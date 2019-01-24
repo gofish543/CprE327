@@ -18,6 +18,7 @@ struct Map {
 };
 
 struct Map* map_initialize();
+
 struct Map* map_terminate(struct Map* map);
 
 #endif

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include "character_listings.h"
 
-struct Staircase{
+struct Staircase {
     unsigned short x;
     unsigned short y;
 
@@ -19,7 +19,9 @@ struct Staircase{
     char character;
 };
 
-struct Staircase* staircase_initialize(unsigned short x, unsigned short y, unsigned short fromFloor, unsigned short toFloor);
+struct Staircase*
+staircase_initialize(unsigned short x, unsigned short y, unsigned short fromFloor, unsigned short toFloor);
+
 struct Staircase* staircase_terminate(struct Staircase* staircase);
 
 #endif

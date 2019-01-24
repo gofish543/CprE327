@@ -4,10 +4,9 @@ int offset = 0;
 
 int randomNumberBetween(int min, int max) {
     int fd = open("/dev/urandom", O_RDWR);
-    if(fd == 0) {
+    if (fd == 0) {
         srand(time(NULL));
-    }
-    else {
+    } else {
         long long buffer[1];
         lseek(fd, offset, 0);
         read(fd, buffer, 8);

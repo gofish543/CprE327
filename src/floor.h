@@ -26,6 +26,7 @@ struct Floor {
 };
 
 struct Floor* floor_initialize();
+
 struct Floor* floor_terminate(struct Floor* floor);
 
 #endif

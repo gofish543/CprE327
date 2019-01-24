@@ -8,6 +8,7 @@
 #include "map.h"
 
 void initialize(struct Map** map);
+
 void terminate(struct Map** map);
 
 #endif

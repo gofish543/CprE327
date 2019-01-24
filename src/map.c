@@ -16,7 +16,7 @@ struct Map* map_initialize() {
 
 struct Map* map_terminate(struct Map* map) {
     int index;
-    for(index = 0; index< map->floorCount; index++) {
+    for (index = 0; index < map->floorCount; index++) {
         map->floors[index] = floor_terminate(map->floors[index]);
     }
 

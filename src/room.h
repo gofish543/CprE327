@@ -23,6 +23,7 @@ struct Room {
 };
 
 struct Room* room_initialize(unsigned short startX, unsigned short startY);
+
 struct Room* room_terminate(struct Room* room);
 
 #endif
