@@ -1,6 +1,6 @@
 #include "resource.h"
 
-int offset = 0;
+unsigned short offset = 0;
 
 int randomNumberBetween(int min, int max) {
     int fd = open("/dev/urandom", O_RDWR);

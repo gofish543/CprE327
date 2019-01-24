@@ -1,6 +1,6 @@
-# Release Notes for 0.x
+# Release Notes for 0.x.x
 
-## Unreleased
+## 0.1.0
 
 ### Added
 

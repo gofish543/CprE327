@@ -35,6 +35,7 @@ bool dungeon_load_from_file(Dungeon* dungeon) {
 void print_current_floor(Dungeon* dungeon) {
     u_char width;
     u_char height;
+
     for (height = 0; height < dungeon->floors[dungeon->currentFloor]->height; height++) {
         for (width = 0; width < dungeon->floors[dungeon->currentFloor]->width; width++) {
             printf("%c", dungeon->floors[dungeon->currentFloor]->floorPlan[height][width]->character);

@@ -20,15 +20,16 @@ Floor* floor_initialize(u_char floorNumber, u_char maxFloors) {
 }
 
 Floor* floor_terminate(Floor* floor) {
-    int width;
-    int height;
+    u_char height;
+    u_char width;
+
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
             free(floor->floorPlan[height][width]);
         }
     }
 
-    int index;
+    u_char index;
     for (index = 0; index < floor->roomCount; index++) {
         if (floor->rooms[index] != NULL) {
             floor->rooms[index] = room_terminate(floor->rooms[index]);
@@ -47,8 +48,8 @@ Floor* floor_terminate(Floor* floor) {
 }
 
 void floor_generate_empty_dots(Floor* floor) {
-    int height;
-    int width;
+    u_char height;
+    u_char width;
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
@@ -65,8 +66,8 @@ void floor_generate_empty_dots(Floor* floor) {
 }
 
 void floor_generate_borders(Floor* floor) {
-    int width;
-    int height;
+    u_char height;
+    u_char width;
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
@@ -210,6 +211,7 @@ void floor_generate_staircases(Floor* floor) {
         floor->floorPlan[stairDownY][stairDownX]->internalObject = floor->stairDown;
     }
 }
+
 void floor_generate_corridors(Floor* floor) {
     return;
 }
