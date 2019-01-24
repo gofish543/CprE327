@@ -1,19 +1,28 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-#define ROOM_CELL 'x'
+#include <stdio.h>
+#include <stdlib.h>
+#include "resource.h"
 
-#define MIN_WIDTH 4
-#define MIN_HEIGHT 3
-#define MAX_WIDTH 7
-#define MAX_HEIGHT 6
+#define ROOM_CHARACTER '.'
 
-typedef struct {
-    short width;
-    short height;
+#define ROOM_MIN_WIDTH 4
+#define ROOM_MIN_HEIGHT 3
+#define ROOM_MAX_WIDTH 7
+#define ROOM_MAX_HEIGHT 6
 
-    short startX;
-    short startY;
-} ROOM;
+struct Room {
+    unsigned short width;
+    unsigned short height;
+
+    unsigned short startX;
+    unsigned short startY;
+
+    char character;
+};
+
+struct Room* room_initialize(unsigned short startX, unsigned short startY);
+struct Room* room_terminate(struct Room* room);
 
 #endif

@@ -22,12 +22,12 @@ struct Floor {
     unsigned short height;
     unsigned short roomCount;
 
-    STAIRCASE staircase_down;
-    STAIRCASE staircase_up;
-    ROOM rooms[FLOOR_ROOMS_MAX];
+    struct Staircase* staircase_down;
+    struct Staircase* staircase_up;
+    struct Room* rooms[FLOOR_ROOMS_MAX];
 };
 
 struct Floor* floor_initialize();
-void floor_terminate(struct Floor* floor);
+struct Floor* floor_terminate(struct Floor* floor);
 
 #endif

@@ -5,7 +5,11 @@ int main(int argc, char *argv[]) {
 
     initialize(&map);
 
+    int index;
     printf("Floors Selected: %d\n", map->floorCount);
+    for(index = 0; index < map->floorCount; index++) {
+        printf("Rooms on floor %d: %d\n", index, map->floors[index]->roomCount);
+    }
 
     terminate(&map);
     return 0;
@@ -16,6 +20,5 @@ void initialize(struct Map** map) {
 }
 
 void terminate(struct Map** map) {
-    map_terminate(*map);
-    *map = NULL;
+    *map = map_terminate(*map);
 }

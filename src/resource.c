@@ -15,5 +15,5 @@ int randomNumberBetween(int min, int max) {
         srand(buffer[0]);
     }
 
-    return rand() % (max - min) + min;
+    return rand() % ((max + 1) - min) + min;
 }
