@@ -5,10 +5,9 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <unistd.h>
-#include "map.h"
+#include "dungeon.h"
 
-void initialize(struct Map** map);
-
-void terminate(struct Map** map);
+void initialize(Dungeon** dungeon);
+void terminate(Dungeon** dungeon);
 
 #endif

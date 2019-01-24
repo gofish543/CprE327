@@ -1,24 +1,20 @@
 #include "escape_from_darkness.h"
 
 int main(int argc, char* argv[]) {
-    struct Map* map = NULL;
+    Dungeon* dungeon = NULL;
 
-    initialize(&map);
+    initialize(&dungeon);
 
-    int index;
-    printf("Floors Selected: %d\n", map->floorCount);
-    for (index = 0; index < map->floorCount; index++) {
-        printf("Rooms on floor %d: %d\n", index, map->floors[index]->roomCount);
-    }
+    print_current_floor(dungeon);
 
-    terminate(&map);
+    terminate(&dungeon);
     return 0;
 }
 
-void initialize(struct Map** map) {
-    *map = map_initialize();
+void initialize(Dungeon** dungeon) {
+    *dungeon = dungeon_initialize();
 }
 
-void terminate(struct Map** map) {
-    *map = map_terminate(*map);
+void terminate(Dungeon** dungeon) {
+    *dungeon = dungeon_terminate(*dungeon);
 }

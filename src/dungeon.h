@@ -1,0 +1,27 @@
+#ifndef DUNGEON_H
+#define DUNGEON_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "resource.h"
+#include "floor.h"
+
+#define DUNGEON_FLOORS_MIN 3
+#define DUNGEON_FLOORS_MAX 6
+
+typedef struct {
+    unsigned short floorCount;
+    unsigned short currentFloor;
+
+    Floor* floors[DUNGEON_FLOORS_MAX];
+} Dungeon;
+
+Dungeon* dungeon_initialize();
+Dungeon* dungeon_terminate(Dungeon* dungeon);
+
+bool dungeon_load_from_file(Dungeon* dungeon);
+void print_current_floor(Dungeon* dungeon);
+
+
+#endif

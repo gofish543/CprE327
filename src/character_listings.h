@@ -10,6 +10,8 @@
 #define FLOOR_ROCK ' '
 #define FLOOR_CORRIDOR '#'
 
+// Player characters
+
 // Room characters
 #define ROOM_CHARACTER '.'
 

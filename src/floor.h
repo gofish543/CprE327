@@ -15,18 +15,34 @@
 #define FLOOR_ROOMS_MIN 6
 #define FLOOR_ROOMS_MAX 10
 
-struct Floor {
+enum FloorDotType{Unknown, Border , Rock, Corridor, Room, StaircaseUp, StaircaseDown};
+
+typedef struct {
+    unsigned short x;
+    unsigned short y;
+
+    char character;
+    unsigned char hardness;
+
+    enum FloorDotType type;
+    void* internalObject;
+} FloorDot;
+
+typedef struct {
     unsigned short width;
     unsigned short height;
     unsigned short roomCount;
 
-    struct Staircase* staircase_down;
-    struct Staircase* staircase_up;
-    struct Room* rooms[FLOOR_ROOMS_MAX];
-};
+    FloorDot* floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
+//    struct Staircase* staircase_down;
+//    struct Staircase* staircase_up;
+//    struct Room* rooms[FLOOR_ROOMS_MAX];
+} Floor;
 
-struct Floor* floor_initialize();
+Floor* floor_initialize();
+Floor* floor_terminate(Floor* floor);
 
-struct Floor* floor_terminate(struct Floor* floor);
+void floor_generate_empty_dots(Floor* floor);
+void floor_generate_borders(Floor* floor);
 
 #endif
