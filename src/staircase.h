@@ -6,20 +6,19 @@
 #include <stdbool.h>
 #include "character_listings.h"
 
-struct Staircase {
-    unsigned short x;
-    unsigned short y;
+typedef struct {
+    u_char x;
+    u_char y;
 
-    unsigned short fromFloor;
-    unsigned short toFloor;
+    u_char fromFloor;
+    u_char toFloor;
 
     bool isUp;
     bool isDown;
 
-    char character;
-};
+} Staircase;
 
-struct Staircase* staircase_initialize(unsigned short x, unsigned short y, unsigned short fromFloor, unsigned short toFloor);
-struct Staircase* staircase_terminate(struct Staircase* staircase);
+Staircase* staircase_initialize(u_char x, u_char y, u_char fromFloor, u_char toFloor);
+Staircase* staircase_terminate(Staircase* staircase);
 
 #endif

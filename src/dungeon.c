@@ -8,9 +8,9 @@ Dungeon* dungeon_initialize() {
         dungeon->currentFloor = 0;
         dungeon->floorCount = randomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX);
 
-        int index;
+        u_char index;
         for (index = 0; index < dungeon->floorCount; index++) {
-            dungeon->floors[index] = floor_initialize();
+            dungeon->floors[index] = floor_initialize(index, dungeon->floorCount);
         }
     }
 
@@ -18,7 +18,7 @@ Dungeon* dungeon_initialize() {
 }
 
 Dungeon* dungeon_terminate(Dungeon* dungeon) {
-    int index;
+    u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
         dungeon->floors[index] = floor_terminate(dungeon->floors[index]);
     }
@@ -33,8 +33,8 @@ bool dungeon_load_from_file(Dungeon* dungeon) {
 }
 
 void print_current_floor(Dungeon* dungeon) {
-    int width;
-    int height;
+    u_char width;
+    u_char height;
     for (height = 0; height < dungeon->floors[dungeon->currentFloor]->height; height++) {
         for (width = 0; width < dungeon->floors[dungeon->currentFloor]->width; width++) {
             printf("%c", dungeon->floors[dungeon->currentFloor]->floorPlan[height][width]->character);

@@ -8,21 +8,21 @@
 #include "character_listings.h"
 
 #define ROOM_MIN_WIDTH 4
-#define ROOM_MIN_HEIGHT 3
-#define ROOM_MAX_WIDTH 7
-#define ROOM_MAX_HEIGHT 6
+#define ROOM_MAX_WIDTH 8
+#define ROOM_MIN_HEIGHT 4
+#define ROOM_MAX_HEIGHT 8
 
-struct Room {
-    unsigned short width;
-    unsigned short height;
+typedef struct {
+    u_char width;
+    u_char height;
 
-    unsigned short startX;
-    unsigned short startY;
+    u_char startX;
+    u_char startY;
 
     char character;
-};
+} Room;
 
-struct Room* room_initialize(unsigned short startX, unsigned short startY);
-struct Room* room_terminate(struct Room* room);
+Room* room_initialize(u_char startX, u_char startY, u_char width, u_char height);
+Room* room_terminate(Room* room);
 
 #endif

@@ -1,10 +1,10 @@
 #include "room.h"
 
-struct Room* room_initialize(unsigned short startX, unsigned short startY) {
-    struct Room* room = malloc(sizeof(struct Room));
+Room* room_initialize(u_char startX, u_char startY, u_char width, u_char height) {
+    Room* room = malloc(sizeof(Room));
 
-    room->width = randomNumberBetween(ROOM_MIN_WIDTH, ROOM_MAX_WIDTH);
-    room->height = randomNumberBetween(ROOM_MIN_HEIGHT, ROOM_MAX_HEIGHT);
+    room->width = width;
+    room->height = height;
 
     room->startX = startX;
     room->startY = startY;
@@ -14,7 +14,7 @@ struct Room* room_initialize(unsigned short startX, unsigned short startY) {
     return room;
 }
 
-struct Room* room_terminate(struct Room* room) {
+Room* room_terminate(Room* room) {
     free(room);
 
     return NULL;

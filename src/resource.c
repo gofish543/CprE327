@@ -12,6 +12,11 @@ int randomNumberBetween(int min, int max) {
         read(fd, buffer, 8);
         close(fd);
         srand(buffer[0]);
+        offset += 8;
+
+        if (offset > 500) {
+            offset = 0;
+        }
     }
 
     return rand() % ((max + 1) - min) + min;

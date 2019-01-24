@@ -15,34 +15,48 @@
 #define FLOOR_ROOMS_MIN 6
 #define FLOOR_ROOMS_MAX 10
 
-enum FloorDotType{Unknown, Border , Rock, Corridor, Room, StaircaseUp, StaircaseDown};
+enum FloorDotType {
+    type_unknown = UNKNOWN_CHARACTER,
+    type_border = 'B',
+    type_rock = FLOOR_ROCK,
+    type_corridor = FLOOR_CORRIDOR,
+    type_room = ROOM_CHARACTER,
+    type_staircaseUp = STAIRCASE_UP,
+    type_staircaseDown = STAIRCASE_DOWN
+};
 
 typedef struct {
-    unsigned short x;
-    unsigned short y;
+    u_char x;
+    u_char y;
 
     char character;
-    unsigned char hardness;
+    u_char hardness;
 
     enum FloorDotType type;
     void* internalObject;
 } FloorDot;
 
 typedef struct {
-    unsigned short width;
-    unsigned short height;
-    unsigned short roomCount;
+    u_char width;
+    u_char height;
+    u_char roomCount;
+
+    u_char floorNumber;
+    u_char maxFloors;
 
     FloorDot* floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
-//    struct Staircase* staircase_down;
-//    struct Staircase* staircase_up;
-//    struct Room* rooms[FLOOR_ROOMS_MAX];
+    Staircase* stairUp;
+    Staircase* stairDown;
+    Room* rooms[FLOOR_ROOMS_MAX];
 } Floor;
 
-Floor* floor_initialize();
+Floor* floor_initialize(u_char floorNumber, u_char maxFloors);
 Floor* floor_terminate(Floor* floor);
 
 void floor_generate_empty_dots(Floor* floor);
 void floor_generate_borders(Floor* floor);
+void floor_generate_rooms(Floor* floor);
+void floor_generate_staircases(Floor* floor);
+void floor_generate_corridors(Floor* floor);
 
 #endif

@@ -11,8 +11,8 @@
 #define DUNGEON_FLOORS_MAX 6
 
 typedef struct {
-    unsigned short floorCount;
-    unsigned short currentFloor;
+    u_char floorCount;
+    u_char currentFloor;
 
     Floor* floors[DUNGEON_FLOORS_MAX];
 } Dungeon;
@@ -22,6 +22,5 @@ Dungeon* dungeon_terminate(Dungeon* dungeon);
 
 bool dungeon_load_from_file(Dungeon* dungeon);
 void print_current_floor(Dungeon* dungeon);
-
 
 #endif
