@@ -35,10 +35,10 @@ Floor* floor_terminate(Floor* floor) {
         }
     }
 
-    if(floor->stairDown != NULL) {
+    if (floor->stairDown != NULL) {
         floor->stairDown = staircase_terminate(floor->stairDown);
     }
-    if(floor->stairUp != NULL) {
+    if (floor->stairUp != NULL) {
         floor->stairUp = staircase_terminate(floor->stairUp);
     }
 
@@ -137,7 +137,7 @@ void floor_generate_rooms(Floor* floor) {
                         }
                     }
                 }
-                // Or valid is false and this for loop needs to terminate now
+                    // Or valid is false and this for loop needs to terminate now
                 else {
                     break;
                 }
@@ -174,15 +174,15 @@ void floor_generate_staircases(Floor* floor) {
     bool makeDown = true;
 
     // Can't make a down floor on the bottom floor
-    if(floor->floorNumber == 0) {
+    if (floor->floorNumber == 0) {
         makeDown = false;
     }
     // Can't make up floor on the top floor
-    if(floor->floorNumber ==floor->maxFloors - 1){
+    if (floor->floorNumber == floor->maxFloors - 1) {
         makeUp = false;
     }
 
-    if(makeUp) {
+    if (makeUp) {
         u_char stairUpRoom = randomNumberBetween(0, floor->roomCount - 1);
 
         u_char stairUpX = randomNumberBetween(floor->rooms[stairUpRoom]->startX, floor->rooms[stairUpRoom]->startX + floor->rooms[stairUpRoom]->width - 1);
@@ -196,7 +196,7 @@ void floor_generate_staircases(Floor* floor) {
         floor->floorPlan[stairUpY][stairUpX]->internalObject = floor->stairUp;
     }
 
-    if(makeDown) {
+    if (makeDown) {
         u_char stairDownRoom = randomNumberBetween(0, floor->roomCount - 1);
 
         u_char stairDownX = randomNumberBetween(floor->rooms[stairDownRoom]->startX, floor->rooms[stairDownRoom]->startX + floor->rooms[stairDownRoom]->width - 1);

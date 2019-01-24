@@ -6,8 +6,7 @@ int main(int argc, char* argv[]) {
     initialize(&dungeon);
 
     int index;
-    for(index = 0; index < dungeon->floorCount; index++)
-    {
+    for (index = 0; index < dungeon->floorCount; index++) {
         dungeon->currentFloor = index;
         print_current_floor(dungeon);
     }
