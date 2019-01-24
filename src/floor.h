@@ -1,15 +1,13 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "resource.h"
 #include "room.h"
 #include "staircase.h"
-
-#define FLOOR_NORTH_SOUTH_WALL '-'
-#define FLOOR_EAST_WEST_WALL '|'
-#define FLOOR_CORNER_WALL '+'
-#define FLOOR_ROCK ' '
-#define FLOOR_CORRIDOR '#'
+#include "character_listings.h"
 
 #define FLOOR_WIDTH 80
 #define FLOOR_HEIGHT 21

@@ -4,9 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-#define STAIRCASE_UP '<'
-#define STAIRCASE_DOWN '>'
+#include "character_listings.h"
 
 struct Staircase{
     unsigned short x;
@@ -17,6 +15,8 @@ struct Staircase{
 
     bool isUp;
     bool isDown;
+
+    char character;
 };
 
 struct Staircase* staircase_initialize(unsigned short x, unsigned short y, unsigned short fromFloor, unsigned short toFloor);

@@ -3,9 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "resource.h"
-
-#define ROOM_CHARACTER '.'
+#include "character_listings.h"
 
 #define ROOM_MIN_WIDTH 4
 #define ROOM_MIN_HEIGHT 3

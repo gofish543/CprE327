@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <unistd.h>
-
 #include "map.h"
 
 void initialize(struct Map** map);

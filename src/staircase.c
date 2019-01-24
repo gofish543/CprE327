@@ -12,14 +12,17 @@ struct Staircase* staircase_initialize(unsigned short x, unsigned short y, unsig
     if(fromFloor < toFloor) {
         staircase->isDown = false;
         staircase->isUp = true;
+        staircase->character = STAIRCASE_UP;
     }
     else if(fromFloor > toFloor) {
         staircase->isDown = true;
         staircase->isUp = false;
+        staircase->character = STAIRCASE_DOWN;
     }
     else {
         staircase->isDown = false;
         staircase->isUp = false;
+        staircase->character = UNKNOWN_CHARACTER;
     }
 
     return staircase;
