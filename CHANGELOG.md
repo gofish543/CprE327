@@ -1,6 +1,6 @@
 # Release Notes for 0.1.x
 
-## [v0.1.0 (2019-01-25)](#)
+## [v0.1.1 (2019-01-25)](https://github.com/gofish543/CprE327/releases/tag/v0.1.1)
 
 ### Added
 - Added Main Escape from Darkness program
