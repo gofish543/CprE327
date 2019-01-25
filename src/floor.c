@@ -183,8 +183,9 @@ void floor_generate_staircases(Floor* floor) {
         makeUp = false;
     }
 
+    u_char stairUpRoom = -1;
     if (makeUp) {
-        u_char stairUpRoom = randomNumberBetween(0, floor->roomCount - 1);
+        stairUpRoom = randomNumberBetween(0, floor->roomCount - 1);
 
         u_char stairUpX = randomNumberBetween(floor->rooms[stairUpRoom]->startX, floor->rooms[stairUpRoom]->startX + floor->rooms[stairUpRoom]->width - 1);
         u_char stairUpY = randomNumberBetween(floor->rooms[stairUpRoom]->startY, floor->rooms[stairUpRoom]->startY + floor->rooms[stairUpRoom]->height - 1);
@@ -198,7 +199,10 @@ void floor_generate_staircases(Floor* floor) {
     }
 
     if (makeDown) {
-        u_char stairDownRoom = randomNumberBetween(0, floor->roomCount - 1);
+        u_char stairDownRoom;
+        do {
+            stairDownRoom = randomNumberBetween(0, floor->roomCount - 1);
+        } while (stairDownRoom == stairUpRoom);
 
         u_char stairDownX = randomNumberBetween(floor->rooms[stairDownRoom]->startX, floor->rooms[stairDownRoom]->startX + floor->rooms[stairDownRoom]->width - 1);
         u_char stairDownY = randomNumberBetween(floor->rooms[stairDownRoom]->startY, floor->rooms[stairDownRoom]->startY + floor->rooms[stairDownRoom]->height - 1);
@@ -213,5 +217,105 @@ void floor_generate_staircases(Floor* floor) {
 }
 
 void floor_generate_corridors(Floor* floor) {
-    return;
+    bool upValid;
+    bool downValid;
+    bool leftValid;
+    bool rightValid;
+
+    u_char firstRoomX;
+    u_char firstRoomY;
+
+    u_char secondRoomX;
+    u_char secondRoomY;
+
+    u_char tempX;
+    u_char tempY;
+
+    u_char index;
+    for (index = 0; index < floor->roomCount - 1; index++) {
+        // First we want to select a random spot within the room, but it needs to be on the border
+        do {
+            firstRoomX = randomNumberBetween(floor->rooms[index]->startX, floor->rooms[index]->startX + floor->rooms[index]->width - 1);
+            firstRoomY = randomNumberBetween(floor->rooms[index]->startY, floor->rooms[index]->startY + floor->rooms[index]->height - 1);
+
+            upValid = floor->floorPlan[firstRoomY - 1][firstRoomX]->type == type_rock;
+            downValid = floor->floorPlan[firstRoomY + 1][firstRoomX]->type == type_rock;
+            leftValid = floor->floorPlan[firstRoomY][firstRoomX - 1]->type == type_rock;
+            rightValid = floor->floorPlan[firstRoomY][firstRoomX + 1]->type == type_rock;
+        } while (upValid || downValid || leftValid || rightValid);
+
+        // Second we want to select a random spot within the next room, but it needs to be on the border
+        do {
+            secondRoomX = randomNumberBetween(floor->rooms[index + 1]->startX, floor->rooms[index + 1]->startX + floor->rooms[index + 1]->width - 1);
+            secondRoomY = randomNumberBetween(floor->rooms[index + 1]->startY, floor->rooms[index + 1]->startY + floor->rooms[index + 1]->height - 1);
+
+            upValid = floor->floorPlan[secondRoomY - 1][secondRoomX]->type == type_rock;
+            downValid = floor->floorPlan[secondRoomY + 1][secondRoomX]->type == type_rock;
+            leftValid = floor->floorPlan[secondRoomY][secondRoomX - 1]->type == type_rock;
+            rightValid = floor->floorPlan[secondRoomY][secondRoomX + 1]->type == type_rock;
+        } while (upValid || downValid || leftValid || rightValid);
+
+        // Now connect them in the X direction
+        tempX = firstRoomX;
+        while (tempX != secondRoomX) {
+            if (tempX > secondRoomX) {
+                tempX--;
+            } else if (tempX < secondRoomX) {
+                tempX++;
+            }
+
+            if (floor->floorPlan[secondRoomY][tempX]->type == type_rock) {
+                floor->floorPlan[secondRoomY][tempX]->type = type_corridor;
+                floor->floorPlan[secondRoomY][tempX]->hardness = 0;
+                floor->floorPlan[secondRoomY][tempX]->character = FLOOR_CORRIDOR;
+                floor->floorPlan[secondRoomY][tempX]->internalObject = NULL;
+            }
+        }
+
+        // Now connect them in the Y direction
+        tempY = secondRoomY;
+        while (tempY != firstRoomY) {
+            if (tempY > firstRoomY) {
+                tempY--;
+            } else if (tempY < firstRoomY) {
+                tempY++;
+            }
+
+            if (floor->floorPlan[tempY][firstRoomX]->type == type_rock) {
+                floor->floorPlan[tempY][firstRoomX]->type = type_corridor;
+                floor->floorPlan[tempY][firstRoomX]->hardness = 0;
+                floor->floorPlan[tempY][firstRoomX]->character = FLOOR_CORRIDOR;
+                floor->floorPlan[tempY][firstRoomX]->internalObject = NULL;
+            }
+        }
+
+        // Handle the corner case
+        if (floor->floorPlan[secondRoomY][firstRoomX]->type == type_rock) {
+            floor->floorPlan[secondRoomY][firstRoomX]->type = type_corridor;
+            floor->floorPlan[secondRoomY][firstRoomX]->hardness = 0;
+            floor->floorPlan[secondRoomY][firstRoomX]->character = FLOOR_CORRIDOR;
+            floor->floorPlan[secondRoomY][firstRoomX]->internalObject = NULL;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
