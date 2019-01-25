@@ -51,6 +51,7 @@ resources:
 
 # Make the Directories
 directories:
+	@mkdir -p $(RESDIR)
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
 
