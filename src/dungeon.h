@@ -14,7 +14,7 @@ typedef struct {
     u_char floorCount;
     u_char currentFloor;
 
-    Floor* floors[DUNGEON_FLOORS_MAX];
+    Floor** floors;
 } Dungeon;
 
 Dungeon* dungeon_initialize();

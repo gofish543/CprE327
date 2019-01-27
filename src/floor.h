@@ -15,6 +15,9 @@
 #define FLOOR_ROOMS_MIN 6
 #define FLOOR_ROOMS_MAX 10
 
+#define FLOOR_STAIRS_MIN 1
+#define FLOOR_STAIRS_MAX 1
+
 enum FloorDotType {
     type_unknown = UNKNOWN_CHARACTER,
     type_border = 'B',
@@ -40,17 +43,18 @@ typedef struct {
     u_char width;
     u_char height;
     u_char roomCount;
+    u_char stairCount;
 
     u_char floorNumber;
     u_char maxFloors;
 
     FloorDot* floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
-    Staircase* stairUp;
-    Staircase* stairDown;
-    Room* rooms[FLOOR_ROOMS_MAX];
+    Staircase** stairUp;
+    Staircase** stairDown;
+    Room** rooms;
 } Floor;
 
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors);
+Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairsPerFloor);
 Floor* floor_terminate(Floor* floor);
 
 void floor_generate_empty_dots(Floor* floor);

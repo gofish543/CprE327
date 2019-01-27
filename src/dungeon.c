@@ -7,10 +7,13 @@ Dungeon* dungeon_initialize() {
     if (!dungeon_load_from_file(dungeon)) {
         dungeon->currentFloor = 0;
         dungeon->floorCount = randomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX);
+        // This creates a dynamically sized array. Going to need to do that because of load and save features later
+        dungeon->floors = malloc(dungeon->floorCount  * sizeof(Floor*));
 
+        u_char stairsPerFloor = randomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX);
         u_char index;
         for (index = 0; index < dungeon->floorCount; index++) {
-            dungeon->floors[index] = floor_initialize(index, dungeon->floorCount);
+            dungeon->floors[index] = floor_initialize(index, dungeon->floorCount, stairsPerFloor);
         }
     }
 
@@ -23,6 +26,7 @@ Dungeon* dungeon_terminate(Dungeon* dungeon) {
         dungeon->floors[index] = floor_terminate(dungeon->floors[index]);
     }
 
+    free(dungeon->floors);
     free(dungeon);
 
     return NULL;

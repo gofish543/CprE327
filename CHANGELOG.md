@@ -3,8 +3,11 @@
 ## Unreleased
 
 ### Added
+- Added multiple stairs up and down per floor
 ### Fixed
 ### Changed
+- Changed fixed array length fto dynamically sized array for floors
+- Changed fixed array length to dynamically sized array for rooms
 
 ## [v0.1.1 (2019-01-25)](https://github.com/gofish543/CprE327/releases/tag/v0.1.1)
 

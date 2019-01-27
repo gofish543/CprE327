@@ -1,11 +1,16 @@
 #include "floor.h"
 
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors) {
+Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairsPerFloor) {
     Floor* floor = malloc(sizeof(Floor));
 
     floor->width = FLOOR_WIDTH;
     floor->height = FLOOR_HEIGHT;
     floor->roomCount = randomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
+    floor->stairCount = stairsPerFloor;
+
+    floor->rooms = malloc(floor->roomCount * sizeof(Room*));
+    floor->stairUp = malloc(floor->stairCount * sizeof(Staircase*));
+    floor->stairDown = malloc(floor->stairCount * sizeof(Staircase*));
 
     floor->floorNumber = floorNumber;
     floor->maxFloors = maxFloors;
@@ -36,14 +41,24 @@ Floor* floor_terminate(Floor* floor) {
         }
     }
 
-    if (floor->stairDown != NULL) {
-        floor->stairDown = staircase_terminate(floor->stairDown);
-    }
-    if (floor->stairUp != NULL) {
-        floor->stairUp = staircase_terminate(floor->stairUp);
+    for (index = 0; index < floor->stairCount; index++) {
+        if (floor->stairDown[index] != NULL) {
+            floor->stairDown[index] = staircase_terminate(floor->stairDown[index]);
+        }
     }
 
+    for (index = 0; index < floor->stairCount; index++) {
+        if (floor->stairUp[index] != NULL) {
+            floor->stairUp[index] = staircase_terminate(floor->stairUp[index]);
+        }
+    }
+
+
+    free(floor->stairUp);
+    free(floor->stairDown);
+    free(floor->rooms);
     free(floor);
+
     return NULL;
 }
 
@@ -168,9 +183,6 @@ void floor_generate_rooms(Floor* floor) {
 }
 
 void floor_generate_staircases(Floor* floor) {
-    floor->stairUp = NULL;
-    floor->stairDown = NULL;
-
     bool makeUp = true;
     bool makeDown = true;
 
@@ -183,36 +195,64 @@ void floor_generate_staircases(Floor* floor) {
         makeUp = false;
     }
 
-    u_char stairUpRoom = -1;
     if (makeUp) {
-        stairUpRoom = randomNumberBetween(0, floor->roomCount - 1);
+        u_char stairUpX;
+        u_char stairUpY;
+        u_char stairUpRoom;
 
-        u_char stairUpX = randomNumberBetween(floor->rooms[stairUpRoom]->startX, floor->rooms[stairUpRoom]->startX + floor->rooms[stairUpRoom]->width - 1);
-        u_char stairUpY = randomNumberBetween(floor->rooms[stairUpRoom]->startY, floor->rooms[stairUpRoom]->startY + floor->rooms[stairUpRoom]->height - 1);
+        u_char index;
+        for (index = 0; index < floor->stairCount; index++) {
+            stairUpRoom = randomNumberBetween(0, floor->roomCount - 1);
 
-        floor->stairUp = staircase_initialize(stairUpX, stairUpY, floor->floorNumber, floor->floorNumber + 1);
+            // Select random spots until they are only surrounded by room space
+            do {
+                // Select random spot inside the room, not on edge
+                stairUpX = randomNumberBetween(floor->rooms[stairUpRoom]->startX + 1, floor->rooms[stairUpRoom]->startX + floor->rooms[stairUpRoom]->width - 2);
+                stairUpY = randomNumberBetween(floor->rooms[stairUpRoom]->startY + 1, floor->rooms[stairUpRoom]->startY + floor->rooms[stairUpRoom]->height - 2);
+            } while (
+                    floor->floorPlan[stairUpY - 1][stairUpX]->character != ROOM_CHARACTER ||
+                    floor->floorPlan[stairUpY + 1][stairUpX]->character != ROOM_CHARACTER ||
+                    floor->floorPlan[stairUpY][stairUpX - 1]->character != ROOM_CHARACTER ||
+                    floor->floorPlan[stairUpY][stairUpX + 1]->character != ROOM_CHARACTER
+                    );
 
-        floor->floorPlan[stairUpY][stairUpX]->hardness = 0;
-        floor->floorPlan[stairUpY][stairUpX]->type = type_staircaseUp;
-        floor->floorPlan[stairUpY][stairUpX]->character = STAIRCASE_UP;
-        floor->floorPlan[stairUpY][stairUpX]->internalObject = floor->stairUp;
+            floor->stairUp[index] = staircase_initialize(stairUpX, stairUpY, floor->floorNumber, floor->floorNumber + 1);
+
+            floor->floorPlan[stairUpY][stairUpX]->hardness = 0;
+            floor->floorPlan[stairUpY][stairUpX]->type = type_staircaseUp;
+            floor->floorPlan[stairUpY][stairUpX]->character = STAIRCASE_UP;
+            floor->floorPlan[stairUpY][stairUpX]->internalObject = floor->stairUp;
+        }
     }
 
     if (makeDown) {
+        u_char stairDownX;
+        u_char stairDownY;
         u_char stairDownRoom;
-        do {
+
+        u_char index;
+        for (index = 0; index < floor->stairCount; index++) {
             stairDownRoom = randomNumberBetween(0, floor->roomCount - 1);
-        } while (stairDownRoom == stairUpRoom);
 
-        u_char stairDownX = randomNumberBetween(floor->rooms[stairDownRoom]->startX, floor->rooms[stairDownRoom]->startX + floor->rooms[stairDownRoom]->width - 1);
-        u_char stairDownY = randomNumberBetween(floor->rooms[stairDownRoom]->startY, floor->rooms[stairDownRoom]->startY + floor->rooms[stairDownRoom]->height - 1);
+            // Select random spots until they are only surrounded by room space
+            do {
+                // Select random spot inside the room, not on edge
+                stairDownX = randomNumberBetween(floor->rooms[stairDownRoom]->startX + 1, floor->rooms[stairDownRoom]->startX + floor->rooms[stairDownRoom]->width - 2);
+                stairDownY = randomNumberBetween(floor->rooms[stairDownRoom]->startY + 1, floor->rooms[stairDownRoom]->startY + floor->rooms[stairDownRoom]->height - 2);
+            } while (
+                    floor->floorPlan[stairDownY - 1][stairDownX]->character != ROOM_CHARACTER ||
+                    floor->floorPlan[stairDownY + 1][stairDownX]->character != ROOM_CHARACTER ||
+                    floor->floorPlan[stairDownY][stairDownX - 1]->character != ROOM_CHARACTER ||
+                    floor->floorPlan[stairDownY][stairDownX + 1]->character != ROOM_CHARACTER
+                    );
 
-        floor->stairDown = staircase_initialize(stairDownX, stairDownY, floor->floorNumber, floor->floorNumber + 1);
+            floor->stairDown[index] = staircase_initialize(stairDownX, stairDownY, floor->floorNumber, floor->floorNumber + 1);
 
-        floor->floorPlan[stairDownY][stairDownX]->hardness = 0;
-        floor->floorPlan[stairDownY][stairDownX]->type = type_staircaseDown;
-        floor->floorPlan[stairDownY][stairDownX]->character = STAIRCASE_DOWN;
-        floor->floorPlan[stairDownY][stairDownX]->internalObject = floor->stairDown;
+            floor->floorPlan[stairDownY][stairDownX]->hardness = 0;
+            floor->floorPlan[stairDownY][stairDownX]->type = type_staircaseDown;
+            floor->floorPlan[stairDownY][stairDownX]->character = STAIRCASE_DOWN;
+            floor->floorPlan[stairDownY][stairDownX]->internalObject = floor->stairDown;
+        }
     }
 }
 
