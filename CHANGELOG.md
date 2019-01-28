@@ -3,7 +3,15 @@
 ## Unreleased
 
 ### Added
+- Added player placement upon dungeon load
 - Added multiple stairs up and down per floor
+- Added ability to save first floor of application
+- Added save flag `./bin/coms327_dykhuizen_VERSION --save <file_name>`
+- Added ability to load first floor of application
+- Added load flag `./bin/coms327_dykhuizen_VERSION --load <file_name>`
+- Added file version 0, saving only the current floor the user is on
+- Added file version 1, saving all the floors, including the floor the user is on
+- Added file version default 0, override flag is `--file_version <version>`
 ### Fixed
 ### Changed
 - Changed fixed array length fto dynamically sized array for floors

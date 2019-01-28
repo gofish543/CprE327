@@ -22,6 +22,7 @@ OBJEXT		= o
 
 # Flags
 CFLAGS		= -Wall -Wpedantic -g -ggdb3 -funroll-loops -pg
+#CFLAGS		= -Wall -Werror -Wpedantic -funroll-loops -pg -O2
 CXXFLAGS	= -Wall -Werror -Wpedantic -g -ggdb3 -funroll-loops -pg
 LIBS		= -lm -lncurses -pg
 INC			= -I$(INCDIR) -I/usr/local/include

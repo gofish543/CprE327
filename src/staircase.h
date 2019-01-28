@@ -15,7 +15,6 @@ typedef struct {
 
     bool isUp;
     bool isDown;
-
 } Staircase;
 
 Staircase* staircase_initialize(u_char x, u_char y, u_char fromFloor, u_char toFloor);

@@ -21,11 +21,12 @@
 enum FloorDotType {
     type_unknown = UNKNOWN_CHARACTER,
     type_border = 'B',
-    type_rock = FLOOR_ROCK,
-    type_corridor = FLOOR_CORRIDOR,
+    type_rock = ROCK_CHARACTER,
+    type_corridor = CORRIDOR_CHARACTER,
     type_room = ROOM_CHARACTER,
-    type_staircaseUp = STAIRCASE_UP,
-    type_staircaseDown = STAIRCASE_DOWN
+    type_staircase_up = STAIRCASE_UP_CHARACTER,
+    type_staircase_down = STAIRCASE_DOWN_CHARACTER,
+    type_player = PLAYER_CHARACTER,
 };
 
 typedef struct {
@@ -43,7 +44,8 @@ typedef struct {
     u_char width;
     u_char height;
     u_char roomCount;
-    u_char stairCount;
+    u_char stairUpCount;
+    u_char stairDownCount;
 
     u_char floorNumber;
     u_char maxFloors;
@@ -54,7 +56,32 @@ typedef struct {
     Room** rooms;
 } Floor;
 
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairsPerFloor);
+typedef struct {
+    u_char width;
+    u_char height;
+    u_char roomCount;
+    u_char stairUpCount;
+    u_char stairDownCount;
+
+    u_char floorNumber;
+    u_char maxFloors;
+
+    u_char floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
+
+    u_char* stairUpX;
+    u_char* stairUpY;
+
+    u_char* stairDownX;
+    u_char* stairDownY;
+
+    u_char* roomsX;
+    u_char* roomsY;
+    u_char* roomsWidth;
+    u_char* roomsHeight;
+} FloorLoadStructure;
+
+Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure);
+Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairUpCount, u_char stairDownCount);
 Floor* floor_terminate(Floor* floor);
 
 void floor_generate_empty_dots(Floor* floor);

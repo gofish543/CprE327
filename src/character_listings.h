@@ -4,19 +4,27 @@
 #define UNKNOWN_CHARACTER '?'
 
 // Floor characters
-#define FLOOR_NORTH_SOUTH_WALL '-'
-#define FLOOR_EAST_WEST_WALL '|'
-#define FLOOR_CORNER_WALL '+'
-#define FLOOR_ROCK ' '
-#define FLOOR_CORRIDOR '#'
+#define NORTH_SOUTH_WALL_CHARACTER '-'
+#define EAST_WEST_WALL_CHARACTER '|'
+#define CORNER_WALL_CHARACTER '+'
+#define ROCK_CHARACTER ' '
+#define CORRIDOR_CHARACTER '#'
 
 // Player characters
+#define PLAYER_CHARACTER '@'
 
 // Room characters
 #define ROOM_CHARACTER '.'
 
 // Staircase characters
-#define STAIRCASE_UP '<'
-#define STAIRCASE_DOWN '>'
+#define STAIRCASE_UP_CHARACTER '<'
+#define STAIRCASE_DOWN_CHARACTER '>'
+
+#define BORDER_HARDNESS 255
+#define ROCK_HARDNESS 100
+#define ROOM_HARDNESS 0
+#define CORRIDOR_HARDNESS 0
+#define PLAYER_HARDNESS 0
+#define STAIRCASE_HARDNESS 0
 
 #endif

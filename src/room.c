@@ -9,8 +9,6 @@ Room* room_initialize(u_char startX, u_char startY, u_char width, u_char height)
     room->startX = startX;
     room->startY = startY;
 
-    room->character = ROOM_CHARACTER;
-
     return room;
 }
 

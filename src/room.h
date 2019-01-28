@@ -18,8 +18,6 @@ typedef struct {
 
     u_char startX;
     u_char startY;
-
-    char character;
 } Room;
 
 Room* room_initialize(u_char startX, u_char startY, u_char width, u_char height);
