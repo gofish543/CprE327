@@ -42,6 +42,15 @@ bool dungeon_save_to_file(void* dungeonPointer) {
             save_floor(file, dungeon, dungeon->currentFloor);
         }
 
+        fflush(file);
+        // Seek to end of file
+        fseek(file, 0, SEEK_END);
+        // Get current file pointer
+        fileSize = htobe32(ftell(file));
+        // Seek back to file size data index
+        fseek(file, (sizeof(char) * strlen(fileHeading)) + sizeof(fileVersion), SEEK_SET);
+        fwrite(&fileSize, sizeof(fileSize), 1, file);
+
         fclose(file);
         file = NULL;
 
@@ -132,6 +141,14 @@ bool dungeon_load_from_file(void* dungeonPointer) {
         u_int fileSize;
         fread(&fileSize, sizeof(fileSize), 1, file);
         fileSize = be32toh(fileSize);
+        // Seek to end of file
+        fseek(file, 0, SEEK_END);
+        u_int actualFileSize = ftell(file);
+        fseek(file, (sizeof(char) * strlen(fileHeading)) + sizeof(fileVersion) + sizeof(fileSize), SEEK_SET);
+        if (fileSize != actualFileSize) {
+            printf("Invalid file sizes. Actual file size %u bits doesn't match header of %u bits\n", actualFileSize, fileSize);
+            return false;
+        }
 
         // Load player location
         u_char playerX;

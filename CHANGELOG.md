@@ -13,6 +13,7 @@
 - Added file version 1, saving all the floors, including the floor the user is on
 - Added file version default 0, override flag is `--file_version <version>`
 ### Fixed
+- Fixed file size mismatch fault dealing with endianness conversion
 ### Changed
 - Changed fixed array length fto dynamically sized array for floors
 - Changed fixed array length to dynamically sized array for rooms
