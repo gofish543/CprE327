@@ -79,7 +79,9 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
         floor->floorPlan[floor->stairDown[index]->y][floor->stairDown[index]->x]->internalObject = floor->stairDown[index];
     }
 
-    floor_generate_borders(floor);
+    if(floor_generate_borders(floor) != 0) {
+        return NULL;
+    }
 
     return floor;
 }
@@ -100,11 +102,13 @@ Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairUpCoun
     floor->floorNumber = floorNumber;
     floor->maxFloors = maxFloors;
 
-    floor_generate_empty_dots(floor);
-    floor_generate_borders(floor);
-    floor_generate_rooms(floor);
-    floor_generate_staircases(floor);
-    floor_generate_corridors(floor);
+    if (floor_generate_empty_dots(floor) != 0 ||
+        floor_generate_borders(floor) != 0 ||
+        floor_generate_rooms(floor) != 0 ||
+        floor_generate_staircases(floor) != 0 ||
+        floor_generate_corridors(floor) != 0) {
+        return NULL;
+    }
 
     return floor;
 }
@@ -132,7 +136,6 @@ Floor* floor_terminate(Floor* floor) {
         floor->stairUp[index] = staircase_terminate(floor->stairUp[index]);
     }
 
-
     free(floor->stairUp);
     free(floor->stairDown);
     free(floor->rooms);
@@ -141,7 +144,7 @@ Floor* floor_terminate(Floor* floor) {
     return NULL;
 }
 
-void floor_generate_empty_dots(Floor* floor) {
+int floor_generate_empty_dots(Floor* floor) {
     u_char height;
     u_char width;
 
@@ -157,33 +160,63 @@ void floor_generate_empty_dots(Floor* floor) {
             floor->floorPlan[height][width] = floorDot;
         }
     }
+
+    return 0;
 }
 
-void floor_generate_borders(Floor* floor) {
+int floor_generate_borders(Floor* floor) {
     u_char height;
     u_char width;
 
-    for (height = 0; height < floor->height; height++) {
-        for (width = 0; width < floor->width; width++) {
-            if ((width == 0 && height == 0) || (width == FLOOR_WIDTH - 1 && height == FLOOR_HEIGHT - 1) ||
-                (width == FLOOR_WIDTH - 1 && height == 0) || (width == 0 && height == FLOOR_HEIGHT - 1)) {
-                floor->floorPlan[height][width]->type = type_border;
-                floor->floorPlan[height][width]->hardness = BORDER_HARDNESS;
-                floor->floorPlan[height][width]->character = CORNER_WALL_CHARACTER;
-            } else if (height == 0 || height == FLOOR_HEIGHT - 1) {
-                floor->floorPlan[height][width]->type = type_border;
-                floor->floorPlan[height][width]->hardness = BORDER_HARDNESS;
-                floor->floorPlan[height][width]->character = NORTH_SOUTH_WALL_CHARACTER;
-            } else if (width == 0 || width == FLOOR_WIDTH - 1) {
-                floor->floorPlan[height][width]->type = type_border;
-                floor->floorPlan[height][width]->hardness = BORDER_HARDNESS;
-                floor->floorPlan[height][width]->character = EAST_WEST_WALL_CHARACTER;
-            }
-        }
+    // Set NORTH and SOUTH walls
+    for (width = 0; width < floor->width; width++) {
+        floor->floorPlan[0][width]->type = type_border;
+        floor->floorPlan[0][width]->hardness = BORDER_HARDNESS;
+        floor->floorPlan[0][width]->character = CORNER_WALL_CHARACTER;
+
+        floor->floorPlan[floor->height - 1][width]->type = type_border;
+        floor->floorPlan[floor->height - 1][width]->hardness = BORDER_HARDNESS;
+        floor->floorPlan[floor->height - 1][width]->character = CORNER_WALL_CHARACTER;
     }
+
+    // Set EAST and WEST walls
+    for (height = 0; height < floor->height; height++) {
+        floor->floorPlan[height][0]->type = type_border;
+        floor->floorPlan[height][0]->hardness = BORDER_HARDNESS;
+        floor->floorPlan[height][0]->character = EAST_WEST_WALL_CHARACTER;
+
+        floor->floorPlan[height][floor->width - 1]->type = type_border;
+        floor->floorPlan[height][floor->width - 1]->hardness = BORDER_HARDNESS;
+        floor->floorPlan[height][floor->width - 1]->character = EAST_WEST_WALL_CHARACTER;
+    }
+
+    // Set top left corner
+    floor->floorPlan[0][0]->type = type_border;
+    floor->floorPlan[0][0]->hardness = BORDER_HARDNESS;
+    floor->floorPlan[0][0]->character = CORNER_WALL_CHARACTER;
+
+    // Set top right corner
+    floor->floorPlan[0][floor->width - 1]->type = type_border;
+    floor->floorPlan[0][floor->width - 1]->hardness = BORDER_HARDNESS;
+    floor->floorPlan[0][floor->width - 1]->character = CORNER_WALL_CHARACTER;
+
+    // Set bottom left corner
+    floor->floorPlan[floor->height - 1][0]->type = type_border;
+    floor->floorPlan[floor->height - 1][0]->hardness = BORDER_HARDNESS;
+    floor->floorPlan[floor->height - 1][0]->character = CORNER_WALL_CHARACTER;
+
+    // Set bottom right corner
+    floor->floorPlan[floor->height - 1][floor->width - 1]->type = type_border;
+    floor->floorPlan[floor->height - 1][floor->width - 1]->hardness = BORDER_HARDNESS;
+    floor->floorPlan[floor->height - 1][floor->width - 1]->character = CORNER_WALL_CHARACTER;
+
+    return 0;
 }
 
-void floor_generate_rooms(Floor* floor) {
+int floor_generate_rooms(Floor* floor) {
+    u_char maxDoWhileAttempts = 100;
+    u_char doWhileAttempts;
+
     u_char startX;
     u_char startY;
 
@@ -195,14 +228,13 @@ void floor_generate_rooms(Floor* floor) {
 
     u_char index;
 
-    u_char maxDoWhile;
     bool valid;
     for (index = 0; index < floor->roomCount; index++) {
-        maxDoWhile = 0;
+        doWhileAttempts = 0;
         // Attempt to find a starting point randomly, do while
         do {
             valid = true;
-            maxDoWhile++;
+            doWhileAttempts++;
 
             // Find something inside the gameplay box....
             startX = randomNumberBetween(0 + 1, floor->width - 1);
@@ -241,9 +273,9 @@ void floor_generate_rooms(Floor* floor) {
             if (valid) {
                 break;
             }
-        } while (maxDoWhile < 101);
+        } while (doWhileAttempts < maxDoWhileAttempts);
 
-        if (maxDoWhile < 101) {
+        if (doWhileAttempts < maxDoWhileAttempts) {
             // Valid room found, create it
             floor->rooms[index] = room_initialize(startX, startY, roomWidth, roomHeight);
 
@@ -257,11 +289,15 @@ void floor_generate_rooms(Floor* floor) {
             }
         } else {
             printf("Failed to create room %d...\n", index);
+
+            return 1;
         }
     }
+
+    return 0;
 }
 
-void floor_generate_staircases(Floor* floor) {
+int floor_generate_staircases(Floor* floor) {
     // Can't make a down floor on the bottom floor
     if (floor->floorNumber == 0) {
         floor->stairDownCount = 0;
@@ -322,9 +358,11 @@ void floor_generate_staircases(Floor* floor) {
         floor->floorPlan[stairY][stairX]->character = STAIRCASE_DOWN_CHARACTER;
         floor->floorPlan[stairY][stairX]->internalObject = floor->stairDown;
     }
+
+    return 0;
 }
 
-void floor_generate_corridors(Floor* floor) {
+int floor_generate_corridors(Floor* floor) {
     bool upValid;
     bool downValid;
     bool leftValid;
@@ -405,4 +443,6 @@ void floor_generate_corridors(Floor* floor) {
             floor->floorPlan[secondRoomY][firstRoomX]->internalObject = NULL;
         }
     }
+
+    return 0;
 }

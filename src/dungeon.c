@@ -4,34 +4,27 @@ Dungeon* dungeon_initialize(Settings* settings) {
     Dungeon* dungeon = malloc(sizeof(Dungeon));
     dungeon->settings = settings;
 
-    // If failed loaded from file load up a new map
+    // Check if loading from file or from program
     if (dungeon->settings->doLoad) {
-        bool loadedSuccessfully = dungeon_load_from_file(dungeon);
-
-        if (!loadedSuccessfully) {
+        if (load_from_file(dungeon) != 0) {
+            load_error();
             return NULL;
         }
     } else {
-        dungeon->currentFloor = 0;
-        dungeon->floorCount = randomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX);
-        u_char stairUpCount = randomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX);
-        u_char stairDownCount = stairDownCount;
-
-        // This creates a dynamically sized array. Going to need to do that because of load and save features later
-        dungeon->floors = malloc(dungeon->floorCount * sizeof(Floor*));
-        u_char index;
-        for (index = 0; index < dungeon->floorCount; index++) {
-            dungeon->floors[index] = floor_initialize(index, dungeon->floorCount, stairUpCount, stairDownCount);
+        if(dungeon_load_from_program(dungeon) != 0) {
+            return NULL;
         }
-
-        dungeon_place_character(dungeon);
     }
 
     return dungeon;
 }
 
 Dungeon* dungeon_terminate(Dungeon* dungeon) {
-    dungeon_save_to_file(dungeon);
+    if (dungeon->settings->doSave) {
+        if(save_to_file(dungeon) != 0) {
+            save_error(dungeon);
+        }
+    }
 
     u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
@@ -39,20 +32,28 @@ Dungeon* dungeon_terminate(Dungeon* dungeon) {
     }
     dungeon->player = player_terminate(dungeon->player);
 
-
-    if (dungeon->settings->doSave) {
-        free(dungeon->settings->savePath);
-    }
-
-    if (dungeon->settings->doLoad) {
-        free(dungeon->settings->loadPath);
-    }
-
-    free(dungeon->settings);
+    dungeon->settings = NULL;
     free(dungeon->floors);
     free(dungeon);
 
     return NULL;
+}
+
+int dungeon_load_from_program(Dungeon* dungeon) {
+    dungeon->currentFloor = 0;
+    dungeon->floorCount = randomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX);
+    u_char stairCount = randomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX);
+
+    // This creates a dynamically sized array. Going to need to do that because of load and save features later
+    dungeon->floors = malloc(dungeon->floorCount * sizeof(Floor*));
+    u_char index;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        dungeon->floors[index] = floor_initialize(index, dungeon->floorCount, stairCount, stairCount);
+    }
+
+    dungeon_place_character(dungeon);
+
+    return 0;
 }
 
 void dungeon_place_character(Dungeon* dungeon) {

@@ -12,11 +12,15 @@
 - Added file version 0, saving only the current floor the user is on
 - Added file version 1, saving all the floors, including the floor the user is on
 - Added file version default 0, override flag is `--file_version <version>`
+- Added error checking for file load and save
+- Added in production compilation inside of makefile
 ### Fixed
 - Fixed file size mismatch fault dealing with endianness conversion
+- Fixed warnings given by -O2 on makefile
 ### Changed
 - Changed fixed array length fto dynamically sized array for floors
 - Changed fixed array length to dynamically sized array for rooms
+- Moved settings under the dungeon structure with error checking on passed params
 
 ## [v0.1.1 (2019-01-25)](https://github.com/gofish543/CprE327/releases/tag/v0.1.1)
 

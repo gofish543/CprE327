@@ -9,15 +9,33 @@ int randomNumberBetween(int min, int max) {
     } else {
         long long buffer[1];
         lseek(fd, offset, 0);
-        read(fd, buffer, 8);
-        close(fd);
-        srand(buffer[0]);
-        offset += 8;
+        if (read(fd, buffer, 8) != 8) {
+            srand(time(NULL));
+        } else {
+            srand(buffer[0]);
+            offset += 8;
 
-        if (offset > 500) {
-            offset = 0;
+            if (offset > 500) {
+                offset = 0;
+            }
         }
+        close(fd);
     }
 
     return rand() % ((max + 1) - min) + min;
+}
+
+int error_check_fread(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream) {
+    if (fread(ptr, size, nmemb, stream) != nmemb) {
+        return 1;
+    }
+
+    return 0;
+}
+
+int error_check_fwrite(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream) {
+    if (fwrite(ptr, size, nmemb, stream) != nmemb) {
+        return 1;
+    }
+    return 0;
 }

@@ -1,13 +1,20 @@
 #include "save_load.h"
 
-bool dungeon_save_to_file(void* dungeonPointer) {
+int save_to_file(void* dungeonPointer) {
     Dungeon* dungeon = (Dungeon*) dungeonPointer;
     if (dungeon->settings->doSave) {
+        // Move current file to a tmp file in case save fails
+        char* tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
+        sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
+        rename(dungeon->settings->savePath, tempName);
+        free(tempName);
+
+        // Open the file
         FILE* file = fopen(dungeon->settings->savePath, "wb+");
 
         if (file == NULL) {
             printf("Failed to open file at path %s\n", dungeon->settings->savePath);
-            return false;
+            return 1;
         }
 
         char fileHeading[] = FILE_HEADING;
@@ -16,30 +23,49 @@ bool dungeon_save_to_file(void* dungeonPointer) {
         u_int fileSize = 0;
 
         // Write file heading
-        fwrite(fileHeading, sizeof(char), strlen(fileHeading), file);
+        if (error_check_fwrite(fileHeading, sizeof(char), strlen(fileHeading), file) != 0) {
+            printf("Failed on the first one... lol fwrite is broke af\n");
+            return 1;
+        }
         // Write file version
-        fwrite(&(fileVersion_be32), sizeof(fileVersion), 1, file);
+        if (error_check_fwrite(&(fileVersion_be32), sizeof(fileVersion), 1, file) != 0) {
+            return 1;
+        }
         // Write file size, this will be over written later
-        fwrite(&fileSize, sizeof(fileSize), 1, file);
+        if (error_check_fwrite(&fileSize, sizeof(fileSize), 1, file) != 0) {
+            return 1;
+        }
         // Write player location
-        fwrite(&(dungeon->player->x), sizeof(dungeon->player->x), 1, file);
-        fwrite(&(dungeon->player->y), sizeof(dungeon->player->y), 1, file);
+        if (error_check_fwrite(&(dungeon->player->x), sizeof(dungeon->player->x), 1, file) != 0) {
+            return 1;
+        }
+        if (error_check_fwrite(&(dungeon->player->y), sizeof(dungeon->player->y), 1, file) != 0) {
+            return 1;
+        }
         // Write current floor of player
         // Write max floors
         if (fileVersion == 1) {
-            fwrite(&(dungeon->player->floor), sizeof(dungeon->player->floor), 1, file);
-            fwrite(&(dungeon->floorCount), sizeof(dungeon->floorCount), 1, file);
+            if (error_check_fwrite(&(dungeon->player->floor), sizeof(dungeon->player->floor), 1, file) != 0) {
+                return 1;
+            }
+            if (error_check_fwrite(&(dungeon->floorCount), sizeof(dungeon->floorCount), 1, file) != 0) {
+                return 1;
+            }
         }
 
         if (fileVersion == 1) {
             u_char index;
             for (index = 0; index < dungeon->floorCount; index++) {
                 // Save each floor
-                save_floor(file, dungeon, index);
+                if (save_floor(file, dungeon, index) != 0) {
+                    return 1;
+                }
             }
         } else {
             // Only save 1 floor and be done
-            save_floor(file, dungeon, dungeon->currentFloor);
+            if (save_floor(file, dungeon, dungeon->currentFloor) != 0) {
+                return 1;
+            }
         }
 
         fflush(file);
@@ -49,18 +75,18 @@ bool dungeon_save_to_file(void* dungeonPointer) {
         fileSize = htobe32(ftell(file));
         // Seek back to file size data index
         fseek(file, (sizeof(char) * strlen(fileHeading)) + sizeof(fileVersion), SEEK_SET);
-        fwrite(&fileSize, sizeof(fileSize), 1, file);
+        if (error_check_fwrite(&fileSize, sizeof(fileSize), 1, file)) {
+            return 1;
+        }
 
         fclose(file);
         file = NULL;
-
-        return true;
     }
 
-    return false;
+    return 0;
 }
 
-void save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
+int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     Dungeon* dungeon = (Dungeon*) dungeonPointer;
 
     u_char index;
@@ -70,47 +96,85 @@ void save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     u_char width;
     for (height = 0; height < dungeon->floors[floorIndex]->height; height++) {
         for (width = 0; width < dungeon->floors[floorIndex]->width; width++) {
-            fwrite(&(dungeon->floors[floorIndex]->floorPlan[height][width]->hardness), sizeof(u_char), 1, file);
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->floorPlan[height][width]->hardness), sizeof(u_char), 1, file) != 0) {
+                return 1;
+            }
         }
     }
     // Write number of rooms
-    fwrite(&(dungeon->floors[floorIndex]->roomCount), sizeof(dungeon->floors[floorIndex]->roomCount), 1, file);
+    if (error_check_fwrite(&(dungeon->floors[floorIndex]->roomCount), sizeof(dungeon->floors[floorIndex]->roomCount), 1, file) != 0) {
+        return 1;
+    }
     // Write rooms
     for (index = 0; index < dungeon->floors[floorIndex]->roomCount; index++) {
         // Write x position
-        fwrite(&(dungeon->floors[floorIndex]->rooms[index]->startX), sizeof(dungeon->floors[floorIndex]->rooms[index]->startX), 1, file);
+        if (error_check_fwrite(&(dungeon->floors[floorIndex]->rooms[index]->startX), sizeof(dungeon->floors[floorIndex]->rooms[index]->startX), 1, file) != 0) {
+            return 1;
+        }
         // Write y position
-        fwrite(&(dungeon->floors[floorIndex]->rooms[index]->startY), sizeof(dungeon->floors[floorIndex]->rooms[index]->startY), 1, file);
+        if (error_check_fwrite(&(dungeon->floors[floorIndex]->rooms[index]->startY), sizeof(dungeon->floors[floorIndex]->rooms[index]->startY), 1, file) != 0) {
+            return 1;
+        }
         // Write width
-        fwrite(&(dungeon->floors[floorIndex]->rooms[index]->width), sizeof(dungeon->floors[floorIndex]->rooms[index]->width), 1, file);
+        if (error_check_fwrite(&(dungeon->floors[floorIndex]->rooms[index]->width), sizeof(dungeon->floors[floorIndex]->rooms[index]->width), 1, file) != 0) {
+            return 1;
+        }
         // Write height
-        fwrite(&(dungeon->floors[floorIndex]->rooms[index]->height), sizeof(dungeon->floors[floorIndex]->rooms[index]->height), 1, file);
+        if (error_check_fwrite(&(dungeon->floors[floorIndex]->rooms[index]->height), sizeof(dungeon->floors[floorIndex]->rooms[index]->height), 1, file) != 0) {
+            return 1;
+        }
     }
     // Write number of upward staircases
-    fwrite(&(dungeon->floors[floorIndex]->stairUpCount), sizeof(dungeon->floors[floorIndex]->stairUpCount), 1, file);
+    if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairUpCount), sizeof(dungeon->floors[floorIndex]->stairUpCount), 1, file) != 0) {
+        return 1;
+    }
     // Write location of upward staircases
     for (index = 0; index < dungeon->floors[floorIndex]->stairUpCount; index++) {
         if (dungeon->floors[floorIndex]->stairUp[index] != NULL) {
             // Write x position
-            fwrite(&(dungeon->floors[floorIndex]->stairUp[index]->x), sizeof(dungeon->floors[floorIndex]->stairUp[index]->x), 1, file);
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairUp[index]->x), sizeof(dungeon->floors[floorIndex]->stairUp[index]->x), 1, file) != 0) {
+                return 1;
+            }
             // Write y position
-            fwrite(&(dungeon->floors[floorIndex]->stairUp[index]->y), sizeof(dungeon->floors[floorIndex]->stairUp[index]->y), 1, file);
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairUp[index]->y), sizeof(dungeon->floors[floorIndex]->stairUp[index]->y), 1, file) != 0) {
+                return 1;
+            }
         }
     }
     // Write number of downward staircases
-    fwrite(&(dungeon->floors[floorIndex]->stairDownCount), sizeof(dungeon->floors[floorIndex]->stairDownCount), 1, file);
+    if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairDownCount), sizeof(dungeon->floors[floorIndex]->stairDownCount), 1, file) != 0) {
+        return 1;
+    }
     // Write location of downward staircases
     for (index = 0; index < dungeon->floors[floorIndex]->stairDownCount; index++) {
         if (dungeon->floors[floorIndex]->stairDown[index] != NULL) {
             // Write x position
-            fwrite(&(dungeon->floors[floorIndex]->stairDown[index]->x), sizeof(dungeon->floors[floorIndex]->stairDown[index]->x), 1, file);
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairDown[index]->x), sizeof(dungeon->floors[floorIndex]->stairDown[index]->x), 1, file) != 0) {
+                return 1;
+            }
             // Write y position
-            fwrite(&(dungeon->floors[floorIndex]->stairDown[index]->y), sizeof(dungeon->floors[floorIndex]->stairDown[index]->y), 1, file);
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairDown[index]->y), sizeof(dungeon->floors[floorIndex]->stairDown[index]->y), 1, file) != 0) {
+                return 1;
+            }
         }
     }
+
+    return 0;
 }
 
-bool dungeon_load_from_file(void* dungeonPointer) {
+void save_error(void* dungeonPointer) {
+    Dungeon* dungeon = (Dungeon*) dungeonPointer;
+
+    printf("Failed to save file\n");
+    printf("Attempting to restore original file contents...\n");
+    char* tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
+    sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
+    rename(tempName, dungeon->settings->savePath);
+    free(tempName);
+    printf("File contents should have been restored\n");
+}
+
+int load_from_file(void* dungeonPointer) {
     Dungeon* dungeon = (Dungeon*) dungeonPointer;
 
     if (dungeon->settings->doLoad) {
@@ -118,28 +182,35 @@ bool dungeon_load_from_file(void* dungeonPointer) {
 
         if (file == NULL) {
             printf("Failed to open file at path %s\n", dungeon->settings->savePath);
-            return false;
+            return 1;
         }
 
         // Read the file heading. Validate that it is the proper heading
         char fileHeading[13];
-        fread(fileHeading, sizeof(fileHeading) - 1, 1, file);
+        if (error_check_fread(fileHeading, sizeof(fileHeading) - 1, 1, file) != 0) {
+            load_error();
+            return 1;
+        }
         fileHeading[12] = '\0';
         if (strncmp(fileHeading, FILE_HEADING, 12)) {
             printf("File presented is not a RLG327 save file.\n");
-            return false;
+            return 1;
         }
         // Read the file version. Validate it against the current version marking
         u_int fileVersion;
-        fread(&fileVersion, sizeof(fileVersion), 1, file);
+        if (error_check_fread(&fileVersion, sizeof(fileVersion), 1, file) != 0) {
+            return 1;
+        }
         fileVersion = be32toh(fileVersion);
         if (fileVersion != dungeon->settings->file_version) {
             printf("Invalid file version. Tried version %d against saved version %d Unable to read.\n", fileVersion, dungeon->settings->file_version);
-            return false;
+            return 1;
         }
         // Read the file size.
         u_int fileSize;
-        fread(&fileSize, sizeof(fileSize), 1, file);
+        if (error_check_fread(&fileSize, sizeof(fileSize), 1, file) != 0) {
+            return 1;
+        }
         fileSize = be32toh(fileSize);
         // Seek to end of file
         fseek(file, 0, SEEK_END);
@@ -147,21 +218,29 @@ bool dungeon_load_from_file(void* dungeonPointer) {
         fseek(file, (sizeof(char) * strlen(fileHeading)) + sizeof(fileVersion) + sizeof(fileSize), SEEK_SET);
         if (fileSize != actualFileSize) {
             printf("Invalid file sizes. Actual file size %u bits doesn't match header of %u bits\n", actualFileSize, fileSize);
-            return false;
+            return 1;
         }
 
         // Load player location
         u_char playerX;
         u_char playerY;
-        fread(&playerX, sizeof(playerX), 1, file);
-        fread(&playerY, sizeof(playerY), 1, file);
+        if (error_check_fread(&playerX, sizeof(playerX), 1, file) != 0) {
+            return 1;
+        }
+        if (error_check_fread(&playerY, sizeof(playerY), 1, file) != 0) {
+            return 1;
+        }
         u_char playerFloor = 0;
         u_char floorCount = 1;
         // Load current floor of player
         // Load max floors
         if (fileVersion == 1) {
-            fread(&playerFloor, sizeof(playerFloor), 1, file);
-            fread(&floorCount, sizeof(floorCount), 1, file);
+            if (error_check_fread(&playerFloor, sizeof(playerFloor), 1, file) != 0) {
+                return 1;
+            }
+            if (error_check_fread(&floorCount, sizeof(floorCount), 1, file) != 0) {
+                return 1;
+            }
         }
 
         dungeon->floorCount = floorCount;
@@ -172,22 +251,20 @@ bool dungeon_load_from_file(void* dungeonPointer) {
         u_char index;
         for (index = 0; index < floorCount; index++) {
             // Load each floor
-            load_floor(file, dungeon, index);
+            if (load_floor(file, dungeon, index) != 0) {
+                return 1;
+            }
         }
 
         fclose(file);
         file = NULL;
-
-        return true;
     }
 
-    return false;
+    return 0;
 }
 
-void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
+int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     Dungeon* dungeon = (Dungeon*) dungeonPointer;
-
-    printf("Loaded floor %d\n", floorIndex);
 
     FloorLoadStructure* floorLoadStructure = malloc(sizeof(FloorLoadStructure));
     floorLoadStructure->width = FLOOR_WIDTH;
@@ -199,7 +276,9 @@ void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     u_char width;
     for (height = 0; height < FLOOR_HEIGHT; height++) {
         for (width = 0; width < FLOOR_WIDTH; width++) {
-            fread(&(floorPlan[height][width]), sizeof(floorPlan[height][width]), 1, file);
+            if (error_check_fread(&(floorPlan[height][width]), sizeof(floorPlan[height][width]), 1, file) != 0) {
+                return 1;
+            }
             switch (floorPlan[height][width]) {
                 case BORDER_HARDNESS:
                     floorPlan[height][width] = CORNER_WALL_CHARACTER;
@@ -218,7 +297,9 @@ void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
 
     // Load number of rooms
     u_char numberOfRooms;
-    fread(&numberOfRooms, sizeof(numberOfRooms), 1, file);
+    if (error_check_fread(&numberOfRooms, sizeof(numberOfRooms), 1, file) != 0) {
+        return 1;
+    }
     floorLoadStructure->roomCount = numberOfRooms;
     // Load room locations
     u_char roomsX[numberOfRooms];
@@ -227,13 +308,21 @@ void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     u_char roomsHeight[numberOfRooms];
     for (index = 0; index < numberOfRooms; index++) {
         // Read x position
-        fread(&(roomsX[index]), sizeof(roomsX[index]), 1, file);
+        if (error_check_fread(&(roomsX[index]), sizeof(roomsX[index]), 1, file) != 0) {
+            return 1;
+        }
         // Read y position
-        fread(&(roomsY[index]), sizeof(roomsY[index]), 1, file);
+        if (error_check_fread(&(roomsY[index]), sizeof(roomsY[index]), 1, file) != 0) {
+            return 1;
+        }
         // Read width
-        fread(&(roomsWidth[index]), sizeof(roomsWidth[index]), 1, file);
+        if (error_check_fread(&(roomsWidth[index]), sizeof(roomsWidth[index]), 1, file) != 0) {
+            return 1;
+        }
         // Read height
-        fread(&(roomsHeight[index]), sizeof(roomsHeight[index]), 1, file);
+        if (error_check_fread(&(roomsHeight[index]), sizeof(roomsHeight[index]), 1, file) != 0) {
+            return 1;
+        }
 
         for (height = roomsY[index]; height < roomsY[index] + roomsHeight[index]; height++) {
             for (width = roomsX[index]; width < roomsX[index] + roomsWidth[index]; width++) {
@@ -251,16 +340,22 @@ void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
 
     // Read number of upward staircases
     u_char stairUpCount;
-    fread(&(stairUpCount), sizeof(stairUpCount), 1, file);
+    if (error_check_fread(&(stairUpCount), sizeof(stairUpCount), 1, file) != 0) {
+        return 1;
+    }
     floorLoadStructure->stairUpCount = stairUpCount;
     // Read location of upward staircases
     u_char stairUpX[stairUpCount];
     u_char stairUpY[stairUpCount];
     for (index = 0; index < stairUpCount; index++) {
         // Read x position
-        fread(&(stairUpX[index]), sizeof(stairUpX[index]), 1, file);
+        if (error_check_fread(&(stairUpX[index]), sizeof(stairUpX[index]), 1, file) != 0) {
+            return 1;
+        }
         // Read y position
-        fread(&(stairUpY[index]), sizeof(stairUpY[index]), 1, file);
+        if (error_check_fread(&(stairUpY[index]), sizeof(stairUpY[index]), 1, file) != 0) {
+            return 1;
+        }
 
         floorPlan[stairUpY[index]][stairUpX[index]] = STAIRCASE_UP_CHARACTER;
     }
@@ -269,16 +364,22 @@ void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
 
     // Read number of downward staircases
     u_char stairDownCount;
-    fread(&(stairDownCount), sizeof(stairDownCount), 1, file);
+    if (error_check_fread(&(stairDownCount), sizeof(stairDownCount), 1, file) != 0) {
+        return 1;
+    }
     floorLoadStructure->stairDownCount = stairDownCount;
     // Read location of downward staircases
     u_char stairDownX[stairDownCount];
     u_char stairDownY[stairDownCount];
     for (index = 0; index < stairDownCount; index++) {
         // Read x position
-        fread(&(stairDownX[index]), sizeof(stairDownX[index]), 1, file);
+        if (error_check_fread(&(stairDownX[index]), sizeof(stairDownX[index]), 1, file) != 0) {
+            return 1;
+        }
         // Read y position
-        fread(&(stairDownY[index]), sizeof(stairDownY[index]), 1, file);
+        if (error_check_fread(&(stairDownY[index]), sizeof(stairDownY[index]), 1, file) != 0) {
+            return 1;
+        }
 
         floorPlan[stairDownY[index]][stairDownX[index]] = STAIRCASE_DOWN_CHARACTER;
     }
@@ -294,4 +395,10 @@ void load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     dungeon->floors[floorIndex] = floor_load_initialize(floorLoadStructure);
 
     free(floorLoadStructure);
+
+    return 0;
+}
+
+void load_error() {
+    printf("Failed to load the file. Invalid data presented\n");
 }

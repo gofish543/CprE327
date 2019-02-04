@@ -84,10 +84,10 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure);
 Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairUpCount, u_char stairDownCount);
 Floor* floor_terminate(Floor* floor);
 
-void floor_generate_empty_dots(Floor* floor);
-void floor_generate_borders(Floor* floor);
-void floor_generate_rooms(Floor* floor);
-void floor_generate_staircases(Floor* floor);
-void floor_generate_corridors(Floor* floor);
+int floor_generate_empty_dots(Floor* floor);
+int floor_generate_borders(Floor* floor);
+int floor_generate_rooms(Floor* floor);
+int floor_generate_staircases(Floor* floor);
+int floor_generate_corridors(Floor* floor);
 
 #endif

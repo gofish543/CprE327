@@ -15,7 +15,5 @@
 
 int initialize(Dungeon** dungeon, int argc, char* argv[]);
 int terminate(Dungeon** dungeon);
-void createApplicationFolders();
-int loadFunctionArguments(Settings* settings, int argc, char* argv[]);
 
 #endif

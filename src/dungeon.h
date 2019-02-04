@@ -25,6 +25,7 @@ typedef struct {
 
 Dungeon* dungeon_initialize(Settings* settings);
 Dungeon* dungeon_terminate(Dungeon* dungeon);
+int dungeon_load_from_program(Dungeon* dungeon);
 
 void dungeon_place_character(Dungeon* dungeon);
 void print_current_floor(Dungeon* dungeon);
