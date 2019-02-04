@@ -271,25 +271,27 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     floorLoadStructure->height = FLOOR_HEIGHT;
 
     u_char index;
-    u_char floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char floorPlanHardness[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char floorPlanCharacters[FLOOR_HEIGHT][FLOOR_WIDTH];
     u_char height;
     u_char width;
     for (height = 0; height < FLOOR_HEIGHT; height++) {
         for (width = 0; width < FLOOR_WIDTH; width++) {
-            if (error_check_fread(&(floorPlan[height][width]), sizeof(floorPlan[height][width]), 1, file) != 0) {
+            if (error_check_fread(&(floorPlanHardness[height][width]), sizeof(floorPlanHardness[height][width]), 1, file) != 0) {
                 return 1;
             }
-            switch (floorPlan[height][width]) {
+            switch (floorPlanHardness[height][width]) {
                 case BORDER_HARDNESS:
-                    floorPlan[height][width] = CORNER_WALL_CHARACTER;
+                    floorPlanCharacters[height][width] = CORNER_WALL_CHARACTER;
                     break;
                 case ROCK_HARDNESS:
-                    floorPlan[height][width] = ROCK_CHARACTER;
+                    floorPlanCharacters[height][width] = ROCK_CHARACTER;
                     break;
                 case CORRIDOR_HARDNESS:
-                    floorPlan[height][width] = CORRIDOR_CHARACTER;
+                    floorPlanCharacters[height][width] = CORRIDOR_CHARACTER;
                     break;
                 default:
+                    floorPlanCharacters[height][width] = ROCK_CHARACTER;
                     break;
             }
         }
@@ -326,12 +328,12 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
 
         for (height = roomsY[index]; height < roomsY[index] + roomsHeight[index]; height++) {
             for (width = roomsX[index]; width < roomsX[index] + roomsWidth[index]; width++) {
-                floorPlan[height][width] = ROOM_CHARACTER;
+                floorPlanCharacters[height][width] = ROOM_CHARACTER;
             }
         }
     }
     if (floorIndex == dungeon->currentFloor) {
-        floorPlan[dungeon->player->y][dungeon->player->x] = PLAYER_CHARACTER;
+        floorPlanCharacters[dungeon->player->y][dungeon->player->x] = PLAYER_CHARACTER;
     }
     floorLoadStructure->roomsX = roomsX;
     floorLoadStructure->roomsY = roomsY;
@@ -357,7 +359,7 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
             return 1;
         }
 
-        floorPlan[stairUpY[index]][stairUpX[index]] = STAIRCASE_UP_CHARACTER;
+        floorPlanCharacters[stairUpY[index]][stairUpX[index]] = STAIRCASE_UP_CHARACTER;
     }
     floorLoadStructure->stairUpX = stairUpX;
     floorLoadStructure->stairUpY = stairUpY;
@@ -381,14 +383,15 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
             return 1;
         }
 
-        floorPlan[stairDownY[index]][stairDownX[index]] = STAIRCASE_DOWN_CHARACTER;
+        floorPlanCharacters[stairDownY[index]][stairDownX[index]] = STAIRCASE_DOWN_CHARACTER;
     }
     floorLoadStructure->stairDownX = stairDownX;
     floorLoadStructure->stairDownY = stairDownY;
 
     for (height = 0; height < FLOOR_HEIGHT; height++) {
         for (width = 0; width < FLOOR_WIDTH; width++) {
-            floorLoadStructure->floorPlan[height][width] = floorPlan[height][width];
+            floorLoadStructure->floorPlanCharacters[height][width] = floorPlanCharacters[height][width];
+            floorLoadStructure->floorPlanHardness[height][width] = floorPlanHardness[height][width];
         }
     }
 

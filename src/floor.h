@@ -66,7 +66,8 @@ typedef struct {
     u_char floorNumber;
     u_char maxFloors;
 
-    u_char floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char floorPlanCharacters[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char floorPlanHardness[FLOOR_HEIGHT][FLOOR_WIDTH];
 
     u_char* stairUpX;
     u_char* stairUpY;

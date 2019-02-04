@@ -11,7 +11,7 @@ Dungeon* dungeon_initialize(Settings* settings) {
             return NULL;
         }
     } else {
-        if(dungeon_load_from_program(dungeon) != 0) {
+        if (dungeon_load_from_program(dungeon) != 0) {
             return NULL;
         }
     }
@@ -21,7 +21,7 @@ Dungeon* dungeon_initialize(Settings* settings) {
 
 Dungeon* dungeon_terminate(Dungeon* dungeon) {
     if (dungeon->settings->doSave) {
-        if(save_to_file(dungeon) != 0) {
+        if (save_to_file(dungeon) != 0) {
             save_error(dungeon);
         }
     }

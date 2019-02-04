@@ -26,7 +26,7 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
             floorDot->x = width;
             floorDot->y = height;
             floorDot->internalObject = NULL;
-            switch (floorLoadStructure->floorPlan[height][width]) {
+            switch (floorLoadStructure->floorPlanCharacters[height][width]) {
                 case ROCK_CHARACTER:
                     floorDot->type = type_rock;
                     floorDot->character = ROCK_CHARACTER;
@@ -58,6 +58,7 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
                     floorDot->hardness = STAIRCASE_HARDNESS;
                     break;
             }
+            floorDot->hardness = floorLoadStructure->floorPlanHardness[height][width];
 
             floor->floorPlan[height][width] = floorDot;
         }
