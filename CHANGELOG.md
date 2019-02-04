@@ -24,6 +24,7 @@
 - Fixed file size mismatch fault dealing with endianness conversion
 - Fixed warnings given by -O2 on makefile
 - Allow for variable hardness levels
+- Fixed player placement on staircase when loading file
 ### Changed
 - Changed fixed array length fto dynamically sized array for floors
 - Changed fixed array length to dynamically sized array for rooms

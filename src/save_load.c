@@ -255,6 +255,9 @@ int load_from_file(void* dungeonPointer) {
                 return 1;
             }
         }
+        dungeon->floors[dungeon->player->floor]->floorPlan[dungeon->player->y][dungeon->player->x]->hardness = PLAYER_HARDNESS;
+        dungeon->floors[dungeon->player->floor]->floorPlan[dungeon->player->y][dungeon->player->x]->type = type_player;
+        dungeon->floors[dungeon->player->floor]->floorPlan[dungeon->player->y][dungeon->player->x]->character = PLAYER_CHARACTER;
 
         fclose(file);
         file = NULL;
@@ -331,9 +334,6 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
                 floorPlanCharacters[height][width] = ROOM_CHARACTER;
             }
         }
-    }
-    if (floorIndex == dungeon->currentFloor) {
-        floorPlanCharacters[dungeon->player->y][dungeon->player->x] = PLAYER_CHARACTER;
     }
     floorLoadStructure->roomsX = roomsX;
     floorLoadStructure->roomsY = roomsY;
