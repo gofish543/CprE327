@@ -81,6 +81,11 @@ int save_to_file(void* dungeonPointer) {
 
         fclose(file);
         file = NULL;
+
+        tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
+        sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
+        remove(tempName);
+        free(tempName);
     }
 
     return 0;
@@ -89,7 +94,7 @@ int save_to_file(void* dungeonPointer) {
 int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     Dungeon* dungeon = (Dungeon*) dungeonPointer;
 
-    u_char index;
+    u_int index;
 
     // Write dungeon floor plan
     u_char height;
@@ -102,7 +107,8 @@ int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
         }
     }
     // Write number of rooms
-    if (error_check_fwrite(&(dungeon->floors[floorIndex]->roomCount), sizeof(dungeon->floors[floorIndex]->roomCount), 1, file) != 0) {
+    u_short roomCount = htobe16(dungeon->floors[floorIndex]->roomCount);
+    if (error_check_fwrite(&roomCount, sizeof(roomCount), 1, file) != 0) {
         return 1;
     }
     // Write rooms
@@ -125,7 +131,8 @@ int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
         }
     }
     // Write number of upward staircases
-    if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairUpCount), sizeof(dungeon->floors[floorIndex]->stairUpCount), 1, file) != 0) {
+    u_short stairUpCount = htobe16(dungeon->floors[floorIndex]->stairUpCount);
+    if (error_check_fwrite(&stairUpCount, sizeof(stairUpCount), 1, file) != 0) {
         return 1;
     }
     // Write location of upward staircases
@@ -142,7 +149,8 @@ int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
         }
     }
     // Write number of downward staircases
-    if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairDownCount), sizeof(dungeon->floors[floorIndex]->stairDownCount), 1, file) != 0) {
+    u_short stairDownCount = htobe16(dungeon->floors[floorIndex]->stairDownCount);
+    if (error_check_fwrite(&stairDownCount, sizeof(stairDownCount), 1, file) != 0) {
         return 1;
     }
     // Write location of downward staircases
@@ -188,7 +196,6 @@ int load_from_file(void* dungeonPointer) {
         // Read the file heading. Validate that it is the proper heading
         char fileHeading[13];
         if (error_check_fread(fileHeading, sizeof(fileHeading) - 1, 1, file) != 0) {
-            load_error();
             return 1;
         }
         fileHeading[12] = '\0';
@@ -273,7 +280,7 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     floorLoadStructure->width = FLOOR_WIDTH;
     floorLoadStructure->height = FLOOR_HEIGHT;
 
-    u_char index;
+    u_int index;
     u_char floorPlanHardness[FLOOR_HEIGHT][FLOOR_WIDTH];
     u_char floorPlanCharacters[FLOOR_HEIGHT][FLOOR_WIDTH];
     u_char height;
@@ -301,10 +308,11 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     }
 
     // Load number of rooms
-    u_char numberOfRooms;
+    u_short numberOfRooms;
     if (error_check_fread(&numberOfRooms, sizeof(numberOfRooms), 1, file) != 0) {
         return 1;
     }
+    numberOfRooms = be16toh(numberOfRooms);
     floorLoadStructure->roomCount = numberOfRooms;
     // Load room locations
     u_char roomsX[numberOfRooms];
@@ -341,10 +349,11 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     floorLoadStructure->roomsHeight = roomsHeight;
 
     // Read number of upward staircases
-    u_char stairUpCount;
-    if (error_check_fread(&(stairUpCount), sizeof(stairUpCount), 1, file) != 0) {
+    u_short stairUpCount;
+    if (error_check_fread(&stairUpCount, sizeof(stairUpCount), 1, file) != 0) {
         return 1;
     }
+    stairUpCount = be16toh(stairUpCount);
     floorLoadStructure->stairUpCount = stairUpCount;
     // Read location of upward staircases
     u_char stairUpX[stairUpCount];
@@ -365,10 +374,11 @@ int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     floorLoadStructure->stairUpY = stairUpY;
 
     // Read number of downward staircases
-    u_char stairDownCount;
-    if (error_check_fread(&(stairDownCount), sizeof(stairDownCount), 1, file) != 0) {
+    u_short stairDownCount;
+    if (error_check_fread(&stairDownCount, sizeof(stairDownCount), 1, file) != 0) {
         return 1;
     }
+    stairDownCount = be16toh(stairDownCount);
     floorLoadStructure->stairDownCount = stairDownCount;
     // Read location of downward staircases
     u_char stairDownX[stairDownCount];

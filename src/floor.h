@@ -43,9 +43,9 @@ typedef struct {
 typedef struct {
     u_char width;
     u_char height;
-    u_char roomCount;
-    u_char stairUpCount;
-    u_char stairDownCount;
+    u_short roomCount;
+    u_short stairUpCount;
+    u_short stairDownCount;
 
     u_char floorNumber;
     u_char maxFloors;
@@ -59,9 +59,9 @@ typedef struct {
 typedef struct {
     u_char width;
     u_char height;
-    u_char roomCount;
-    u_char stairUpCount;
-    u_char stairDownCount;
+    u_short roomCount;
+    u_short stairUpCount;
+    u_short stairDownCount;
 
     u_char floorNumber;
     u_char maxFloors;
@@ -82,7 +82,7 @@ typedef struct {
 } FloorLoadStructure;
 
 Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure);
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairUpCount, u_char stairDownCount);
+Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_short stairUpCount, u_short stairDownCount);
 Floor* floor_terminate(Floor* floor);
 
 int floor_generate_empty_dots(Floor* floor);

@@ -4,6 +4,8 @@
 
 ### Added
 ### Fixed
+- Fixed stairUpCount, stairDownCount, and roomCount to u_short from u_char
+- Fixed removal of .tmp file if save successful
 ### Changed
 
 ## [v0.1.2 (2019-02-04)](https://github.com/gofish543/CprE327/releases/tag/v0.1.2)

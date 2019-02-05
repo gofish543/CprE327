@@ -64,7 +64,7 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
         }
     }
 
-    u_char index;
+    u_short index;
     for (index = 0; index < floorLoadStructure->roomCount; index++) {
         floor->rooms[index] = room_initialize(floorLoadStructure->roomsX[index], floorLoadStructure->roomsY[index], floorLoadStructure->roomsWidth[index], floorLoadStructure->roomsHeight[index]);
         floor->floorPlan[floor->rooms[index]->startY][floor->rooms[index]->startX]->internalObject = floor->rooms[index];
@@ -87,7 +87,7 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
     return floor;
 }
 
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_char stairUpCount, u_char stairDownCount) {
+Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_short stairUpCount, u_short stairDownCount) {
     Floor* floor = malloc(sizeof(Floor));
 
     floor->width = FLOOR_WIDTH;
@@ -124,7 +124,7 @@ Floor* floor_terminate(Floor* floor) {
         }
     }
 
-    u_char index;
+    u_short index;
     for (index = 0; index < floor->roomCount; index++) {
         floor->rooms[index] = room_terminate(floor->rooms[index]);
     }
@@ -227,7 +227,7 @@ int floor_generate_rooms(Floor* floor) {
     u_char height;
     u_char width;
 
-    u_char index;
+    u_short index;
 
     bool valid;
     for (index = 0; index < floor->roomCount; index++) {
@@ -308,11 +308,11 @@ int floor_generate_staircases(Floor* floor) {
         floor->stairUpCount = 0;
     }
 
-    u_char index;
+    u_short index;
 
     u_char stairX;
     u_char stairY;
-    u_char stairRoom;
+    u_short stairRoom;
 
     for (index = 0; index < floor->stairUpCount; index++) {
         stairRoom = randomNumberBetween(0, floor->roomCount - 1);
@@ -378,7 +378,7 @@ int floor_generate_corridors(Floor* floor) {
     u_char tempX;
     u_char tempY;
 
-    u_char index;
+    u_short index;
     for (index = 0; index < floor->roomCount - 1; index++) {
         // First we want to select a random spot within the room, but it needs to be on the border
         do {

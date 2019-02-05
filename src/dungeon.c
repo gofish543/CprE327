@@ -60,7 +60,7 @@ void dungeon_place_character(Dungeon* dungeon) {
     // Select random room and random coords and place character there
     u_char playerX;
     u_char playerY;
-    u_char room = randomNumberBetween(0, dungeon->floors[dungeon->currentFloor]->roomCount - 1);
+    u_short room = randomNumberBetween(0, dungeon->floors[dungeon->currentFloor]->roomCount - 1);
     do {
         playerX = randomNumberBetween(dungeon->floors[dungeon->currentFloor]->rooms[room]->startX, dungeon->floors[dungeon->currentFloor]->rooms[room]->startX + dungeon->floors[dungeon->currentFloor]->rooms[room]->width - 1);
         playerY = randomNumberBetween(dungeon->floors[dungeon->currentFloor]->rooms[room]->startY, dungeon->floors[dungeon->currentFloor]->rooms[room]->startY + dungeon->floors[dungeon->currentFloor]->rooms[room]->height - 1);
