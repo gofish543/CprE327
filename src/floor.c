@@ -3,6 +3,7 @@
 Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
     Floor* floor = malloc(sizeof(Floor));
 
+    floor->dungeon = floorLoadStructure->dungeon;
     floor->width = floorLoadStructure->width;
     floor->height = floorLoadStructure->height;
     floor->roomCount = floorLoadStructure->roomCount;
@@ -10,7 +11,6 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
     floor->stairDownCount = floorLoadStructure->stairDownCount;
 
     floor->floorNumber = floorLoadStructure->floorNumber;
-    floor->maxFloors = floorLoadStructure->maxFloors;
 
     floor->rooms = malloc(floor->roomCount * sizeof(Room*));
     floor->stairUp = malloc(floor->stairUpCount * sizeof(Staircase*));
@@ -18,78 +18,64 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
 
     u_char height;
     u_char width;
-    FloorDot* floorDot;
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
-            floorDot = malloc(sizeof(FloorDot));
-            floorDot->x = width;
-            floorDot->y = height;
-            floorDot->internalObject = NULL;
+            enum FloorDotType type;
             switch (floorLoadStructure->floorPlanCharacters[height][width]) {
                 case ROCK_CHARACTER:
-                    floorDot->type = type_rock;
-                    floorDot->character = ROCK_CHARACTER;
-                    floorDot->hardness = ROCK_HARDNESS;
+                    type = type_rock;
                     break;
                 case PLAYER_CHARACTER:
-                    floorDot->type = type_player;
-                    floorDot->character = PLAYER_CHARACTER;
-                    floorDot->hardness = PLAYER_HARDNESS;
+                    type = type_player;
                     break;
                 case CORRIDOR_CHARACTER:
-                    floorDot->type = type_corridor;
-                    floorDot->character = CORRIDOR_CHARACTER;
-                    floorDot->hardness = CORRIDOR_HARDNESS;
+                    type = type_corridor;
                     break;
                 case ROOM_CHARACTER:
-                    floorDot->type = type_room;
-                    floorDot->character = ROOM_CHARACTER;
-                    floorDot->hardness = ROOM_HARDNESS;
+                    type = type_room;
                     break;
                 case STAIRCASE_UP_CHARACTER:
-                    floorDot->type = type_staircase_up;
-                    floorDot->character = STAIRCASE_UP_CHARACTER;
-                    floorDot->hardness = STAIRCASE_HARDNESS;
+                    type = type_staircase_up;
                     break;
                 case STAIRCASE_DOWN_CHARACTER:
-                    floorDot->type = type_staircase_down;
-                    floorDot->character = STAIRCASE_DOWN_CHARACTER;
-                    floorDot->hardness = STAIRCASE_HARDNESS;
+                    type = type_staircase_down;
                     break;
             }
-            floorDot->hardness = floorLoadStructure->floorPlanHardness[height][width];
-
-            floor->floorPlan[height][width] = floorDot;
+            floor->floorPlan[height][width] =
+                    floor_dot_initialize(width,
+                                         height,
+                                         type,
+                                         floorLoadStructure->floorPlanHardness[height][width],
+                                         floorLoadStructure->floorPlanCharacters[height][width]
+                    );
         }
     }
 
     u_short index;
     for (index = 0; index < floorLoadStructure->roomCount; index++) {
         floor->rooms[index] = room_initialize(floorLoadStructure->roomsX[index], floorLoadStructure->roomsY[index], floorLoadStructure->roomsWidth[index], floorLoadStructure->roomsHeight[index]);
-        floor->floorPlan[floor->rooms[index]->startY][floor->rooms[index]->startX]->internalObject = floor->rooms[index];
     }
 
     for (index = 0; index < floorLoadStructure->stairUpCount; index++) {
         floor->stairUp[index] = staircase_initialize(floorLoadStructure->stairUpX[index], floorLoadStructure->stairUpY[index], floorLoadStructure->floorNumber, floorLoadStructure->floorNumber + 1);
-        floor->floorPlan[floor->stairUp[index]->y][floor->stairUp[index]->x]->internalObject = floor->stairUp[index];
     }
 
     for (index = 0; index < floorLoadStructure->stairDownCount; index++) {
         floor->stairDown[index] = staircase_initialize(floorLoadStructure->stairDownX[index], floorLoadStructure->stairDownY[index], floorLoadStructure->floorNumber, floorLoadStructure->floorNumber - 1);
-        floor->floorPlan[floor->stairDown[index]->y][floor->stairDown[index]->x]->internalObject = floor->stairDown[index];
     }
 
-    if(floor_generate_borders(floor) != 0) {
+    if (floor_generate_borders(floor) != 0) {
         return NULL;
     }
 
     return floor;
 }
 
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_short stairUpCount, u_short stairDownCount) {
+Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCount, u_short stairDownCount) {
     Floor* floor = malloc(sizeof(Floor));
 
+    floor->dungeon = dungeon;
     floor->width = FLOOR_WIDTH;
     floor->height = FLOOR_HEIGHT;
     floor->roomCount = randomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
@@ -101,7 +87,6 @@ Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_short stairUpCou
     floor->stairDown = malloc(floor->stairDownCount * sizeof(Staircase*));
 
     floor->floorNumber = floorNumber;
-    floor->maxFloors = maxFloors;
 
     if (floor_generate_empty_dots(floor) != 0 ||
         floor_generate_borders(floor) != 0 ||
@@ -120,10 +105,9 @@ Floor* floor_terminate(Floor* floor) {
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
-            free(floor->floorPlan[height][width]);
+            floor->floorPlan[height][width] = floor_dot_terminate(floor->floorPlan[height][width]);
         }
     }
-
     u_short index;
     for (index = 0; index < floor->roomCount; index++) {
         floor->rooms[index] = room_terminate(floor->rooms[index]);
@@ -145,20 +129,36 @@ Floor* floor_terminate(Floor* floor) {
     return NULL;
 }
 
+FloorDot* floor_dot_initialize(u_char x, u_char y, enum FloorDotType floorDotType, u_char hardness, u_char character) {
+    FloorDot* floorDot = malloc(sizeof(FloorDot));
+
+    floorDot->x = x;
+    floorDot->y = y;
+
+    floorDot->type = floorDotType;
+
+    floorDot->hardness = hardness;
+    floorDot->character = character;
+
+    return floorDot;
+}
+
+FloorDot* floor_dot_terminate(FloorDot* floorDot) {
+    // Someone else will clean up type_player
+    if (floorDot->type != type_player) {
+        free(floorDot);
+    }
+
+    return NULL;
+}
+
 int floor_generate_empty_dots(Floor* floor) {
     u_char height;
     u_char width;
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
-            FloorDot* floorDot = malloc(sizeof(FloorDot));
-            floorDot->type = type_rock;
-            floorDot->x = width;
-            floorDot->y = height;
-            floorDot->hardness = ROCK_HARDNESS;
-            floorDot->character = ROCK_CHARACTER;
-            floorDot->internalObject = NULL;
-            floor->floorPlan[height][width] = floorDot;
+            floor->floorPlan[height][width] = floor_dot_initialize(width, height, type_rock, randomNumberBetween(ROCK_HARDNESS_MIN, ROCK_HARDNESS_MAX), ROCK_CHARACTER);
         }
     }
 
@@ -283,7 +283,6 @@ int floor_generate_rooms(Floor* floor) {
             for (height = startY; height < startY + roomHeight; height++) {
                 for (width = startX; width < startX + roomWidth; width++) {
                     floor->floorPlan[height][width]->type = type_room;
-                    floor->floorPlan[height][width]->internalObject = floor->rooms[index];
                     floor->floorPlan[height][width]->hardness = ROOM_HARDNESS;
                     floor->floorPlan[height][width]->character = ROOM_CHARACTER;
                 }
@@ -304,7 +303,7 @@ int floor_generate_staircases(Floor* floor) {
         floor->stairDownCount = 0;
     }
     // Can't make up floor on the top floor
-    if (floor->floorNumber == floor->maxFloors - 1) {
+    if (floor->floorNumber == floor->dungeon->floorCount - 1) {
         floor->stairUpCount = 0;
     }
 
@@ -334,7 +333,6 @@ int floor_generate_staircases(Floor* floor) {
         floor->floorPlan[stairY][stairX]->hardness = STAIRCASE_HARDNESS;
         floor->floorPlan[stairY][stairX]->type = type_staircase_up;
         floor->floorPlan[stairY][stairX]->character = STAIRCASE_UP_CHARACTER;
-        floor->floorPlan[stairY][stairX]->internalObject = floor->stairUp;
     }
 
     for (index = 0; index < floor->stairDownCount; index++) {
@@ -357,7 +355,6 @@ int floor_generate_staircases(Floor* floor) {
         floor->floorPlan[stairY][stairX]->hardness = STAIRCASE_HARDNESS;
         floor->floorPlan[stairY][stairX]->type = type_staircase_down;
         floor->floorPlan[stairY][stairX]->character = STAIRCASE_DOWN_CHARACTER;
-        floor->floorPlan[stairY][stairX]->internalObject = floor->stairDown;
     }
 
     return 0;
@@ -415,7 +412,6 @@ int floor_generate_corridors(Floor* floor) {
                 floor->floorPlan[secondRoomY][tempX]->type = type_corridor;
                 floor->floorPlan[secondRoomY][tempX]->hardness = CORRIDOR_HARDNESS;
                 floor->floorPlan[secondRoomY][tempX]->character = CORRIDOR_CHARACTER;
-                floor->floorPlan[secondRoomY][tempX]->internalObject = NULL;
             }
         }
 
@@ -432,7 +428,6 @@ int floor_generate_corridors(Floor* floor) {
                 floor->floorPlan[tempY][firstRoomX]->type = type_corridor;
                 floor->floorPlan[tempY][firstRoomX]->hardness = CORRIDOR_HARDNESS;
                 floor->floorPlan[tempY][firstRoomX]->character = CORRIDOR_CHARACTER;
-                floor->floorPlan[tempY][firstRoomX]->internalObject = NULL;
             }
         }
 
@@ -441,7 +436,6 @@ int floor_generate_corridors(Floor* floor) {
             floor->floorPlan[secondRoomY][firstRoomX]->type = type_corridor;
             floor->floorPlan[secondRoomY][firstRoomX]->hardness = CORRIDOR_HARDNESS;
             floor->floorPlan[secondRoomY][firstRoomX]->character = CORRIDOR_CHARACTER;
-            floor->floorPlan[secondRoomY][firstRoomX]->internalObject = NULL;
         }
     }
 

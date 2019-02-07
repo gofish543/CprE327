@@ -8,11 +8,14 @@
 #include <sys/types.h>
 #include "resource.h"
 
+struct Settings;
+typedef struct Settings Settings;
+
 #define RESOURCE_PATH "./res"
 #define DATA_PATH "/.rlg327/"
 #define FILE_HEADING "RLG327-S2019"
 
-typedef struct {
+struct Settings{
     bool doSave;
     bool doLoad;
 
@@ -20,8 +23,7 @@ typedef struct {
     char* loadPath;
 
     u_char file_version;
-
-} Settings;
+};
 
 Settings* settings_initialize(int argc, char* argv[]);
 Settings* settings_terminate(Settings* settings);

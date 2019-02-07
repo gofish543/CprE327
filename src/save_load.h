@@ -9,12 +9,12 @@
 #include "floor.h"
 #include "resource.h"
 
-int save_to_file(void* dungeonPointer);
-int load_from_file(void* dungeonPointer);
-int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex);
-int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex);
+int save_to_file(Dungeon* dungeon);
+int load_from_file(Dungeon* dungeon);
+int save_floor(FILE* file, Dungeon* dungeon, u_char floorIndex);
+int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex);
 
-void save_error(void* dungeonPointer);
+void save_error(Dungeon* dungeon);
 void load_error();
 
 #endif

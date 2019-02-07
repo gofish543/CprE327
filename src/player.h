@@ -1,18 +1,27 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+struct Player;
+typedef struct Player Player;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "character_listings.h"
+#include "floor.h"
+#include "dungeon.h"
 
-typedef struct {
-    u_char x;
-    u_char y;
+struct Player {
     u_char floor;
-} Player;
+    FloorDot* dot;
+    FloorDot* standingOn;
 
-Player* player_initialize(u_char x, u_char y, u_char floor);
+    Dungeon* dungeon;
+};
+
+Player* player_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor);
 Player* player_terminate(Player* player);
+
+void move_to(Player* player, u_char toFloor, u_char toX, u_char toY);
 
 #endif

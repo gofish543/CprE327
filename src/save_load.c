@@ -1,7 +1,6 @@
 #include "save_load.h"
 
-int save_to_file(void* dungeonPointer) {
-    Dungeon* dungeon = (Dungeon*) dungeonPointer;
+int save_to_file(Dungeon* dungeon) {
     if (dungeon->settings->doSave) {
         // Move current file to a tmp file in case save fails
         char* tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
@@ -36,10 +35,10 @@ int save_to_file(void* dungeonPointer) {
             return 1;
         }
         // Write player location
-        if (error_check_fwrite(&(dungeon->player->x), sizeof(dungeon->player->x), 1, file) != 0) {
+        if (error_check_fwrite(&(dungeon->player->dot->x), sizeof(dungeon->player->dot->x), 1, file) != 0) {
             return 1;
         }
-        if (error_check_fwrite(&(dungeon->player->y), sizeof(dungeon->player->y), 1, file) != 0) {
+        if (error_check_fwrite(&(dungeon->player->dot->y), sizeof(dungeon->player->dot->y), 1, file) != 0) {
             return 1;
         }
         // Write current floor of player
@@ -91,9 +90,7 @@ int save_to_file(void* dungeonPointer) {
     return 0;
 }
 
-int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
-    Dungeon* dungeon = (Dungeon*) dungeonPointer;
-
+int save_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     u_int index;
 
     // Write dungeon floor plan
@@ -170,9 +167,7 @@ int save_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
     return 0;
 }
 
-void save_error(void* dungeonPointer) {
-    Dungeon* dungeon = (Dungeon*) dungeonPointer;
-
+void save_error(Dungeon* dungeon) {
     printf("Failed to save file\n");
     printf("Attempting to restore original file contents...\n");
     char* tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
@@ -182,9 +177,7 @@ void save_error(void* dungeonPointer) {
     printf("File contents should have been restored\n");
 }
 
-int load_from_file(void* dungeonPointer) {
-    Dungeon* dungeon = (Dungeon*) dungeonPointer;
-
+int load_from_file(Dungeon* dungeon) {
     if (dungeon->settings->doLoad) {
         FILE* file = fopen(dungeon->settings->loadPath, "rb");
 
@@ -249,11 +242,9 @@ int load_from_file(void* dungeonPointer) {
                 return 1;
             }
         }
-
         dungeon->floorCount = floorCount;
         dungeon->currentFloor = playerFloor;
         dungeon->floors = malloc(floorCount * sizeof(Floor));
-        dungeon->player = player_initialize(playerX, playerY, dungeon->currentFloor);
 
         u_char index;
         for (index = 0; index < floorCount; index++) {
@@ -262,9 +253,8 @@ int load_from_file(void* dungeonPointer) {
                 return 1;
             }
         }
-        dungeon->floors[dungeon->player->floor]->floorPlan[dungeon->player->y][dungeon->player->x]->hardness = PLAYER_HARDNESS;
-        dungeon->floors[dungeon->player->floor]->floorPlan[dungeon->player->y][dungeon->player->x]->type = type_player;
-        dungeon->floors[dungeon->player->floor]->floorPlan[dungeon->player->y][dungeon->player->x]->character = PLAYER_CHARACTER;
+
+        dungeon->player = player_initialize(dungeon, playerX, playerY, dungeon->currentFloor);
 
         fclose(file);
         file = NULL;
@@ -273,10 +263,9 @@ int load_from_file(void* dungeonPointer) {
     return 0;
 }
 
-int load_floor(FILE* file, void* dungeonPointer, u_char floorIndex) {
-    Dungeon* dungeon = (Dungeon*) dungeonPointer;
-
+int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     FloorLoadStructure* floorLoadStructure = malloc(sizeof(FloorLoadStructure));
+    floorLoadStructure->dungeon = dungeon;
     floorLoadStructure->width = FLOOR_WIDTH;
     floorLoadStructure->height = FLOOR_HEIGHT;
 

@@ -1,6 +1,12 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
+struct Floor;
+typedef struct Floor Floor;
+
+struct FloorDot;
+typedef struct FloorDot FloorDot;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,6 +14,7 @@
 #include "room.h"
 #include "staircase.h"
 #include "character_listings.h"
+#include "dungeon.h"
 
 #define FLOOR_WIDTH 80
 #define FLOOR_HEIGHT 21
@@ -29,7 +36,7 @@ enum FloorDotType {
     type_player = PLAYER_CHARACTER,
 };
 
-typedef struct {
+struct FloorDot {
     u_char x;
     u_char y;
 
@@ -37,10 +44,10 @@ typedef struct {
     u_char hardness;
 
     enum FloorDotType type;
-    void* internalObject;
-} FloorDot;
+};
 
-typedef struct {
+struct Floor {
+    Dungeon* dungeon;
     u_char width;
     u_char height;
     u_short roomCount;
@@ -48,15 +55,16 @@ typedef struct {
     u_short stairDownCount;
 
     u_char floorNumber;
-    u_char maxFloors;
 
     FloorDot* floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
     Staircase** stairUp;
     Staircase** stairDown;
     Room** rooms;
-} Floor;
+};
 
 typedef struct {
+    Dungeon* dungeon;
+
     u_char width;
     u_char height;
     u_short roomCount;
@@ -64,7 +72,6 @@ typedef struct {
     u_short stairDownCount;
 
     u_char floorNumber;
-    u_char maxFloors;
 
     u_char floorPlanCharacters[FLOOR_HEIGHT][FLOOR_WIDTH];
     u_char floorPlanHardness[FLOOR_HEIGHT][FLOOR_WIDTH];
@@ -82,8 +89,11 @@ typedef struct {
 } FloorLoadStructure;
 
 Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure);
-Floor* floor_initialize(u_char floorNumber, u_char maxFloors, u_short stairUpCount, u_short stairDownCount);
+Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCount, u_short stairDownCount);
 Floor* floor_terminate(Floor* floor);
+
+FloorDot* floor_dot_initialize(u_char x, u_char y, enum FloorDotType floorDotType, u_char hardness, u_char character);
+FloorDot* floor_dot_terminate(FloorDot* floorDot);
 
 int floor_generate_empty_dots(Floor* floor);
 int floor_generate_borders(Floor* floor);

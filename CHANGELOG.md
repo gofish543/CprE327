@@ -4,9 +4,11 @@
 
 ### Added
 ### Fixed
+- Fixed fatal error where walking over ground removes the previous floor dot for player character
 - Fixed stairUpCount, stairDownCount, and roomCount to u_short from u_char
 - Fixed removal of .tmp file if save successful
 ### Changed
+- Changed player movement from walking over dot to changing pointer to character
 
 ## [v0.1.2 (2019-02-04)](https://github.com/gofish543/CprE327/releases/tag/v0.1.2)
 

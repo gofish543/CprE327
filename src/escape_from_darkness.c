@@ -11,12 +11,10 @@ int main(int argc, char* argv[]) {
         return status;
     }
 
-    u_char index;
-    for (index = 0; index < dungeon->floorCount; index++) {
-        dungeon->currentFloor = index;
-        print_current_floor(dungeon);
+    while (true) {
+        game_tick(dungeon);
+        sleep(1);
     }
-    dungeon->currentFloor = 0;
 
     status = terminate(&dungeon);
     if (status != 0) {
@@ -50,4 +48,8 @@ int terminate(Dungeon** dungeon) {
     settings = settings_terminate(settings);
 
     return 0;
+}
+
+void game_tick(Dungeon* dungeon) {
+    dungeon_print_current_floor(dungeon);
 }

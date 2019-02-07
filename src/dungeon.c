@@ -48,7 +48,7 @@ int dungeon_load_from_program(Dungeon* dungeon) {
     dungeon->floors = malloc(dungeon->floorCount * sizeof(Floor*));
     u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
-        dungeon->floors[index] = floor_initialize(index, dungeon->floorCount, stairCount, stairCount);
+        dungeon->floors[index] = floor_initialize(dungeon, index, stairCount, stairCount);
     }
 
     dungeon_place_character(dungeon);
@@ -66,20 +66,46 @@ void dungeon_place_character(Dungeon* dungeon) {
         playerY = randomNumberBetween(dungeon->floors[dungeon->currentFloor]->rooms[room]->startY, dungeon->floors[dungeon->currentFloor]->rooms[room]->startY + dungeon->floors[dungeon->currentFloor]->rooms[room]->height - 1);
     } while (dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->character != ROOM_CHARACTER);
 
-    dungeon->player = player_initialize(playerX, playerY, dungeon->currentFloor);
+    dungeon->player = player_initialize(dungeon, playerX, playerY, dungeon->currentFloor);
     dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->character = PLAYER_CHARACTER;
     dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->hardness = 0;
     dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->type = type_player;
-    dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->internalObject = dungeon->player;
 }
 
-void print_current_floor(Dungeon* dungeon) {
+void dungeon_print_current_floor(Dungeon* dungeon) {
+    dungeon_print_floor(dungeon, dungeon->currentFloor);
+}
+
+void dungeon_print_current_floor_hardness(Dungeon* dungeon) {
+    dungeon_print_floor_hardness(dungeon, dungeon->currentFloor);
+}
+
+void dungeon_print_floor(Dungeon* dungeon, u_char floor) {
     u_char width;
     u_char height;
 
-    for (height = 0; height < dungeon->floors[dungeon->currentFloor]->height; height++) {
-        for (width = 0; width < dungeon->floors[dungeon->currentFloor]->width; width++) {
-            printf("%c", dungeon->floors[dungeon->currentFloor]->floorPlan[height][width]->character);
+    printf(" ");
+    for (width = 0; width < dungeon->floors[floor]->width; width++) {
+        printf("%3d", width);
+    }
+    printf("\n");
+
+    for (height = 0; height < dungeon->floors[floor]->height; height++) {
+        printf("%2d", height);
+        for (width = 0; width < dungeon->floors[floor]->width; width++) {
+            printf(" %c ", dungeon->floors[floor]->floorPlan[height][width]->character);
+        }
+        printf("\n");
+    }
+}
+
+void dungeon_print_floor_hardness(Dungeon* dungeon, u_char floor) {
+    u_char width;
+    u_char height;
+
+    for (height = 0; height < dungeon->floors[floor]->height; height++) {
+        for (width = 0; width < dungeon->floors[floor]->width; width++) {
+            printf("%3d", dungeon->floors[floor]->floorPlan[height][width]->hardness);
         }
         printf("\n");
     }
