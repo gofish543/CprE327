@@ -8,23 +8,28 @@ Player* player_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor) {
     player->dungeon = dungeon;
     player->standingOn = NULL;
 
-    move_to(player, floor, x, y);
+    player_move_to(player, floor, x, y);
 
     return player;
 }
 
 Player* player_terminate(Player* player) {
-    // Clean up the standing on pointer
-    if (player->standingOn != NULL) {
-        free(player->standingOn);
+    // Clean up the standing on pointer, as long as it is not a special object
+    if (player->standingOn != NULL &&
+        player->standingOn->type != type_staircase_up &&
+        player->standingOn->type != type_staircase_down &&
+        player->standingOn->type != type_monster &&
+        player->standingOn->type != type_player) {
+        player->standingOn = floor_dot_terminate(player->standingOn, true);
     }
-    player->dot = floor_dot_terminate(player->dot);
+
+    player->dot = floor_dot_terminate(player->dot, true);
     free(player);
 
     return NULL;
 }
 
-void move_to(Player* player, u_char toFloor, u_char toX, u_char toY) {
+void player_move_to(Player* player, u_char toFloor, u_char toX, u_char toY) {
     Dungeon* dungeon = player->dungeon;
     // Restore previous floor dot pointer
     if (player->standingOn != NULL) {

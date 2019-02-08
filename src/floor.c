@@ -81,10 +81,12 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCou
     floor->roomCount = randomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
     floor->stairUpCount = stairUpCount;
     floor->stairDownCount = stairDownCount;
+    floor->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
 
     floor->rooms = malloc(floor->roomCount * sizeof(Room*));
     floor->stairUp = malloc(floor->stairUpCount * sizeof(Staircase*));
     floor->stairDown = malloc(floor->stairDownCount * sizeof(Staircase*));
+    floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));
 
     floor->floorNumber = floorNumber;
 
@@ -105,12 +107,16 @@ Floor* floor_terminate(Floor* floor) {
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
-            floor->floorPlan[height][width] = floor_dot_terminate(floor->floorPlan[height][width]);
+            floor->floorPlan[height][width] = floor_dot_terminate(floor->floorPlan[height][width], false);
         }
     }
     u_short index;
     for (index = 0; index < floor->roomCount; index++) {
         floor->rooms[index] = room_terminate(floor->rooms[index]);
+    }
+
+    for (index = 0; index < floor->monsterCount; index++) {
+        floor->monsters[index] = monster_terminate(floor->monsters[index]);
     }
 
     for (index = 0; index < floor->stairDownCount; index++) {
@@ -124,6 +130,7 @@ Floor* floor_terminate(Floor* floor) {
     free(floor->stairUp);
     free(floor->stairDown);
     free(floor->rooms);
+    free(floor->monsters);
     free(floor);
 
     return NULL;
@@ -143,10 +150,16 @@ FloorDot* floor_dot_initialize(u_char x, u_char y, enum FloorDotType floorDotTyp
     return floorDot;
 }
 
-FloorDot* floor_dot_terminate(FloorDot* floorDot) {
+FloorDot* floor_dot_terminate(FloorDot* floorDot, bool force) {
     // Someone else will clean up type_player
-    if (floorDot->type != type_player) {
+    // Someone else will clean up type_monster
+    if (force) {
         free(floorDot);
+    } else if (floorDot->type != type_player &&
+               floorDot->type != type_monster) {
+        free(floorDot);
+    } else {
+        return floorDot;
     }
 
     return NULL;
@@ -439,5 +452,38 @@ int floor_generate_corridors(Floor* floor) {
         }
     }
 
+    return 0;
+}
+
+int floor_generate_monsters(Floor* floor) {
+    u_short index;
+
+    u_char monsterX;
+    u_char monsterY;
+    u_short monsterRoom;
+    bool canTunnel;
+
+    for (index = 0; index < floor->monsterCount; index++) {
+        monsterRoom = randomNumberBetween(0, floor->roomCount - 1);
+        canTunnel = randomNumberBetween(false, true);
+
+        // Select random spots until they are only surrounded by room space
+        do {
+            if (canTunnel) {
+                // Select random spot inside the map, not on edge
+                monsterX = randomNumberBetween(1, floor->width - 2);
+                monsterY = randomNumberBetween(1, floor->height - 2);
+            } else {
+                // Select random spot inside the room, not on edge
+                monsterX = randomNumberBetween(floor->rooms[monsterRoom]->startX + 1, floor->rooms[monsterRoom]->startX + floor->rooms[monsterRoom]->width - 2);
+                monsterY = randomNumberBetween(floor->rooms[monsterRoom]->startY + 1, floor->rooms[monsterRoom]->startY + floor->rooms[monsterRoom]->height - 2);
+            }
+        } while (
+                floor->floorPlan[monsterY][monsterX]->type == type_player ||
+                floor->floorPlan[monsterY][monsterX]->type == type_monster
+                );
+
+        floor->monsters[index] = monster_initialize(floor->dungeon, monsterX, monsterY, floor->floorNumber, canTunnel);
+    }
     return 0;
 }

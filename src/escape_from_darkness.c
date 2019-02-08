@@ -13,7 +13,8 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         game_tick(dungeon);
-        sleep(1);
+//        sleep(5);
+        break;
     }
 
     status = terminate(&dungeon);
@@ -51,5 +52,8 @@ int terminate(Dungeon** dungeon) {
 }
 
 void game_tick(Dungeon* dungeon) {
-    dungeon_print_current_floor(dungeon);
+//    dungeon_print_all_floors(dungeon);
+
+    // Move all monsters on the current floor
+    monsters_move(dungeon->floors[dungeon->currentFloor]);
 }

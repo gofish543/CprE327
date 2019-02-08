@@ -13,8 +13,8 @@ typedef struct Dungeon Dungeon;
 #include "floor.h"
 #include "settings.h"
 
-#define DUNGEON_FLOORS_MIN 3
-#define DUNGEON_FLOORS_MAX 6
+#define DUNGEON_FLOORS_MIN 1
+#define DUNGEON_FLOORS_MAX 1
 
 struct Dungeon {
     u_char floorCount;
@@ -32,7 +32,14 @@ void dungeon_place_character(Dungeon* dungeon);
 
 void dungeon_print_current_floor(Dungeon* dungeon);
 void dungeon_print_current_floor_hardness(Dungeon* dungeon);
+void dungeon_print_current_floor_tunneler_view(Dungeon* dungeon);
+void dungeon_print_current_floor_non_tunneler_view(Dungeon* dungeon);
+
 void dungeon_print_floor(Dungeon* dungeon, u_char floor);
 void dungeon_print_floor_hardness(Dungeon* dungeon, u_char floor);
+void dungeon_print_floor_tunneler_view(Dungeon* dungeon, u_char floor);
+void dungeon_print_floor_non_tunneler_view(Dungeon* dungeon, u_char floor);
+
+void dungeon_print_all_floors(Dungeon* dungeon);
 
 #endif

@@ -15,7 +15,7 @@ int randomNumberBetween(int min, int max) {
             srand(buffer[0]);
             offset += 8;
 
-            if (offset > 500) {
+            if (offset > 2048) {
                 offset = 0;
             }
         }

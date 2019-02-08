@@ -49,6 +49,10 @@ int dungeon_load_from_program(Dungeon* dungeon) {
     u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
         dungeon->floors[index] = floor_initialize(dungeon, index, stairCount, stairCount);
+        if (floor_generate_monsters(dungeon->floors[index]) != 0) {
+            printf("Failed to generate monsters\n");
+            return 1;
+        }
     }
 
     dungeon_place_character(dungeon);
@@ -108,5 +112,12 @@ void dungeon_print_floor_hardness(Dungeon* dungeon, u_char floor) {
             printf("%3d", dungeon->floors[floor]->floorPlan[height][width]->hardness);
         }
         printf("\n");
+    }
+}
+
+void dungeon_print_all_floors(Dungeon* dungeon) {
+    u_char index;
+    for(index = 0; index < dungeon->floorCount; index++) {
+        dungeon_print_floor(dungeon, index);
     }
 }

@@ -20,6 +20,9 @@
 #define STAIRCASE_UP_CHARACTER '<'
 #define STAIRCASE_DOWN_CHARACTER '>'
 
+// Monster characters
+#define MONSTER_CHARACTER 'z'
+
 #define BORDER_HARDNESS 255
 #define ROCK_HARDNESS_MIN 1
 #define ROCK_HARDNESS 100
@@ -28,5 +31,6 @@
 #define CORRIDOR_HARDNESS 0
 #define PLAYER_HARDNESS 0
 #define STAIRCASE_HARDNESS 0
+#define MONSTER_HARDNESS 0
 
 #endif

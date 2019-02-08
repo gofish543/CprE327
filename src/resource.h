@@ -9,6 +9,9 @@
 #include <fcntl.h>
 #include <string.h>
 
+#define U_CHAR_MIN 0
+#define U_CHAR_MAX 255
+
 typedef unsigned char u_char;
 typedef unsigned short u_short;
 typedef unsigned int u_int;
