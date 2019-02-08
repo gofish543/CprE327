@@ -52,7 +52,10 @@ int terminate(Dungeon** dungeon) {
 }
 
 void game_tick(Dungeon* dungeon) {
-//    dungeon_print_all_floors(dungeon);
+    dungeon_print_current_floor(dungeon);
+    dungeon_print_current_floor_hardness(dungeon);
+    dungeon_print_current_floor_tunneler_view(dungeon);
+    dungeon_print_current_floor_non_tunneler_view(dungeon);
 
     // Move all monsters on the current floor
     monsters_move(dungeon->floors[dungeon->currentFloor]);

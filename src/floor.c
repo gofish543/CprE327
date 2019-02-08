@@ -457,6 +457,8 @@ int floor_generate_corridors(Floor* floor) {
 
 int floor_generate_monsters(Floor* floor) {
     u_short index;
+    u_char height;
+    u_char width;
 
     u_char monsterX;
     u_char monsterY;
@@ -485,5 +487,8 @@ int floor_generate_monsters(Floor* floor) {
 
         floor->monsters[index] = monster_initialize(floor->dungeon, monsterX, monsterY, floor->floorNumber, canTunnel);
     }
+
+    monster_tunneler_costs(floor);
+
     return 0;
 }

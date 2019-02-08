@@ -7,6 +7,7 @@ typedef struct Monster Monster;
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "vendor/heap.h"
 #include "character_listings.h"
 #include "floor.h"
 #include "dungeon.h"
@@ -21,6 +22,7 @@ struct Monster {
 
     Dungeon* dungeon;
 };
+
 
 Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, bool canTunnel);
 Monster* monster_terminate(Monster* monster);

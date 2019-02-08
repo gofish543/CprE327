@@ -704,7 +704,7 @@ void init_dungeon(dungeon_t* d) {
     empty_dungeon(d);
 }
 
-int main(int argc, char* argv[]) {
+int main2(int argc, char* argv[]) {
     dungeon_t d;
     struct timeval tv;
     uint32_t seed;
