@@ -16,6 +16,12 @@ Dungeon* dungeon_initialize(Settings* settings) {
         }
     }
 
+    u_char index;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        monster_dijkstra_tunneler(dungeon->floors[index]);
+        monster_dijkstra_non_tunneler(dungeon->floors[index]);
+    }
+
     return dungeon;
 }
 
@@ -143,7 +149,7 @@ void dungeon_print_floor_tunneler_view(Dungeon* dungeon, u_char floor) {
     for (height = 0; height < dungeon->floors[floor]->height; height++) {
         printf("%2d ", height);
         for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3c", ' ');
+            printf("%3d", dungeon->floors[floor]->tunnelerCost[height][width]);
         }
         printf("\n");
     }
@@ -162,7 +168,11 @@ void dungeon_print_floor_non_tunneler_view(Dungeon* dungeon, u_char floor) {
     for (height = 0; height < dungeon->floors[floor]->height; height++) {
         printf("%2d ", height);
         for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3c", ' ');
+            if (dungeon->floors[floor]->nonTunnelerCost[height][width] == BORDER_HARDNESS) {
+                printf("   ");
+            } else {
+                printf("%3d", dungeon->floors[floor]->nonTunnelerCost[height][width]);
+            }
         }
         printf("\n");
     }

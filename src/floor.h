@@ -63,7 +63,8 @@ struct Floor {
     u_char floorNumber;
 
     FloorDot* floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
-    u_short tunnelerCost[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char tunnelerCost[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char nonTunnelerCost[FLOOR_HEIGHT][FLOOR_WIDTH];
     Staircase** stairUp;
     Staircase** stairDown;
     Room** rooms;

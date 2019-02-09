@@ -13,8 +13,7 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         game_tick(dungeon);
-//        sleep(5);
-        break;
+        sleep(2);
     }
 
     status = terminate(&dungeon);
@@ -53,10 +52,13 @@ int terminate(Dungeon** dungeon) {
 
 void game_tick(Dungeon* dungeon) {
     dungeon_print_current_floor(dungeon);
-    dungeon_print_current_floor_hardness(dungeon);
+//    dungeon_print_current_floor_hardness(dungeon);
     dungeon_print_current_floor_tunneler_view(dungeon);
     dungeon_print_current_floor_non_tunneler_view(dungeon);
 
     // Move all monsters on the current floor
     monsters_move(dungeon->floors[dungeon->currentFloor]);
+    // Rerun dijkstras for the current floor
+    monster_dijkstra_tunneler(dungeon->floors[dungeon->currentFloor]);
+    monster_dijkstra_non_tunneler(dungeon->floors[dungeon->currentFloor]);
 }

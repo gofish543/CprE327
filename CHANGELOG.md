@@ -5,11 +5,15 @@
 ### Added
 - Added in monsters
 - Added in monster placement
+- Added in dijkstra for tunneling and non tunneling monsters
+- Added in game ticks
+- Added monsters seeking out enemy players
 ### Fixed
 - Fixed double free bug when monster gets placed on another monster
 - Fixed fatal error where walking over ground removes the previous floor dot for player character
 - Fixed stairUpCount, stairDownCount, and roomCount to u_short from u_char
 - Fixed removal of .tmp file if save successful
+- Attempted fixing of changelog formatting
 ### Changed
 - Changed player movement from walking over dot to changing pointer to character
 
