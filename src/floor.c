@@ -457,8 +457,6 @@ int floor_generate_corridors(Floor* floor) {
 
 int floor_generate_monsters(Floor* floor) {
     u_short index;
-    u_char height;
-    u_char width;
 
     u_char monsterX;
     u_char monsterY;

@@ -90,7 +90,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Top Left
             MonsterCost* topLeft = &(monsterCost[item->y - 1][item->x - 1]);
             if (floor->tunnelerCost[topLeft->y][topLeft->x] >= item->cost + topLeft->cost) {
-                if(floor->floorPlan[topLeft->y][topLeft->x]->type != type_border) {
+                if (floor->floorPlan[topLeft->y][topLeft->x]->type != type_border) {
                     topLeft->cost += item->cost;
                     floor->tunnelerCost[topLeft->y][topLeft->x] = topLeft->cost;
                     heap_insert(&heap, topLeft);
@@ -99,16 +99,16 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Top Center
             MonsterCost* topCenter = &monsterCost[item->y - 1][item->x];
             if (floor->tunnelerCost[topCenter->y][topCenter->x] >= item->cost + topCenter->cost) {
-                if(floor->floorPlan[topLeft->y][topLeft->x]->type != type_border) {
+                if (floor->floorPlan[topLeft->y][topLeft->x]->type != type_border) {
                     topCenter->cost += item->cost;
-                floor->tunnelerCost[topCenter->y][topCenter->x] = topCenter->cost;
-                heap_insert(&heap, topCenter);
-            }
+                    floor->tunnelerCost[topCenter->y][topCenter->x] = topCenter->cost;
+                    heap_insert(&heap, topCenter);
+                }
             }
             // Top Right
             MonsterCost* topRight = &monsterCost[item->y - 1][item->x + 1];
             if (floor->tunnelerCost[topRight->y][topRight->x] >= item->cost + topRight->cost) {
-                if(floor->floorPlan[topRight->y][topRight->x]->type != type_border) {
+                if (floor->floorPlan[topRight->y][topRight->x]->type != type_border) {
                     topRight->cost += item->cost;
                     floor->tunnelerCost[topRight->y][topRight->x] = topRight->cost;
                     heap_insert(&heap, topRight);
@@ -117,7 +117,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Left Center
             MonsterCost* leftCenter = &monsterCost[item->y][item->x - 1];
             if (floor->tunnelerCost[leftCenter->y][leftCenter->x] >= item->cost + leftCenter->cost) {
-                if(floor->floorPlan[leftCenter->y][leftCenter->x]->type != type_border) {
+                if (floor->floorPlan[leftCenter->y][leftCenter->x]->type != type_border) {
                     leftCenter->cost += item->cost;
                     floor->tunnelerCost[leftCenter->y][leftCenter->x] = leftCenter->cost;
                     heap_insert(&heap, leftCenter);
@@ -126,7 +126,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Right Center
             MonsterCost* rightCenter = &monsterCost[item->y][item->x + 1];
             if (floor->tunnelerCost[rightCenter->y][rightCenter->x] >= item->cost + rightCenter->cost) {
-                if(floor->floorPlan[rightCenter->y][rightCenter->x]->type != type_border) {
+                if (floor->floorPlan[rightCenter->y][rightCenter->x]->type != type_border) {
                     rightCenter->cost += item->cost;
                     floor->tunnelerCost[rightCenter->y][rightCenter->x] = rightCenter->cost;
                     heap_insert(&heap, rightCenter);
@@ -135,7 +135,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Bot Left
             MonsterCost* bottomLeft = &monsterCost[item->y + 1][item->x - 1];
             if (floor->tunnelerCost[bottomLeft->y][bottomLeft->x] >= item->cost + bottomLeft->cost) {
-                if(floor->floorPlan[bottomLeft->y][bottomLeft->x]->type != type_border) {
+                if (floor->floorPlan[bottomLeft->y][bottomLeft->x]->type != type_border) {
                     bottomLeft->cost += item->cost;
                     floor->tunnelerCost[bottomLeft->y][bottomLeft->x] = bottomLeft->cost;
                     heap_insert(&heap, bottomLeft);
@@ -144,7 +144,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Bot Center
             MonsterCost* bottomCenter = &monsterCost[item->y + 1][item->x];
             if (floor->tunnelerCost[bottomCenter->y][bottomCenter->x] >= item->cost + bottomCenter->cost) {
-                if(floor->floorPlan[bottomCenter->y][bottomCenter->x]->type != type_border) {
+                if (floor->floorPlan[bottomCenter->y][bottomCenter->x]->type != type_border) {
                     bottomCenter->cost += item->cost;
                     floor->tunnelerCost[bottomCenter->y][bottomCenter->x] = bottomCenter->cost;
                     heap_insert(&heap, bottomCenter);
@@ -153,7 +153,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             // Bot Right
             MonsterCost* bottomRight = &monsterCost[item->y + 1][item->x + 1];
             if (floor->tunnelerCost[bottomRight->y][bottomRight->x] >= item->cost + bottomRight->cost) {
-                if(floor->floorPlan[bottomRight->y][bottomRight->x]->type != type_border) {
+                if (floor->floorPlan[bottomRight->y][bottomRight->x]->type != type_border) {
                     bottomRight->cost += item->cost;
                     floor->tunnelerCost[bottomRight->y][bottomRight->x] = bottomRight->cost;
                     heap_insert(&heap, bottomRight);
@@ -281,7 +281,6 @@ void monsters_move(Floor* floor) {
         // Record cheapest cost
         u_char cheapestCost = U_CHAR_MAX;
         if (monster->canTunnel) {
-            continue;
             // If top left is the cheapest, move there
             if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x - 1] <= cheapestCost) {
                 cheapestX = monster->dot->x - 1;

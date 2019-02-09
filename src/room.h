@@ -15,7 +15,7 @@ typedef struct Room Room;
 #define ROOM_MIN_HEIGHT 4
 #define ROOM_MAX_HEIGHT 8
 
-struct Room{
+struct Room {
     u_char width;
     u_char height;
 

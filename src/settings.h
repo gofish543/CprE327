@@ -15,7 +15,7 @@ typedef struct Settings Settings;
 #define DATA_PATH "/.rlg327/"
 #define FILE_HEADING "RLG327-S2019"
 
-struct Settings{
+struct Settings {
     bool doSave;
     bool doLoad;
 

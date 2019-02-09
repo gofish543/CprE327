@@ -14,6 +14,7 @@
 - Fixed stairUpCount, stairDownCount, and roomCount to u_short from u_char
 - Fixed removal of .tmp file if save successful
 - Attempted fixing of changelog formatting
+- Fixed heap compiler warnings
 ### Changed
 - Changed player movement from walking over dot to changing pointer to character
 

@@ -15,32 +15,32 @@ struct heap_node {
     uint32_t mark;
 };
 
-#define swap(a, b) ({    \
+#define swap(a, b) {    \
   typeof (a) _tmp = (a); \
   (a) = (b);             \
   (b) = _tmp;            \
-})
+}
 
-#define splice_heap_node_lists(n1, n2) ({ \
+#define splice_heap_node_lists(n1, n2) { \
   if ((n1) && (n2)) {                     \
     (n1)->next->prev = (n2)->prev;        \
     (n2)->prev->next = (n1)->next;        \
     (n1)->next = (n2);                    \
     (n2)->prev = (n1);                    \
   }                                       \
-})
+}
 
-#define insert_heap_node_in_list(n, l) ({ \
+#define insert_heap_node_in_list(n, l) { \
   (n)->next = (l);                        \
   (n)->prev = (l)->prev;                  \
   (n)->prev->next = (n);                  \
   (l)->prev = (n);                        \
-})
+}
 
-#define remove_heap_node_from_list(n) ({ \
+#define remove_heap_node_from_list(n) { \
   (n)->next->prev = (n)->prev;           \
   (n)->prev->next = (n)->next;           \
-})
+}
 
 void print_heap_node(heap_node_t* n, unsigned indent,
         char* (* print)(const void* v)) {
@@ -127,7 +127,7 @@ void heap_delete(heap_t* h) {
 heap_node_t* heap_insert(heap_t* h, void* v) {
     heap_node_t* n;
 
-    assert(n = calloc(1, sizeof(*n)));
+    assert((n = calloc(1, sizeof(*n))));
     n->datum = v;
 
     if (h->min) {
