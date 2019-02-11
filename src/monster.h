@@ -42,6 +42,8 @@ int32_t monster_path_cmp(const void* key, const void* with);
 void monster_dijkstra_tunneler(Floor* floor);
 void monster_dijkstra_non_tunneler(Floor* floor);
 
+void monster_free_standing_on(Monster* monster);
+
 void monster_move_to(Monster* monster, u_char toX, u_char toY);
 void monsters_move(Floor* floor);
 

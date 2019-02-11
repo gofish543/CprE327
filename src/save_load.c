@@ -163,6 +163,29 @@ int save_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
             }
         }
     }
+    if (dungeon->settings->file_version == 1) {
+        // Write number of monsters
+        u_short monsterCount = htobe16(dungeon->floors[floorIndex]->monsterCount);
+        if (error_check_fwrite(&monsterCount, sizeof(monsterCount), 1, file) != 0) {
+            return 1;
+        }
+        // Write location of monsters
+        for (index = 0; index < dungeon->floors[floorIndex]->monsterCount; index++) {
+            // Write x Position
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->monsters[index]->dot->x), sizeof(dungeon->floors[floorIndex]->monsters[index]->dot->x), 1, file) != 0) {
+                return 1;
+            }
+            // Write y Position
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->monsters[index]->dot->y), sizeof(dungeon->floors[floorIndex]->monsters[index]->dot->y), 1, file) != 0) {
+                return 1;
+            }
+            u_char canTunnel = (u_char) dungeon->floors[floorIndex]->monsters[index]->canTunnel;
+            // Write isTunneler
+            if (error_check_fwrite(&canTunnel, sizeof(canTunnel), 1, file) != 0) {
+                return 1;
+            }
+        }
+    }
 
     return 0;
 }
@@ -387,6 +410,46 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     floorLoadStructure->stairDownX = stairDownX;
     floorLoadStructure->stairDownY = stairDownY;
 
+    u_short monsterCount;
+    u_char* monsterX;
+    u_char* monsterY;
+    u_char* monsterCanTunnel;
+    if (dungeon->settings->file_version == 1) {
+        // Read number of monsters
+        if (error_check_fread(&monsterCount, sizeof(monsterCount), 1, file) != 0) {
+            return 1;
+        }
+        monsterCount = be16toh(monsterCount);
+        floorLoadStructure->monsterCount = monsterCount;
+        // Read location of monsters
+        monsterX = malloc(sizeof(u_char) * monsterCount);
+        monsterY = malloc(sizeof(u_char) * monsterCount);
+        monsterCanTunnel = malloc(sizeof(u_char) * monsterCount);
+        // Read location of monsters
+        for (index = 0; index < monsterCount; index++) {
+            // Read x Position
+            if (error_check_fread(&(monsterX[index]), sizeof(monsterX[index]), 1, file) != 0) {
+                return 1;
+            }
+            // Read y Position
+            if (error_check_fread(&(monsterY[index]), sizeof(monsterY[index]), 1, file) != 0) {
+                return 1;
+            }
+            // Read isTunneler
+            if (error_check_fread(&(monsterCanTunnel[index]), sizeof(monsterCanTunnel[index]), 1, file) != 0) {
+                return 1;
+            }
+        }
+        floorLoadStructure->monsterX = monsterX;
+        floorLoadStructure->monsterY = monsterY;
+        floorLoadStructure->monsterCanTunnel = monsterCanTunnel;
+    } else {
+        floorLoadStructure->monsterX = NULL;
+        floorLoadStructure->monsterY = NULL;
+        floorLoadStructure->monsterCanTunnel = NULL;
+        floorLoadStructure->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
+    }
+
     for (height = 0; height < FLOOR_HEIGHT; height++) {
         for (width = 0; width < FLOOR_WIDTH; width++) {
             floorLoadStructure->floorPlanCharacters[height][width] = floorPlanCharacters[height][width];
@@ -396,6 +459,19 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
 
     dungeon->floors[floorIndex] = floor_load_initialize(floorLoadStructure);
 
+    if (dungeon->settings->file_version == 1) {
+        for (index = 0; index < dungeon->floors[floorIndex]->monsterCount; index++) {
+            dungeon->floors[floorIndex]->monsters[index] = monster_initialize(dungeon, floorLoadStructure->monsterX[index], floorLoadStructure->monsterY[index], floorIndex, floorLoadStructure->monsterCanTunnel[index]);
+        }
+    } else {
+        floor_generate_monsters(dungeon->floors[floorIndex]);
+    }
+
+    if (dungeon->settings->file_version == 1) {
+        free(floorLoadStructure->monsterX);
+        free(floorLoadStructure->monsterY);
+        free(floorLoadStructure->monsterCanTunnel);
+    }
     free(floorLoadStructure);
 
     return 0;

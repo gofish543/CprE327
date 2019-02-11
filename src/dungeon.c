@@ -26,13 +26,22 @@ Dungeon* dungeon_initialize(Settings* settings) {
 }
 
 Dungeon* dungeon_terminate(Dungeon* dungeon) {
+    // Free all monsters and player character on the floor plan
+    u_char index;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        u_short monster;
+        for (monster = 0; monster < dungeon->floors[index]->monsterCount; monster++) {
+            monster_free_standing_on(dungeon->floors[index]->monsters[monster]);
+        }
+    }
+
+    player_free_standing_on(dungeon->player);
     if (dungeon->settings->doSave) {
         if (save_to_file(dungeon) != 0) {
             save_error(dungeon);
         }
     }
 
-    u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
         dungeon->floors[index] = floor_terminate(dungeon->floors[index]);
     }
@@ -77,9 +86,6 @@ void dungeon_place_character(Dungeon* dungeon) {
     } while (dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->character != ROOM_CHARACTER);
 
     dungeon->player = player_initialize(dungeon, playerX, playerY, dungeon->currentFloor);
-    dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->character = PLAYER_CHARACTER;
-    dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->hardness = 0;
-    dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->type = type_player;
 }
 
 void dungeon_print_current_floor(Dungeon* dungeon) {
@@ -149,7 +155,11 @@ void dungeon_print_floor_tunneler_view(Dungeon* dungeon, u_char floor) {
     for (height = 0; height < dungeon->floors[floor]->height; height++) {
         printf("%2d ", height);
         for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3d", dungeon->floors[floor]->tunnelerCost[height][width]);
+            if (dungeon->floors[floor]->tunnelerCost[height][width] == BORDER_HARDNESS) {
+                printf("   ");
+            } else {
+                printf("%3d", dungeon->floors[floor]->tunnelerCost[height][width]);
+            }
         }
         printf("\n");
     }

@@ -79,6 +79,7 @@ typedef struct {
     u_short roomCount;
     u_short stairUpCount;
     u_short stairDownCount;
+    u_short monsterCount;
 
     u_char floorNumber;
 
@@ -95,6 +96,10 @@ typedef struct {
     u_char* roomsY;
     u_char* roomsWidth;
     u_char* roomsHeight;
+
+    u_char* monsterX;
+    u_char* monsterY;
+    u_char* monsterCanTunnel;
 } FloorLoadStructure;
 
 Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure);

@@ -29,22 +29,25 @@ Monster* monster_terminate(Monster* monster) {
     return NULL;
 }
 
-void monster_move_to(Monster* monster, u_char toX, u_char toY) {
-    Dungeon* dungeon = monster->dungeon;
-    // Restore previous floor dot pointer
+void monster_free_standing_on(Monster* monster) {
     if (monster->standingOn != NULL) {
-        dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->standingOn;
+        monster->dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->standingOn;
+        monster->standingOn = NULL;
     }
+}
+
+void monster_move_to(Monster* monster, u_char toX, u_char toY) {
+    monster_free_standing_on(monster);
 
     // Move the monster to the new dot
     monster->dot->x = toX;
     monster->dot->y = toY;
 
     // Save the standing on dot
-    monster->standingOn = dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x];
+    monster->standingOn = monster->dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x];
 
     // Place the player on the floor plan position
-    dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->dot;
+    monster->dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->dot;
 }
 
 int32_t monster_path_cmp(const void* key, const void* with) {
@@ -382,6 +385,7 @@ void monsters_move(Floor* floor) {
         // Before moving, make sure that the space is open
         if (floor->floorPlan[cheapestY][cheapestX]->type == type_player) {
             // Handle it
+            continue;
         } else if (floor->floorPlan[cheapestY][cheapestX]->type == type_monster) {
             // Dont move there
             continue;

@@ -9,12 +9,14 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
     floor->roomCount = floorLoadStructure->roomCount;
     floor->stairUpCount = floorLoadStructure->stairUpCount;
     floor->stairDownCount = floorLoadStructure->stairDownCount;
+    floor->monsterCount = floorLoadStructure->monsterCount;
 
     floor->floorNumber = floorLoadStructure->floorNumber;
 
     floor->rooms = malloc(floor->roomCount * sizeof(Room*));
     floor->stairUp = malloc(floor->stairUpCount * sizeof(Staircase*));
     floor->stairDown = malloc(floor->stairDownCount * sizeof(Staircase*));
+    floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));
 
     u_char height;
     u_char width;

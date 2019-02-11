@@ -29,21 +29,25 @@ Player* player_terminate(Player* player) {
     return NULL;
 }
 
-void player_move_to(Player* player, u_char toFloor, u_char toX, u_char toY) {
-    Dungeon* dungeon = player->dungeon;
-    // Restore previous floor dot pointer
+void player_free_standing_on(Player* player) {
     if (player->standingOn != NULL) {
-        dungeon->floors[player->floor]->floorPlan[player->dot->y][player->dot->x] = player->standingOn;
+        player->dungeon->floors[player->floor]->floorPlan[player->dot->y][player->dot->x] = player->standingOn;
+        player->standingOn = NULL;
     }
+}
+
+void player_move_to(Player* player, u_char toFloor, u_char toX, u_char toY) {
+    // Restore previous floor dot pointer
+    player_free_standing_on(player);
 
     // Move the player to the new dot
     player->dot->x = toX;
     player->dot->y = toY;
     player->floor = toFloor;
     // Save the standing on dot
-    player->standingOn = dungeon->floors[player->floor]->floorPlan[player->dot->y][player->dot->x];
+    player->standingOn = player->dungeon->floors[player->floor]->floorPlan[player->dot->y][player->dot->x];
 
     // Place the player on the floor plan position
-    dungeon->floors[player->floor]->floorPlan[player->dot->y][player->dot->x] = player->dot;
-    dungeon->currentFloor = toFloor;
+    player->dungeon->floors[player->floor]->floorPlan[player->dot->y][player->dot->x] = player->dot;
+    player->dungeon->currentFloor = toFloor;
 }
