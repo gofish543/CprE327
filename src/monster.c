@@ -7,37 +7,80 @@ Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, 
     monster->floor = floor;
     monster->dungeon = dungeon;
     monster->canTunnel = canTunnel;
-    monster->standingOn = NULL;
+    monster->standingOn = null;
 
     monster_move_to(monster, x, y);
 
     return monster;
 }
 
+int monster_run_dijkstra_on_all_floors(Dungeon* dungeon) {
+    u_char index;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        if (monster_run_dijkstra_on_floor(dungeon->floors[index])) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int monster_run_dijkstra_on_floor(Floor* floor) {
+    monster_dijkstra_tunneler(floor);
+    monster_dijkstra_non_tunneler(floor);
+
+    return 0;
+}
+
 Monster* monster_terminate(Monster* monster) {
     // Clean up the standing on pointer as long as it is not a special object
-    if (monster->standingOn != NULL &&
-        monster->standingOn->type != type_staircase_up &&
-        monster->standingOn->type != type_staircase_down &&
-        monster->standingOn->type != type_monster &&
-        monster->standingOn->type != type_player) {
-        monster->standingOn = floor_dot_terminate(monster->standingOn, true);
-    }
-    monster->dot = floor_dot_terminate(monster->dot, true);
+    monster->dot = floor_dot_terminate(monster->dot);
     free(monster);
 
-    return NULL;
+    return null;
 }
 
-void monster_free_standing_on(Monster* monster) {
-    if (monster->standingOn != NULL) {
-        monster->dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->standingOn;
-        monster->standingOn = NULL;
+int monster_free_dungeon(Dungeon* dungeon) {
+    u_char index;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        if (monster_free_floor(dungeon->floors[index])) {
+            printf("Failed to free monsters on floor %d\n", index);
+            return 1;
+        }
     }
+
+    return 0;
 }
 
-void monster_move_to(Monster* monster, u_char toX, u_char toY) {
-    monster_free_standing_on(monster);
+int monster_free_floor(Floor* floor) {
+    u_char index;
+    for (index = 0; index < floor->monsterCount; index++) {
+        if (monster_free(floor->monsters[index])) {
+            printf("Failed to free monster %d on floor %d", index, floor->floorNumber);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int monster_free(Monster* monster) {
+    if (monster->standingOn != null) {
+        // Tunneler monsters leave corridors behind them if the dot is rock
+        if (monster->canTunnel && monster->standingOn->type == type_rock) {
+            monster->standingOn->type = type_corridor;
+            monster->standingOn->hardness = CORRIDOR_HARDNESS;
+            monster->standingOn->character = CORRIDOR_CHARACTER;
+        }
+        monster->dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->standingOn;
+        monster->standingOn = null;
+    }
+
+    return 0;
+}
+
+int monster_move_to(Monster* monster, u_char toX, u_char toY) {
+    monster_free(monster);
 
     // Move the monster to the new dot
     monster->dot->x = toX;
@@ -48,16 +91,18 @@ void monster_move_to(Monster* monster, u_char toX, u_char toY) {
 
     // Place the player on the floor plan position
     monster->dungeon->floors[monster->floor]->floorPlan[monster->dot->y][monster->dot->x] = monster->dot;
+
+    return 0;
 }
 
-int32_t monster_path_cmp(const void* key, const void* with) {
-    MonsterCost* keyMonster = (MonsterCost*) key;
-    MonsterCost* withMonster = (MonsterCost*) with;
+int32_t monster_dijkstra_compare(const void* A, const void* B) {
+    MonsterCost* monsterA = (MonsterCost*) A;
+    MonsterCost* monsterB = (MonsterCost*) B;
 
-    if (keyMonster->isTunnel) {
-        return keyMonster->floor->tunnelerCost[keyMonster->y][keyMonster->x] - withMonster->floor->tunnelerCost[withMonster->y][withMonster->x];
+    if (monsterA->isTunnel) {
+        return monsterA->floor->tunnelerCost[monsterA->y][monsterA->x] - monsterB->floor->tunnelerCost[monsterB->y][monsterB->x];
     } else {
-        return keyMonster->floor->nonTunnelerCost[keyMonster->y][keyMonster->x] - withMonster->floor->nonTunnelerCost[withMonster->y][withMonster->x];
+        return monsterA->floor->nonTunnelerCost[monsterA->y][monsterA->x] - monsterB->floor->nonTunnelerCost[monsterB->y][monsterB->x];
     }
 }
 
@@ -84,7 +129,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
 
     monsterCost[fromY][fromX].cost = 0;
 
-    heap_init(&heap, monster_path_cmp, NULL);
+    heap_init(&heap, monster_dijkstra_compare, null);
     heap_insert(&heap, &monsterCost[fromY][fromX]);
 
     MonsterCost* item;
@@ -190,7 +235,7 @@ void monster_dijkstra_non_tunneler(Floor* floor) {
 
     monsterCost[fromY][fromX].cost = 0;
 
-    heap_init(&heap, monster_path_cmp, NULL);
+    heap_init(&heap, monster_dijkstra_compare, null);
     heap_insert(&heap, &monsterCost[fromY][fromX]);
 
     MonsterCost* item;
@@ -274,7 +319,7 @@ void monster_dijkstra_non_tunneler(Floor* floor) {
     floor->nonTunnelerCost[fromY][fromX] = U_CHAR_MIN;
 }
 
-void monsters_move(Floor* floor) {
+int monsters_move(Floor* floor) {
     u_short index;
     for (index = 0; index < floor->monsterCount; index++) {
         Monster* monster = floor->monsters[index];
@@ -393,4 +438,6 @@ void monsters_move(Floor* floor) {
             monster_move_to(monster, cheapestX, cheapestY);
         }
     }
+
+    return 0;
 }

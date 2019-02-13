@@ -44,13 +44,7 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
                     type = type_staircase_down;
                     break;
             }
-            floor->floorPlan[height][width] =
-                    floor_dot_initialize(width,
-                                         height,
-                                         type,
-                                         floorLoadStructure->floorPlanHardness[height][width],
-                                         floorLoadStructure->floorPlanCharacters[height][width]
-                    );
+            floor->floorPlan[height][width] = floor_dot_initialize(width, height, type, floorLoadStructure->floorPlanHardness[height][width], floorLoadStructure->floorPlanCharacters[height][width]);
         }
     }
 
@@ -68,7 +62,9 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
     }
 
     if (floor_generate_borders(floor) != 0) {
-        return NULL;
+        printf("Failed to generate borders\n");
+        exit(1);
+        return null;
     }
 
     return floor;
@@ -78,6 +74,7 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCou
     Floor* floor = malloc(sizeof(Floor));
 
     floor->dungeon = dungeon;
+    floor->floorNumber = floorNumber;
     floor->width = FLOOR_WIDTH;
     floor->height = FLOOR_HEIGHT;
     floor->roomCount = randomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
@@ -90,29 +87,29 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCou
     floor->stairDown = malloc(floor->stairDownCount * sizeof(Staircase*));
     floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));
 
-    floor->floorNumber = floorNumber;
-
     if (floor_generate_empty_dots(floor) != 0 ||
         floor_generate_borders(floor) != 0 ||
         floor_generate_rooms(floor) != 0 ||
         floor_generate_staircases(floor) != 0 ||
         floor_generate_corridors(floor) != 0) {
-        return NULL;
+        printf("Failed to generate floor %d", floorNumber);
+        exit(1);
+        return null;
     }
 
     return floor;
 }
 
 Floor* floor_terminate(Floor* floor) {
+    u_short index;
     u_char height;
     u_char width;
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
-            floor->floorPlan[height][width] = floor_dot_terminate(floor->floorPlan[height][width], false);
+            floor->floorPlan[height][width] = floor_dot_terminate(floor->floorPlan[height][width]);
         }
     }
-    u_short index;
     for (index = 0; index < floor->roomCount; index++) {
         floor->rooms[index] = room_terminate(floor->rooms[index]);
     }
@@ -135,7 +132,7 @@ Floor* floor_terminate(Floor* floor) {
     free(floor->monsters);
     free(floor);
 
-    return NULL;
+    return null;
 }
 
 FloorDot* floor_dot_initialize(u_char x, u_char y, enum FloorDotType floorDotType, u_char hardness, u_char character) {
@@ -152,19 +149,10 @@ FloorDot* floor_dot_initialize(u_char x, u_char y, enum FloorDotType floorDotTyp
     return floorDot;
 }
 
-FloorDot* floor_dot_terminate(FloorDot* floorDot, bool force) {
-    // Someone else will clean up type_player
-    // Someone else will clean up type_monster
-    if (force) {
-        free(floorDot);
-    } else if (floorDot->type != type_player &&
-               floorDot->type != type_monster) {
-        free(floorDot);
-    } else {
-        return floorDot;
-    }
+FloorDot* floor_dot_terminate(FloorDot* floorDot) {
+    free(floorDot);
 
-    return NULL;
+    return null;
 }
 
 int floor_generate_empty_dots(Floor* floor) {
@@ -188,11 +176,11 @@ int floor_generate_borders(Floor* floor) {
     for (width = 0; width < floor->width; width++) {
         floor->floorPlan[0][width]->type = type_border;
         floor->floorPlan[0][width]->hardness = BORDER_HARDNESS;
-        floor->floorPlan[0][width]->character = CORNER_WALL_CHARACTER;
+        floor->floorPlan[0][width]->character = NORTH_SOUTH_WALL_CHARACTER;
 
         floor->floorPlan[floor->height - 1][width]->type = type_border;
         floor->floorPlan[floor->height - 1][width]->hardness = BORDER_HARDNESS;
-        floor->floorPlan[floor->height - 1][width]->character = CORNER_WALL_CHARACTER;
+        floor->floorPlan[floor->height - 1][width]->character = NORTH_SOUTH_WALL_CHARACTER;
     }
 
     // Set EAST and WEST walls
@@ -252,7 +240,7 @@ int floor_generate_rooms(Floor* floor) {
             valid = true;
             doWhileAttempts++;
 
-            // Find something inside the gameplay box....
+            // Find something inside the game play box....
             startX = randomNumberBetween(0 + 1, floor->width - 1);
             startY = randomNumberBetween(0 + 1, floor->height - 1);
 
@@ -304,7 +292,6 @@ int floor_generate_rooms(Floor* floor) {
             }
         } else {
             printf("Failed to create room %d...\n", index);
-
             return 1;
         }
     }

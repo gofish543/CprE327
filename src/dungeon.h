@@ -27,19 +27,5 @@ struct Dungeon {
 
 Dungeon* dungeon_initialize(Settings* settings);
 Dungeon* dungeon_terminate(Dungeon* dungeon);
-int dungeon_load_from_program(Dungeon* dungeon);
-void dungeon_place_character(Dungeon* dungeon);
-
-void dungeon_print_current_floor(Dungeon* dungeon);
-void dungeon_print_current_floor_hardness(Dungeon* dungeon);
-void dungeon_print_current_floor_tunneler_view(Dungeon* dungeon);
-void dungeon_print_current_floor_non_tunneler_view(Dungeon* dungeon);
-
-void dungeon_print_floor(Dungeon* dungeon, u_char floor);
-void dungeon_print_floor_hardness(Dungeon* dungeon, u_char floor);
-void dungeon_print_floor_tunneler_view(Dungeon* dungeon, u_char floor);
-void dungeon_print_floor_non_tunneler_view(Dungeon* dungeon, u_char floor);
-
-void dungeon_print_all_floors(Dungeon* dungeon);
 
 #endif

@@ -3,10 +3,13 @@
 
 #define UNKNOWN_CHARACTER '?'
 
-// Floor characters
+// Border characters
 #define NORTH_SOUTH_WALL_CHARACTER '-'
 #define EAST_WEST_WALL_CHARACTER '|'
 #define CORNER_WALL_CHARACTER '+'
+#define GENERAL_WALL_CHARACTER 'B'
+
+// Floor characters
 #define ROCK_CHARACTER ' '
 #define CORRIDOR_CHARACTER '#'
 

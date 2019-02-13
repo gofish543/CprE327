@@ -1,24 +1,27 @@
 #include "escape_from_darkness.h"
 
-
 int main(int argc, char* argv[]) {
     int status = 0;
-    Dungeon* dungeon = NULL;
+    Dungeon* dungeon = null;
 
     status = initialize(&dungeon, argc, argv);
-    if (status != 0) {
+    if (status) {
         printf("An error has occurred initializing the application, exiting\n");
         return status;
     }
 
+//    output_print_current_floor(dungeon);
     while (true) {
-        game_tick(dungeon);
-        sleep(2);
+        if (game_tick(dungeon)) {
+            printf("Game tick error encountered, exiting while loop\n");
+            break;
+        }
+        sleep(1);
         break;
     }
 
     status = terminate(&dungeon);
-    if (status != 0) {
+    if (status) {
         printf("An error has occurred terminating the application, exiting\n");
         return status;
     }
@@ -28,14 +31,16 @@ int main(int argc, char* argv[]) {
 
 int initialize(Dungeon** dungeon, int argc, char* argv[]) {
     Settings* settings = settings_initialize(argc, argv);
-    if (settings == NULL) {
-        return 1;
+    if (settings == null) {
+        printf("Failed to initialize settings\n");
+        exit(1);
     }
 
     *dungeon = dungeon_initialize(settings);
 
-    if (*dungeon == NULL) {
-        return 1;
+    if (*dungeon == null) {
+        printf("Failed to initialize the dungeon\n");
+        exit(1);
     }
 
     return 0;
@@ -51,19 +56,19 @@ int terminate(Dungeon** dungeon) {
     return 0;
 }
 
-void game_tick(Dungeon* dungeon) {
-    printf("----- CURRENT FLOOR -----\n");
-    dungeon_print_current_floor(dungeon);
-    printf("----- HARDNESS CHART -----\n");
-    dungeon_print_current_floor_hardness(dungeon);
-    printf("----- TUNNELER CHART -----\n");
-    dungeon_print_current_floor_tunneler_view(dungeon);
-    printf("----- NON TUNNELER CHART -----\n");
-    dungeon_print_current_floor_non_tunneler_view(dungeon);
-
+int game_tick(Dungeon* dungeon) {
     // Move all monsters on the current floor
 //    monsters_move(dungeon->floors[dungeon->currentFloor]);
     // Rerun dijkstras for the current floor
-//    monster_dijkstra_tunneler(dungeon->floors[dungeon->currentFloor]);
-//    monster_dijkstra_non_tunneler(dungeon->floors[dungeon->currentFloor]);
+//    monster_run_dijkstra_on_floor(dungeon->floors[dungeon->currentFloor]);
+
+    printf("----- CURRENT FLOOR -----\n");
+    output_print_current_floor(dungeon);
+    printf("----- HARDNESS CHART -----\n");
+    output_print_current_floor_hardness(dungeon);
+    printf("----- TUNNELER CHART -----\n");
+    output_print_current_floor_tunneler_view(dungeon);
+    printf("----- NON TUNNELER CHART -----\n");
+    output_print_current_floor_non_tunneler_view(dungeon);
+    return 0;
 }

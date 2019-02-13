@@ -11,7 +11,7 @@ int save_to_file(Dungeon* dungeon) {
         // Open the file
         FILE* file = fopen(dungeon->settings->savePath, "wb+");
 
-        if (file == NULL) {
+        if (file == null) {
             printf("Failed to open file at path %s\n", dungeon->settings->savePath);
             return 1;
         }
@@ -79,7 +79,7 @@ int save_to_file(Dungeon* dungeon) {
         }
 
         fclose(file);
-        file = NULL;
+        file = null;
 
         tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
         sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
@@ -134,7 +134,7 @@ int save_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     }
     // Write location of upward staircases
     for (index = 0; index < dungeon->floors[floorIndex]->stairUpCount; index++) {
-        if (dungeon->floors[floorIndex]->stairUp[index] != NULL) {
+        if (dungeon->floors[floorIndex]->stairUp[index] != null) {
             // Write x position
             if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairUp[index]->x), sizeof(dungeon->floors[floorIndex]->stairUp[index]->x), 1, file) != 0) {
                 return 1;
@@ -152,7 +152,7 @@ int save_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     }
     // Write location of downward staircases
     for (index = 0; index < dungeon->floors[floorIndex]->stairDownCount; index++) {
-        if (dungeon->floors[floorIndex]->stairDown[index] != NULL) {
+        if (dungeon->floors[floorIndex]->stairDown[index] != null) {
             // Write x position
             if (error_check_fwrite(&(dungeon->floors[floorIndex]->stairDown[index]->x), sizeof(dungeon->floors[floorIndex]->stairDown[index]->x), 1, file) != 0) {
                 return 1;
@@ -204,7 +204,7 @@ int load_from_file(Dungeon* dungeon) {
     if (dungeon->settings->doLoad) {
         FILE* file = fopen(dungeon->settings->loadPath, "rb");
 
-        if (file == NULL) {
+        if (file == null) {
             printf("Failed to open file at path %s\n", dungeon->settings->savePath);
             return 1;
         }
@@ -280,7 +280,7 @@ int load_from_file(Dungeon* dungeon) {
         dungeon->player = player_initialize(dungeon, playerX, playerY, dungeon->currentFloor);
 
         fclose(file);
-        file = NULL;
+        file = null;
     }
 
     return 0;
@@ -444,9 +444,9 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
         floorLoadStructure->monsterY = monsterY;
         floorLoadStructure->monsterCanTunnel = monsterCanTunnel;
     } else {
-        floorLoadStructure->monsterX = NULL;
-        floorLoadStructure->monsterY = NULL;
-        floorLoadStructure->monsterCanTunnel = NULL;
+        floorLoadStructure->monsterX = null;
+        floorLoadStructure->monsterY = null;
+        floorLoadStructure->monsterCanTunnel = null;
         floorLoadStructure->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
     }
 
@@ -477,6 +477,32 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     return 0;
 }
 
-void load_error() {
-    printf("Failed to load the file. Invalid data presented\n");
+int load_from_program(Dungeon* dungeon) {
+    dungeon->currentFloor = 0;
+    dungeon->floorCount = randomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX);
+    u_char stairCount = randomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX);
+
+    // This creates a dynamically sized array. Going to need to do that because of load and save features later
+    dungeon->floors = malloc(dungeon->floorCount * sizeof(Floor*));
+    u_char index;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        dungeon->floors[index] = floor_initialize(dungeon, index, stairCount, stairCount);
+        if (floor_generate_monsters(dungeon->floors[index]) != 0) {
+            printf("Failed to generate monsters\n");
+            return 1;
+        }
+    }
+
+    // Select random room and random coords and place character there
+    u_char playerX;
+    u_char playerY;
+    u_short room = randomNumberBetween(0, dungeon->floors[dungeon->currentFloor]->roomCount - 1);
+    do {
+        playerX = randomNumberBetween(dungeon->floors[dungeon->currentFloor]->rooms[room]->startX, dungeon->floors[dungeon->currentFloor]->rooms[room]->startX + dungeon->floors[dungeon->currentFloor]->rooms[room]->width - 1);
+        playerY = randomNumberBetween(dungeon->floors[dungeon->currentFloor]->rooms[room]->startY, dungeon->floors[dungeon->currentFloor]->rooms[room]->startY + dungeon->floors[dungeon->currentFloor]->rooms[room]->height - 1);
+    } while (dungeon->floors[dungeon->currentFloor]->floorPlan[playerY][playerX]->character != ROOM_CHARACTER);
+
+    dungeon->player = player_initialize(dungeon, playerX, playerY, dungeon->currentFloor);
+
+    return 0;
 }

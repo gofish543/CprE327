@@ -3,8 +3,8 @@
 Settings* settings_initialize(int argc, char* argv[]) {
     Settings* settings = malloc(sizeof(Settings));
 
-    if (load_function_arguments(settings, argc, argv) != 0) {
-        return NULL;
+    if (settings_load_arguments(settings, argc, argv) != 0) {
+        return null;
     }
 
     return settings;
@@ -21,11 +21,10 @@ Settings* settings_terminate(Settings* settings) {
 
     free(settings);
 
-    return NULL;
+    return null;
 }
 
-
-void create_home_folders() {
+int create_home_folders() {
     char* homePath = getenv("HOME");
     u_char folderCount = 1;
     char* folders[] = {
@@ -43,14 +42,17 @@ void create_home_folders() {
 
         free(tempCreation);
     }
+
+    return 0;
 }
 
-int load_function_arguments(Settings* settings, int argc, char* argv[]) {
-    settings->loadPath = NULL;
-    settings->savePath = NULL;
+int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
+    settings->loadPath = null;
+    settings->savePath = null;
     settings->doLoad = false;
     settings->doSave = false;
     settings->file_version = 0;
+    settings->expandedPrint = false;
 
     char* homePath = getenv("HOME");
     char dotFolder[] = DATA_PATH;
@@ -72,7 +74,7 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
 
             // Step 1) Check if the path specified is either a file or invalid path
             DIR* checkDirectory = opendir(filePath);
-            if (checkDirectory != NULL) {
+            if (checkDirectory != null) {
                 printf("Using --save requires a valid file and file path. Potentially only a directory was provided or an invalid file path was presented\n");
                 closedir(checkDirectory);
                 free(filePath);
@@ -90,7 +92,7 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
 
                 // Using file name, check if home directory exists
                 DIR* homeDirectory = opendir(homePath);
-                if (homeDirectory == NULL) {
+                if (homeDirectory == null) {
                     // Save path to internal game file
                     filePath = malloc((sizeof(char) * strlen(resourcePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
                     sprintf(filePath, "%s%s%s", resourcePath, dotFolder, fileName);
@@ -106,7 +108,7 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
             }
             // Try to load the path to the file
             FILE* checkFile = fopen(filePath, "a");
-            if (checkFile == NULL) {
+            if (checkFile == null) {
                 printf("Could not open file provided or create it\n");
                 free(filePath);
                 return 1;
@@ -130,7 +132,7 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
 
             // Step 1) Check if the path specified is either a file or invalid path
             DIR* checkDirectory = opendir(filePath);
-            if (checkDirectory != NULL) {
+            if (checkDirectory != null) {
                 printf("Using --load requires a valid file and file path. Potentially only a directory was provided or an invalid file path was presented\n");
                 closedir(checkDirectory);
                 free(filePath);
@@ -148,7 +150,7 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
 
                 // Using file name, check if home directory exists
                 DIR* homeDirectory = opendir(homePath);
-                if (homeDirectory == NULL) {
+                if (homeDirectory == null) {
                     // Save path to internal game file
                     filePath = malloc((sizeof(char) * strlen(resourcePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
                     sprintf(filePath, "%s%s%s", resourcePath, dotFolder, fileName);
@@ -164,7 +166,7 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
             }
             // Try to load the path to the file
             FILE* checkFile = fopen(filePath, "a");
-            if (checkFile == NULL) {
+            if (checkFile == null) {
                 printf("Could not open file provided or create it\n");
                 free(filePath);
                 return 1;
@@ -189,6 +191,8 @@ int load_function_arguments(Settings* settings, int argc, char* argv[]) {
                     settings->file_version = 0;
                     break;
             }
+        } else if (strcmp(argv[index], "--expanded_print") == 0) {
+            settings->expandedPrint = true;
         }
     }
 

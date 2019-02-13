@@ -31,7 +31,7 @@ typedef struct FloorDot FloorDot;
 
 enum FloorDotType {
     type_unknown = UNKNOWN_CHARACTER,
-    type_border = 'B',
+    type_border = GENERAL_WALL_CHARACTER,
     type_rock = ROCK_CHARACTER,
     type_corridor = CORRIDOR_CHARACTER,
     type_room = ROOM_CHARACTER,
@@ -59,7 +59,6 @@ struct Floor {
     u_short stairUpCount;
     u_short stairDownCount;
     u_short monsterCount;
-
     u_char floorNumber;
 
     FloorDot* floorPlan[FLOOR_HEIGHT][FLOOR_WIDTH];
@@ -107,7 +106,7 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCou
 Floor* floor_terminate(Floor* floor);
 
 FloorDot* floor_dot_initialize(u_char x, u_char y, enum FloorDotType floorDotType, u_char hardness, u_char character);
-FloorDot* floor_dot_terminate(FloorDot* floorDot, bool force);
+FloorDot* floor_dot_terminate(FloorDot* floorDot);
 
 int floor_generate_empty_dots(Floor* floor);
 int floor_generate_borders(Floor* floor);

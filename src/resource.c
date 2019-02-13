@@ -5,12 +5,12 @@ unsigned short offset = 0;
 int randomNumberBetween(int min, int max) {
     int fd = open("/dev/urandom", O_RDWR);
     if (fd == 0) {
-        srand(time(NULL));
+        srand(time(null));
     } else {
         long long buffer[1];
         lseek(fd, offset, 0);
         if (read(fd, buffer, 8) != 8) {
-            srand(time(NULL));
+            srand(time(null));
         } else {
             srand(buffer[0]);
             offset += 8;

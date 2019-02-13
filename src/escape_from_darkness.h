@@ -13,10 +13,11 @@
 #include "settings.h"
 #include "resource.h"
 #include "monster.h"
+#include "output.h"
 
 int initialize(Dungeon** dungeon, int argc, char* argv[]);
 int terminate(Dungeon** dungeon);
 
-void game_tick(Dungeon* dungeon);
+int game_tick(Dungeon* dungeon);
 
 #endif

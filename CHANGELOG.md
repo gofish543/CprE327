@@ -3,11 +3,19 @@
 ## Unreleased
 
 ### Added
+### Fixed
+### Changed
+
+## [v0.1.3 (2019-02-13)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
+
+### Added
 - Added in monsters
 - Added in monster placement
 - Added in dijkstra for tunneling and non tunneling monsters
 - Added in game ticks
 - Added monsters seeking out enemy players
+- Added `--expanded_print` flag to print dungeon with padding, column numbers, and row numbers
+- Added tunneler monsters leaving behind corridors
 ### Fixed
 - Fixed double free bug when monster gets placed on another monster
 - Fixed fatal error where walking over ground removes the previous floor dot for player character
@@ -17,6 +25,8 @@
 - Fixed heap compiler warnings
 ### Changed
 - Changed player movement from walking over dot to changing pointer to character
+- Moved print functions to output.c/output.h files
+- Minor refactoring of logic
 
 ## [v0.1.2 (2019-02-04)](https://github.com/gofish543/CprE327/releases/tag/v0.1.2)
 

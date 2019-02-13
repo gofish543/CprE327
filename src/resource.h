@@ -11,6 +11,7 @@
 
 #define U_CHAR_MIN 0
 #define U_CHAR_MAX 255
+#define null NULL
 
 typedef unsigned char u_char;
 typedef unsigned short u_short;
