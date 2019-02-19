@@ -98,7 +98,8 @@ typedef struct {
 
     u_char* monsterX;
     u_char* monsterY;
-    u_char* monsterCanTunnel;
+    u_char* monsterClassification;
+    u_char* monsterSpeed;
 } FloorLoadStructure;
 
 Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure);

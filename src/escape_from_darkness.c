@@ -62,13 +62,13 @@ int game_tick(Dungeon* dungeon) {
     // Rerun dijkstras for the current floor
 //    monster_run_dijkstra_on_floor(dungeon->floors[dungeon->currentFloor]);
 
-    printf("----- CURRENT FLOOR -----\n");
+//    printf("----- CURRENT FLOOR -----\n");
     output_print_current_floor(dungeon);
-    printf("----- HARDNESS CHART -----\n");
-    output_print_current_floor_hardness(dungeon);
-    printf("----- TUNNELER CHART -----\n");
-    output_print_current_floor_tunneler_view(dungeon);
-    printf("----- NON TUNNELER CHART -----\n");
-    output_print_current_floor_non_tunneler_view(dungeon);
+//    printf("----- HARDNESS CHART -----\n");
+//    output_print_current_floor_hardness(dungeon);
+//    printf("----- TUNNELER CHART -----\n");
+//    output_print_current_floor_tunneler_view(dungeon);
+//    printf("----- NON TUNNELER CHART -----\n");
+//    output_print_current_floor_non_tunneler_view(dungeon);
     return 0;
 }

@@ -179,9 +179,12 @@ int save_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
             if (error_check_fwrite(&(dungeon->floors[floorIndex]->monsters[index]->dot->y), sizeof(dungeon->floors[floorIndex]->monsters[index]->dot->y), 1, file) != 0) {
                 return 1;
             }
-            u_char canTunnel = (u_char) dungeon->floors[floorIndex]->monsters[index]->canTunnel;
-            // Write isTunneler
-            if (error_check_fwrite(&canTunnel, sizeof(canTunnel), 1, file) != 0) {
+            // Write classification value
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->monsters[index]->classification), sizeof(dungeon->floors[floorIndex]->monsters[index]->classification), 1, file) != 0) {
+                return 1;
+            }
+            // Write speed
+            if (error_check_fwrite(&(dungeon->floors[floorIndex]->monsters[index]->speed), sizeof(dungeon->floors[floorIndex]->monsters[index]->speed), 1, file) != 0) {
                 return 1;
             }
         }
@@ -413,7 +416,8 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     u_short monsterCount;
     u_char* monsterX;
     u_char* monsterY;
-    u_char* monsterCanTunnel;
+    u_char* monsterClassification;
+    u_char* monsterSpeed;
     if (dungeon->settings->file_version == 1) {
         // Read number of monsters
         if (error_check_fread(&monsterCount, sizeof(monsterCount), 1, file) != 0) {
@@ -424,7 +428,8 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
         // Read location of monsters
         monsterX = malloc(sizeof(u_char) * monsterCount);
         monsterY = malloc(sizeof(u_char) * monsterCount);
-        monsterCanTunnel = malloc(sizeof(u_char) * monsterCount);
+        monsterClassification = malloc(sizeof(u_char) * monsterCount);
+        monsterSpeed = malloc(sizeof(u_char) * monsterCount);
         // Read location of monsters
         for (index = 0; index < monsterCount; index++) {
             // Read x Position
@@ -435,18 +440,24 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
             if (error_check_fread(&(monsterY[index]), sizeof(monsterY[index]), 1, file) != 0) {
                 return 1;
             }
-            // Read isTunneler
-            if (error_check_fread(&(monsterCanTunnel[index]), sizeof(monsterCanTunnel[index]), 1, file) != 0) {
+            // Read monster classification
+            if (error_check_fread(&(monsterClassification[index]), sizeof(monsterClassification[index]), 1, file) != 0) {
+                return 1;
+            }
+            // Read monster speed
+            if (error_check_fread(&(monsterSpeed[index]), sizeof(monsterSpeed[index]), 1, file) != 0) {
                 return 1;
             }
         }
         floorLoadStructure->monsterX = monsterX;
         floorLoadStructure->monsterY = monsterY;
-        floorLoadStructure->monsterCanTunnel = monsterCanTunnel;
+        floorLoadStructure->monsterClassification = monsterClassification;
+        floorLoadStructure->monsterSpeed = monsterSpeed;
     } else {
         floorLoadStructure->monsterX = null;
         floorLoadStructure->monsterY = null;
-        floorLoadStructure->monsterCanTunnel = null;
+        floorLoadStructure->monsterClassification = null;
+        floorLoadStructure->monsterSpeed = null;
         floorLoadStructure->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
     }
 
@@ -461,7 +472,8 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
 
     if (dungeon->settings->file_version == 1) {
         for (index = 0; index < dungeon->floors[floorIndex]->monsterCount; index++) {
-            dungeon->floors[floorIndex]->monsters[index] = monster_initialize(dungeon, floorLoadStructure->monsterX[index], floorLoadStructure->monsterY[index], floorIndex, floorLoadStructure->monsterCanTunnel[index]);
+            // Parse classification
+            dungeon->floors[floorIndex]->monsters[index] = monster_initialize(dungeon, floorLoadStructure->monsterX[index], floorLoadStructure->monsterY[index], floorIndex, floorLoadStructure->monsterSpeed[index], floorLoadStructure->monsterClassification[index] >> 1, floorLoadStructure->monsterClassification[index] >> 2, floorLoadStructure->monsterClassification[index] >> 3, floorLoadStructure->monsterClassification[index] >> 4);
         }
     } else {
         floor_generate_monsters(dungeon->floors[floorIndex]);
@@ -470,7 +482,8 @@ int load_floor(FILE* file, Dungeon* dungeon, u_char floorIndex) {
     if (dungeon->settings->file_version == 1) {
         free(floorLoadStructure->monsterX);
         free(floorLoadStructure->monsterY);
-        free(floorLoadStructure->monsterCanTunnel);
+        free(floorLoadStructure->monsterClassification);
+        free(floorLoadStructure->monsterSpeed);
     }
     free(floorLoadStructure);
 

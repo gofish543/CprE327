@@ -80,7 +80,12 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCou
     floor->roomCount = randomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
     floor->stairUpCount = stairUpCount;
     floor->stairDownCount = stairDownCount;
-    floor->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
+    if(floor->dungeon->settings->doNumberOfMonsters) {
+        floor->monsterCount = floor->dungeon->settings->numberOfMonsters;
+    }
+    else {
+        floor->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
+    }
 
     floor->rooms = malloc(floor->roomCount * sizeof(Room*));
     floor->stairUp = malloc(floor->stairUpCount * sizeof(Staircase*));
@@ -450,15 +455,27 @@ int floor_generate_monsters(Floor* floor) {
     u_char monsterX;
     u_char monsterY;
     u_short monsterRoom;
-    bool canTunnel;
+
+    u_char speed;
+    bool intelligent;
+    bool telepathic;
+    bool tunneler;
+    bool erratic;
 
     for (index = 0; index < floor->monsterCount; index++) {
         monsterRoom = randomNumberBetween(0, floor->roomCount - 1);
-        canTunnel = randomNumberBetween(false, true);
+
+        speed = randomNumberBetween(MONSTER_MIN_SPEED, MONSTER_MAX_SPEED);
+
+        intelligent = randomNumberBetween(false, true);
+        telepathic = randomNumberBetween(false, true);
+        tunneler = randomNumberBetween(false, true);
+        erratic = randomNumberBetween(false, true);
+
 
         // Select random spots until they are only surrounded by room space
         do {
-            if (canTunnel) {
+            if (tunneler) {
                 // Select random spot inside the map, not on edge
                 monsterX = randomNumberBetween(1, floor->width - 2);
                 monsterY = randomNumberBetween(1, floor->height - 2);
@@ -472,7 +489,7 @@ int floor_generate_monsters(Floor* floor) {
                 floor->floorPlan[monsterY][monsterX]->type == type_monster
                 );
 
-        floor->monsters[index] = monster_initialize(floor->dungeon, monsterX, monsterY, floor->floorNumber, canTunnel);
+        floor->monsters[index] = monster_initialize(floor->dungeon, monsterX, monsterY, floor->floorNumber, speed, intelligent, telepathic, tunneler, erratic);
     }
 
     return 0;

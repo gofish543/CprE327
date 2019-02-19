@@ -193,6 +193,19 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
             }
         } else if (strcmp(argv[index], "--expanded_print") == 0) {
             settings->expandedPrint = true;
+        } else if (strcmp(argv[index], "--nummon") == 0) {
+            if (index + 1 == argc || strstr(argv[index + 1], "--")) {
+                printf("Using --nummon requires a number of monsters\n");
+                return 1;
+            }
+
+            settings->doNumberOfMonsters = true;
+            settings->numberOfMonsters = strtol(argv[index + 1], NULL, 0);
+
+            if (settings->numberOfMonsters == 0 || errno == ERANGE) {
+                printf("Failed to parse number provided\n");
+                return 1;
+            }
         }
     }
 

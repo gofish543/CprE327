@@ -1,13 +1,33 @@
 #include "monster.h"
 
-Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, bool canTunnel) {
+Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, u_char speed, bool intelligent, bool telepathic, bool tunneler, bool erratic) {
     Monster* monster = malloc(sizeof(Monster));
 
     monster->dot = floor_dot_initialize(x, y, type_monster, MONSTER_HARDNESS, MONSTER_CHARACTER);
     monster->floor = floor;
     monster->dungeon = dungeon;
-    monster->canTunnel = canTunnel;
+    monster->classification = 0;
+
+    monster->intelligent = intelligent;
+    monster->telepathic = telepathic;
+    monster->tunneler = tunneler;
+    monster->erratic = erratic;
+    monster->speed = speed;
+
     monster->standingOn = null;
+
+    if (intelligent) {
+        monster->classification += MONSTER_INTELLIGENT_VALUE;
+    }
+    if (telepathic) {
+        monster->classification += MONSTER_TELEPATHIC_VALUE;
+    }
+    if (tunneler) {
+        monster->classification += MONSTER_TUNNELER_VALUE;
+    }
+    if (erratic) {
+        monster->classification += MONSTER_ERRATIC_VALUE;
+    }
 
     monster_move_to(monster, x, y);
 
@@ -67,7 +87,7 @@ int monster_free_floor(Floor* floor) {
 int monster_free(Monster* monster) {
     if (monster->standingOn != null) {
         // Tunneler monsters leave corridors behind them if the dot is rock
-        if (monster->canTunnel && monster->standingOn->type == type_rock) {
+        if (monster->tunneler && monster->standingOn->type == type_rock) {
             monster->standingOn->type = type_corridor;
             monster->standingOn->hardness = CORRIDOR_HARDNESS;
             monster->standingOn->character = CORRIDOR_CHARACTER;
@@ -328,7 +348,7 @@ int monsters_move(Floor* floor) {
         u_char cheapestY = monster->dot->y;
         // Record cheapest cost
         u_char cheapestCost = U_CHAR_MAX;
-        if (monster->canTunnel) {
+        if (monster->tunneler) {
             // If top left is the cheapest, move there
             if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x - 1] <= cheapestCost) {
                 cheapestX = monster->dot->x - 1;

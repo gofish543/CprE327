@@ -3,8 +3,15 @@
 ## Unreleased
 
 ### Added
+- Added `--nummon` flag to specify number of monsters
+- Added monster speed
+- Added monster boolean values
+- Added monster classification based on boolean generated values
 ### Fixed
+- Fixed error within make file linking libraries
 ### Changed
+- Changed file version 1 to save monster speed and classification
+- Changed file version 1 to load monster speed and classification
 
 ## [v0.1.3 (2019-02-13)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
 

@@ -21,3 +21,4 @@ The following is an example run...
 * The load flag enables the game to load a dungeon rather than generating a fresh dungeon instance.<br>The file ordering is exactly the same as the save flag.<br>`--load <file_path | file_name>`
 * The file version saves differing amounts of data.<br>=> File version 0: Save the current floor the character is on<br>=> File version 1: Save all floors<br>`--file_version <0 | 1>` 
 * The expanded print flag will add extra padding and include column and row numbers when printing out dungeon information.<br>`--expanded_print`
+* The number of monsters flag specifies the number of monsters per floor to generate. If the flag is not present, a random number is generated. Please note that the use of this flag with `--load` will have no affect.<br>`--nummon <number>`

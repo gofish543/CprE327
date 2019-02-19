@@ -7,6 +7,7 @@ typedef struct Settings Settings;
 #include <stdbool.h>
 #include <libgen.h>
 #include <dirent.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "resource.h"
@@ -21,10 +22,14 @@ struct Settings {
     bool doSave;
     bool doLoad;
 
+    bool doNumberOfMonsters;
+
     char* savePath;
     char* loadPath;
 
     u_char file_version;
+
+    u_int numberOfMonsters;
 };
 
 Settings* settings_initialize(int argc, char* argv[]);

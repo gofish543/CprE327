@@ -17,14 +17,29 @@ typedef struct MonsterCost MonsterCost;
 #include "dungeon.h"
 #include "resource.h"
 
+#define MONSTER_MIN_SPEED 5
+#define MONSTER_MAX_SPEED 20
+
+#define MONSTER_INTELLIGENT_VALUE 1
+#define MONSTER_TELEPATHIC_VALUE 2
+#define MONSTER_TUNNELER_VALUE 4
+#define MONSTER_ERRATIC_VALUE 8
+
 struct Monster {
     u_char floor;
     FloorDot* dot;
     FloorDot* standingOn;
 
-    bool canTunnel;
-
     Dungeon* dungeon;
+
+    bool intelligent;
+    bool telepathic;
+    bool tunneler;
+    bool erratic;
+
+    u_char classification;
+
+    u_char speed;
 };
 
 struct MonsterCost {
@@ -35,7 +50,7 @@ struct MonsterCost {
     bool isTunnel;
 };
 
-Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, bool canTunnel);
+Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, u_char speed, bool intelligent, bool telepathic, bool tunneler, bool erratic);
 Monster* monster_terminate(Monster* monster);
 
 int monster_run_dijkstra_on_all_floors(Dungeon* dungeon);
