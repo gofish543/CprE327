@@ -10,15 +10,15 @@ int main(int argc, char* argv[]) {
         return status;
     }
 
-//    output_print_current_floor(dungeon);
-    while (true) {
+    output_print_current_floor(dungeon);
+    while (dungeon->player->isAlive && monster_count(dungeon) != 0 && dungeon->eventManager->queue->size != 0) {
         if (game_tick(dungeon)) {
             printf("Game tick error encountered, exiting while loop\n");
             break;
         }
-        sleep(1);
-        break;
+        usleep(TIME_HALF_SECOND_MS);
     }
+    output_print_endgame(dungeon);
 
     status = terminate(&dungeon);
     if (status) {
@@ -57,18 +57,22 @@ int terminate(Dungeon** dungeon) {
 }
 
 int game_tick(Dungeon* dungeon) {
-    // Move all monsters on the current floor
-//    monsters_move(dungeon->floors[dungeon->currentFloor]);
-    // Rerun dijkstras for the current floor
-//    monster_run_dijkstra_on_floor(dungeon->floors[dungeon->currentFloor]);
+    Event* event = event_peek_next(dungeon->eventManager);
 
-//    printf("----- CURRENT FLOOR -----\n");
-    output_print_current_floor(dungeon);
-//    printf("----- HARDNESS CHART -----\n");
-//    output_print_current_floor_hardness(dungeon);
-//    printf("----- TUNNELER CHART -----\n");
-//    output_print_current_floor_tunneler_view(dungeon);
-//    printf("----- NON TUNNELER CHART -----\n");
-//    output_print_current_floor_non_tunneler_view(dungeon);
+    bool isPlayerTurn = event->type == type_player;
+
+    if (isPlayerTurn) {
+        output_print_current_floor(dungeon);
+    }
+
+    event_handle_next(dungeon->eventManager);
+    event_increment_tick(dungeon->eventManager, 1);
+
+    if (isPlayerTurn) {
+        output_print_current_floor(dungeon);
+        dungeon->player->tilesExplored++;
+    }
+
+    dungeon->player->daysSurvived++;
     return 0;
 }

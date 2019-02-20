@@ -3,7 +3,6 @@
 Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, u_char speed, bool intelligent, bool telepathic, bool tunneler, bool erratic) {
     Monster* monster = malloc(sizeof(Monster));
 
-    monster->dot = floor_dot_initialize(x, y, type_monster, MONSTER_HARDNESS, MONSTER_CHARACTER);
     monster->floor = floor;
     monster->dungeon = dungeon;
     monster->classification = 0;
@@ -13,6 +12,7 @@ Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, 
     monster->tunneler = tunneler;
     monster->erratic = erratic;
     monster->speed = speed;
+    monster->isAlive = true;
 
     monster->standingOn = null;
 
@@ -28,6 +28,8 @@ Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, 
     if (erratic) {
         monster->classification += MONSTER_ERRATIC_VALUE;
     }
+
+    monster->dot = floor_dot_initialize(x, y, type_monster, MONSTER_HARDNESS, convert_base10_to_char(monster->classification));
 
     monster_move_to(monster, x, y);
 
@@ -58,6 +60,54 @@ Monster* monster_terminate(Monster* monster) {
     free(monster);
 
     return null;
+}
+
+int monster_event(Event* event) {
+    Monster* monster = (Monster*) event->structure;
+
+    if (monster->isAlive) {
+        monster_move(monster->dungeon->floors[monster->floor], monster);
+    }
+
+    if (monster->isAlive) {
+        event_initialize(monster->dungeon->eventManager, monster->dungeon->eventManager->currentTick + (1000 / monster->speed), type_monster, monster, monster_event);
+    }
+
+    return 0;
+}
+
+Monster* monster_get_at(Floor* floor, u_char x, u_char y) {
+    u_short index;
+    for (index = 0; index < floor->monsterCount; index++) {
+        if (floor->monsters[index]->dot->x == x && floor->monsters[index]->dot->y == y) {
+            return floor->monsters[index];
+        }
+    }
+
+    return null;
+}
+
+int monster_slain(Monster* monster) {
+    // Get all monsters on the current floor
+    monster->isAlive = false;
+    monster_free(monster);
+
+    return monster->classification;
+}
+
+int monster_count(Dungeon* dungeon) {
+    u_int total = 0;
+    u_char index;
+    u_short monsterIndex;
+    for (index = 0; index < dungeon->floorCount; index++) {
+        for (monsterIndex = 0; monsterIndex < dungeon->floors[index]->monsterCount; monsterIndex++) {
+            if (dungeon->floors[index]->monsters[monsterIndex]->isAlive) {
+                total++;
+            }
+        }
+    }
+
+    return total;
 }
 
 int monster_free_dungeon(Dungeon* dungeon) {
@@ -229,7 +279,7 @@ void monster_dijkstra_tunneler(Floor* floor) {
             }
         }
     }
-    floor->nonTunnelerCost[fromY][fromX] = U_CHAR_MIN;
+    floor->tunnelerCost[fromY][fromX] = U_CHAR_MIN;
 }
 
 void monster_dijkstra_non_tunneler(Floor* floor) {
@@ -342,121 +392,133 @@ void monster_dijkstra_non_tunneler(Floor* floor) {
 int monsters_move(Floor* floor) {
     u_short index;
     for (index = 0; index < floor->monsterCount; index++) {
-        Monster* monster = floor->monsters[index];
-        // Default stay right where they are
-        u_char cheapestX = monster->dot->x;
-        u_char cheapestY = monster->dot->y;
-        // Record cheapest cost
-        u_char cheapestCost = U_CHAR_MAX;
-        if (monster->tunneler) {
-            // If top left is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x - 1] <= cheapestCost) {
-                cheapestX = monster->dot->x - 1;
-                cheapestY = monster->dot->y - 1;
-                cheapestCost = floor->tunnelerCost[monster->dot->y - 1][monster->dot->x - 1];
-            }
-            // If top center is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x] <= cheapestCost) {
-                cheapestX = monster->dot->x;
-                cheapestY = monster->dot->y - 1;
-                cheapestCost = floor->tunnelerCost[monster->dot->y - 1][monster->dot->x];
-            }
-            // If top right is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x + 1] <= cheapestCost) {
-                cheapestX = monster->dot->x + 1;
-                cheapestY = monster->dot->y - 1;
-                cheapestCost = floor->tunnelerCost[monster->dot->y - 1][monster->dot->x + 1];
-            }
-            // If center left is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y][monster->dot->x - 1] <= cheapestCost) {
-                cheapestX = monster->dot->x - 1;
-                cheapestY = monster->dot->y;
-                cheapestCost = floor->tunnelerCost[monster->dot->y][monster->dot->x - 1];
-            }
-            // If center right is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y][monster->dot->x + 1] <= cheapestCost) {
-                cheapestX = monster->dot->x + 1;
-                cheapestY = monster->dot->y;
-                cheapestCost = floor->tunnelerCost[monster->dot->y][monster->dot->x + 1];
-            }
+        if (floor->monsters[index]->isAlive) {
+            monster_move(floor, floor->monsters[index]);
+        }
+    }
+
+    return 0;
+}
+
+int monster_move(Floor* floor, Monster* monster) {
+    // Default stay right where they are
+    u_char cheapestX = monster->dot->x;
+    u_char cheapestY = monster->dot->y;
+    // Record cheapest cost
+    u_char cheapestCost = U_CHAR_MAX;
+    if (monster->tunneler) {
+        // If top left is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x - 1] <= cheapestCost) {
+            cheapestX = monster->dot->x - 1;
+            cheapestY = monster->dot->y - 1;
+            cheapestCost = floor->tunnelerCost[monster->dot->y - 1][monster->dot->x - 1];
+        }
+        // If top center is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x] <= cheapestCost) {
+            cheapestX = monster->dot->x;
+            cheapestY = monster->dot->y - 1;
+            cheapestCost = floor->tunnelerCost[monster->dot->y - 1][monster->dot->x];
+        }
+        // If top right is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y - 1][monster->dot->x + 1] <= cheapestCost) {
+            cheapestX = monster->dot->x + 1;
+            cheapestY = monster->dot->y - 1;
+            cheapestCost = floor->tunnelerCost[monster->dot->y - 1][monster->dot->x + 1];
+        }
+        // If center left is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y][monster->dot->x - 1] <= cheapestCost) {
+            cheapestX = monster->dot->x - 1;
+            cheapestY = monster->dot->y;
+            cheapestCost = floor->tunnelerCost[monster->dot->y][monster->dot->x - 1];
+        }
+        // If center right is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y][monster->dot->x + 1] <= cheapestCost) {
+            cheapestX = monster->dot->x + 1;
+            cheapestY = monster->dot->y;
+            cheapestCost = floor->tunnelerCost[monster->dot->y][monster->dot->x + 1];
+        }
+        // If bottom left is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y + 1][monster->dot->x - 1] <= cheapestCost) {
+            cheapestX = monster->dot->x - 1;
+            cheapestY = monster->dot->y + 1;
+            cheapestCost = floor->tunnelerCost[monster->dot->y + 1][monster->dot->x - 1];
+        }
+        // If bottom center is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y + 1][monster->dot->x] <= cheapestCost) {
+            cheapestX = monster->dot->x;
+            cheapestY = monster->dot->y + 1;
+            cheapestCost = floor->tunnelerCost[monster->dot->y + 1][monster->dot->x];
+        }
+        // If bottom right center is the cheapest, move there
+        if (floor->tunnelerCost[monster->dot->y + 1][monster->dot->x + 1] <= cheapestCost) {
+            cheapestX = monster->dot->x + 1;
+            cheapestY = monster->dot->y + 1;
+            cheapestCost = floor->tunnelerCost[monster->dot->y + 1][monster->dot->x + 1];
+        }
+    } else {
+        // If top left is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x - 1] <= cheapestCost) {
+            cheapestX = monster->dot->x - 1;
+            cheapestY = monster->dot->y - 1;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x - 1];
+        }
+        // If top center is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x] <= cheapestCost) {
+            cheapestX = monster->dot->x;
+            cheapestY = monster->dot->y - 1;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x];
+        }
+        // If top right is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x + 1] <= cheapestCost) {
+            cheapestX = monster->dot->x + 1;
+            cheapestY = monster->dot->y - 1;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x + 1];
+        }
+        // If center left is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y][monster->dot->x - 1] <= cheapestCost) {
+            cheapestX = monster->dot->x - 1;
+            cheapestY = monster->dot->y;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y][monster->dot->x - 1];
+        }
+        // If center right is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y][monster->dot->x + 1] <= cheapestCost) {
+            cheapestX = monster->dot->x + 1;
+            cheapestY = monster->dot->y;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y][monster->dot->x + 1];
+        }
             // If bottom left is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y + 1][monster->dot->x - 1] <= cheapestCost) {
-                cheapestX = monster->dot->x - 1;
-                cheapestY = monster->dot->y + 1;
-                cheapestCost = floor->tunnelerCost[monster->dot->y + 1][monster->dot->x - 1];
-            }
-            // If bottom center is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y + 1][monster->dot->x] <= cheapestCost) {
-                cheapestX = monster->dot->x;
-                cheapestY = monster->dot->y + 1;
-                cheapestCost = floor->tunnelerCost[monster->dot->y + 1][monster->dot->x];
-            }
-            // If bottom right center is the cheapest, move there
-            if (floor->tunnelerCost[monster->dot->y + 1][monster->dot->x + 1] <= cheapestCost) {
-                cheapestX = monster->dot->x + 1;
-                cheapestY = monster->dot->y + 1;
-                cheapestCost = floor->tunnelerCost[monster->dot->y + 1][monster->dot->x + 1];
-            }
-        } else {
-            // If top left is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x - 1] <= cheapestCost) {
-                cheapestX = monster->dot->x - 1;
-                cheapestY = monster->dot->y - 1;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x - 1];
-            }
-            // If top center is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x] <= cheapestCost) {
-                cheapestX = monster->dot->x;
-                cheapestY = monster->dot->y - 1;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x];
-            }
-            // If top right is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x + 1] <= cheapestCost) {
-                cheapestX = monster->dot->x + 1;
-                cheapestY = monster->dot->y - 1;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y - 1][monster->dot->x + 1];
-            }
-            // If center left is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y][monster->dot->x - 1] <= cheapestCost) {
-                cheapestX = monster->dot->x - 1;
-                cheapestY = monster->dot->y;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y][monster->dot->x - 1];
-            }
-            // If center right is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y][monster->dot->x + 1] <= cheapestCost) {
-                cheapestX = monster->dot->x + 1;
-                cheapestY = monster->dot->y;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y][monster->dot->x + 1];
-            }
-                // If bottom left is the cheapest, move there
-            else if (floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x - 1] <= cheapestCost) {
-                cheapestX = monster->dot->x - 1;
-                cheapestY = monster->dot->y + 1;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x - 1];
-            }
-            // If bottom center is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x] <= cheapestCost) {
-                cheapestX = monster->dot->x;
-                cheapestY = monster->dot->y + 1;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x];
-            }
-            // If bottom right center is the cheapest, move there
-            if (floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x + 1] <= cheapestCost) {
-                cheapestX = monster->dot->x + 1;
-                cheapestY = monster->dot->y + 1;
-                cheapestCost = floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x + 1];
-            }
+        else if (floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x - 1] <= cheapestCost) {
+            cheapestX = monster->dot->x - 1;
+            cheapestY = monster->dot->y + 1;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x - 1];
         }
-        // Before moving, make sure that the space is open
-        if (floor->floorPlan[cheapestY][cheapestX]->type == type_player) {
-            // Handle it
-            continue;
-        } else if (floor->floorPlan[cheapestY][cheapestX]->type == type_monster) {
-            // Dont move there
-            continue;
-        } else {
-            monster_move_to(monster, cheapestX, cheapestY);
+        // If bottom center is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x] <= cheapestCost) {
+            cheapestX = monster->dot->x;
+            cheapestY = monster->dot->y + 1;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x];
         }
+        // If bottom right center is the cheapest, move there
+        if (floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x + 1] <= cheapestCost) {
+            cheapestX = monster->dot->x + 1;
+            cheapestY = monster->dot->y + 1;
+            cheapestCost = floor->nonTunnelerCost[monster->dot->y + 1][monster->dot->x + 1];
+        }
+    }
+    // Before moving, make sure that the space is open
+    if (floor->floorPlan[cheapestY][cheapestX]->type == type_player) {
+        // Handle it
+        char message[FLOOR_WIDTH + 1] = "";
+        sprintf(message, "Monster %d attacked you!", monster->classification);
+        dungeon_prepend_message(monster->dungeon, message);
+
+        actions_battle(monster->dungeon->player, monster);
+        return 0;
+    } else if (floor->floorPlan[cheapestY][cheapestX]->type == type_monster) {
+        // Dont move there
+        return 0;
+    } else {
+        monster_move_to(monster, cheapestX, cheapestY);
     }
 
     return 0;

@@ -20,4 +20,6 @@ void output_print_floor_non_tunneler_view(Dungeon* dungeon, u_char floor);
 
 void output_print_all_floors(Dungeon* dungeon);
 
+void output_print_endgame(Dungeon* dungeon);
+
 #endif

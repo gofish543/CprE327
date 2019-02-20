@@ -39,3 +39,11 @@ int error_check_fwrite(void* __restrict ptr, size_t size, size_t nmemb, FILE* st
     }
     return 0;
 }
+
+u_char convert_base10_to_char(u_int integerValue) {
+    if (integerValue < 10) {
+        return '0' + integerValue;
+    } else {
+        return 'a' + (integerValue - 10);
+    }
+}

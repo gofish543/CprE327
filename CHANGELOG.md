@@ -7,11 +7,21 @@
 - Added monster speed
 - Added monster boolean values
 - Added monster classification based on boolean generated values
+- Added player speed
+- Added player and monster isAlive flag
+- Added player statistic data
+- Added player movement with keyboard
+- Added monster auto-movement with events and game ticks
+- Added 3 dungeon text strings for message information
+- Implemented monster versus player battle
 ### Fixed
 - Fixed error within make file linking libraries
+- Fixed compile warnings on -O2
 ### Changed
 - Changed file version 1 to save monster speed and classification
 - Changed file version 1 to load monster speed and classification
+- Altered monster movement
+- Dead monsters can no longer move
 
 ## [v0.1.3 (2019-02-13)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
 

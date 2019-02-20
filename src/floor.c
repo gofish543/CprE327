@@ -23,7 +23,7 @@ Floor* floor_load_initialize(FloorLoadStructure* floorLoadStructure) {
 
     for (height = 0; height < floor->height; height++) {
         for (width = 0; width < floor->width; width++) {
-            enum FloorDotType type;
+            enum FloorDotType type = type_rock;
             switch (floorLoadStructure->floorPlanCharacters[height][width]) {
                 case ROCK_CHARACTER:
                     type = type_rock;
@@ -80,10 +80,9 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short stairUpCou
     floor->roomCount = randomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
     floor->stairUpCount = stairUpCount;
     floor->stairDownCount = stairDownCount;
-    if(floor->dungeon->settings->doNumberOfMonsters) {
+    if (floor->dungeon->settings->doNumberOfMonsters) {
         floor->monsterCount = floor->dungeon->settings->numberOfMonsters;
-    }
-    else {
+    } else {
         floor->monsterCount = randomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
     }
 

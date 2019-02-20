@@ -16,6 +16,7 @@ typedef struct MonsterCost MonsterCost;
 #include "floor.h"
 #include "dungeon.h"
 #include "resource.h"
+#include "events.h"
 
 #define MONSTER_MIN_SPEED 5
 #define MONSTER_MAX_SPEED 20
@@ -40,6 +41,8 @@ struct Monster {
     u_char classification;
 
     u_char speed;
+
+    bool isAlive;
 };
 
 struct MonsterCost {
@@ -52,6 +55,12 @@ struct MonsterCost {
 
 Monster* monster_initialize(Dungeon* dungeon, u_char x, u_char y, u_char floor, u_char speed, bool intelligent, bool telepathic, bool tunneler, bool erratic);
 Monster* monster_terminate(Monster* monster);
+
+int monster_event(Event* event);
+
+Monster* monster_get_at(Floor* floor, u_char x, u_char y);
+int monster_slain(Monster* monster);
+int monster_count(Dungeon* dungeon);
 
 int monster_run_dijkstra_on_all_floors(Dungeon* dungeon);
 int monster_run_dijkstra_on_floor(Floor* floor);
@@ -66,5 +75,6 @@ int monster_free(Monster* monster);
 
 int monster_move_to(Monster* monster, u_char toX, u_char toY);
 int monsters_move(Floor* floor);
+int monster_move(Floor* floor, Monster* monster);
 
 #endif

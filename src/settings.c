@@ -53,6 +53,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
     settings->doSave = false;
     settings->file_version = 0;
     settings->expandedPrint = false;
+    settings->doNumberOfMonsters = false;
 
     char* homePath = getenv("HOME");
     char dotFolder[] = DATA_PATH;

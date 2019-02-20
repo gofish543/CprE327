@@ -2,6 +2,9 @@
 
 void output_print_current_floor(Dungeon* dungeon) {
     output_print_floor(dungeon, dungeon->currentFloor);
+    printf("%s\n", dungeon->textLine1);
+    printf("%s\n", dungeon->textLine2);
+    printf("%s\n", dungeon->textLine3);
 }
 
 void output_print_current_floor_hardness(Dungeon* dungeon) {
@@ -152,5 +155,23 @@ void output_print_floor_non_tunneler_view(Dungeon* dungeon, u_char floor) {
             }
             printf("\n");
         }
+    }
+}
+
+void output_print_endgame(Dungeon* dungeon) {
+    if (!dungeon->player->isAlive && monster_count(dungeon) > 0) {
+        printf("Queue completely empty, terminating the program safely\n");
+    } else {
+        u_char height;
+        for (height = 0; height < FLOOR_HEIGHT; height++) {
+            printf("\n");
+        }
+        printf("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+        printf("| Player Level   | %5d |                                                    |\n", dungeon->player->level);
+        printf("| Days Survived  | %5d |                                                    |\n", dungeon->player->daysSurvived);
+        printf("| Monsters Slain | %5d |                                                    |\n", dungeon->player->monstersSlain);
+        printf("| Tiles Explored | %5d |                                                    |\n", dungeon->player->tilesExplored);
+        printf("| Alive          | %5d |                                                    |\n", dungeon->player->isAlive);
+        printf("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
     }
 }
