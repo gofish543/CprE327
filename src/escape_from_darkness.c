@@ -13,6 +13,7 @@ int main(int argc, char* argv[]) {
             print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Game tick error encountered, exiting while loop\n");
             break;
         }
+        usleep(TIME_HALF_SECOND_MICRO_SECONDS);
     }
     output(dungeon, output_print_endgame);
 
@@ -25,7 +26,7 @@ int main(int argc, char* argv[]) {
 }
 
 int game_tick(Dungeon* dungeon) {
-    if (event_peek_next(dungeon->eventManager)->type == event_type_player) {
+    if (true || event_peek_next(dungeon->eventManager)->type == event_type_player) {
         output(dungeon, output_print_current_floor);
     }
 

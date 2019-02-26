@@ -34,6 +34,7 @@ typedef struct MonsterCost MonsterCost;
 #include <stdbool.h>
 #include <limits.h>
 #include "character.h"
+#include "./monster/movement.h"
 #include "../vendor/heap.h"
 #include "../character_listings.h"
 #include "../floor.h"
@@ -65,7 +66,6 @@ Monster* monster_terminate(Monster* monster);
 int monster_next_tick(Event* event);
 int monster_event(Event* event);
 
-int monster_move(Monster* monster, u_char visionTable[FLOOR_HEIGHT][FLOOR_WIDTH]);
 int monster_move_to(Monster* monster, u_char toX, u_char toY);
 
 int monsters_battle(Monster* monsterA,Monster* monsterB);

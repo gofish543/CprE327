@@ -33,6 +33,7 @@ int player_next_tick(Event* event) {
 }
 
 int player_event(Event* event) {
+    return 0;
     u_char move;
     u_char x;
     u_char y;
@@ -141,7 +142,11 @@ int player_move_to(Player* player, u_char toX, u_char toY) {
 }
 
 bool player_battle(Player* player, Monster* monster) {
-    return true;
+    if (monster_alive_count(monster->character->floor->dungeon) == 1) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 void player_slain(Player* player) {
