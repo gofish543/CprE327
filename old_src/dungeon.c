@@ -19,26 +19,26 @@ Dungeon* dungeon_initialize(Settings* settings) {
 
     // Check if loading from file or from program
     if (dungeon->settings->doLoad && load_from_file(dungeon)) {
-        print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate dungeon from file specified\n");
+        print_error(dungeon->settings->doNCursesPrint, "Failed to generate dungeon from file specified\n");
         exit(1);
         return null;
     } else if (load_from_program(dungeon)) {
-        print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate a dungeon programmatically\n");
+        print_error(dungeon->settings->doNCursesPrint, "Failed to generate a dungeon programmatically\n");
         exit(1);
         return null;
     }
 
-    // Run dijkstra on current floor
-    if (monster_run_dijkstra_on_floor(dungeon->floor)) {
-        print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate monster fastest paths\n");
+    // Run dijkstra on all floors
+    if (monster_run_dijkstra_on_floors(dungeon->floor)) {
+        pprint_error(dungeon->settings->doNCursesPrint, "Failed to generate monster fastest paths\n");
         exit(1);
         return null;
     }
 
-    // Add the player action to the event queue
-    event_initialize(dungeon->eventManager, 0, event_type_player, dungeon->player, player_event, player_next_tick);
-    for (index = 0; index < dungeon->floor->monsterCount; index++) {
-        event_initialize(dungeon->eventManager, dungeon->eventManager->tick, event_type_monster, dungeon->floor->monsters[index], monster_event, monster_next_tick);
+    // After everything is setup, add the user's event and monsters' events
+    event_initialize(dungeon->eventManager, 0, type_player, dungeon->player, event_type_player);
+    for (index = 0; index < dungeon->floors[dungeon->currentFloor]->monsterCount; index++) {
+        event_initialize(dungeon->eventManager, index + 1, type_monster, dungeon->floors[dungeon->currentFloor]->monsters[index], event_type_monster);
     }
 
     return dungeon;
@@ -50,6 +50,7 @@ Dungeon* dungeon_terminate(Dungeon* dungeon) {
         save_error(dungeon);
     }
 
+    dungeon->eventManager = event_manager_terminate(dungeon->eventManager);
     free(dungeon->textLine1);
     free(dungeon->textLine2);
     free(dungeon->textLine3);
@@ -57,12 +58,17 @@ Dungeon* dungeon_terminate(Dungeon* dungeon) {
     dungeon->textLine2 = null;
     dungeon->textLine3 = null;
 
+    // Free all monsters, lift them off dungeon floor
+    monster_free_dungeon(dungeon);
+
+    // Free player, lift them off dungeon floor
+    player_free(dungeon->player);
+
     u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
         dungeon->floors[index] = floor_terminate(dungeon->floors[index]);
     }
     dungeon->player = player_terminate(dungeon->player);
-    dungeon->eventManager = event_manager_terminate(dungeon->eventManager);
     dungeon->settings = null;
 
     free(dungeon->floors);
@@ -77,7 +83,7 @@ int dungeon_prepend_message(Dungeon* dungeon, const char* message, ...) {
 
     strcpy(dungeon->textLine3, dungeon->textLine2);
     strcpy(dungeon->textLine2, dungeon->textLine1);
-    vsprintf(dungeon->textLine1, message, args);
+    sprintf(dungeon->textLine3, message, args);
 
     va_end(args);
 
@@ -90,7 +96,7 @@ int dungeon_append_message(Dungeon* dungeon, const char* message, ...) {
 
     strcpy(dungeon->textLine1, dungeon->textLine2);
     strcpy(dungeon->textLine2, dungeon->textLine3);
-    vsprintf(dungeon->textLine3, message, args);
+    sprintf(dungeon->textLine3, message, args);
 
     va_end(args);
     return 0;

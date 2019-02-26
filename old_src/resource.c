@@ -2,7 +2,7 @@
 
 unsigned short offset = 0;
 
-int random_number_between(int min, int max) {
+int randomNumberBetween(int min, int max) {
     int fd = open("/dev/urandom", O_RDWR);
     if (fd == 0) {
         srand(time(null));

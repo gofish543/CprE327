@@ -4,20 +4,23 @@ int main(int argc, char* argv[]) {
     Dungeon* dungeon = null;
 
     if (initialize(&dungeon, argc, argv)) {
-        print_error(dungeon->window, dungeon->settings->doNCursesPrint, "An error has occurred initializing the application, exiting\n");
+        print_error(dungeon->settings->doNCursesPrint, "An error has occurred initializing the application, exiting\n");
         return 1;
     }
 
-    while (dungeon->player->isAlive && monster_alive_count(dungeon)) {
+    while (dungeon->player->isAlive && monster_count(dungeon)) {
         if (game_tick(dungeon)) {
-            print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Game tick error encountered, exiting while loop\n");
+            print_error(dungeon->settings->doNCursesPrint, "Game tick error encountered, exiting while loop\n");
             break;
         }
+        usleep(TIME_HALF_SECOND_MICRO_SECONDS);
+        break;
     }
+    getch();
     output(dungeon, output_print_endgame);
 
     if (terminate(&dungeon)) {
-        print_error(dungeon->window, dungeon->settings->doNCursesPrint, "An error has occurred terminating the application, exiting\n");
+        print_error(dungeon->settings->doNCursesPrint, "An error has occurred terminating the application, exiting\n");
         return 1;
     }
 
@@ -25,7 +28,7 @@ int main(int argc, char* argv[]) {
 }
 
 int game_tick(Dungeon* dungeon) {
-    if (event_peek_next(dungeon->eventManager)->type == event_type_player) {
+    if (true || event_peek_next(dungeon->eventManager)->type == type_player) {
         output(dungeon, output_print_current_floor);
     }
 
@@ -38,19 +41,19 @@ int game_tick(Dungeon* dungeon) {
 int initialize(Dungeon** dungeon, int argc, char* argv[]) {
     Settings* settings = settings_initialize(argc, argv);
     if (settings == null) {
-        print_error((*dungeon)->window, (*dungeon)->settings->doNCursesPrint, "Failed to initialize settings\n");
+        print_error(dungeon->settings->doNCursesPrint, "Failed to initialize settings\n");
         exit(1);
     }
 
     *dungeon = dungeon_initialize(settings);
 
     if (*dungeon == null) {
-        print_error((*dungeon)->window, (*dungeon)->settings->doNCursesPrint, "Failed to initialize the dungeon\n");
+        print_error(dungeon->settings->doNCursesPrint, "Failed to initialize the dungeon\n");
         exit(1);
     }
 
     if (settings->doNCursesPrint) {
-        (*dungeon)->window = initscr();
+        initscr();
         raw();
         keypad(stdscr, true);
         noecho();

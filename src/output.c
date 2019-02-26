@@ -1,177 +1,269 @@
 #include "output.h"
 
-void output_print_current_floor(Dungeon* dungeon) {
-    output_print_floor(dungeon, dungeon->currentFloor);
-    printf("%s\n", dungeon->textLine1);
-    printf("%s\n", dungeon->textLine2);
-    printf("%s\n", dungeon->textLine3);
-}
+void output(Dungeon* dungeon, void (* targetOutputFunction)(Dungeon*)) {
+    if (dungeon->settings->doNCursesPrint) {
+        // Clear the current window
+        clear();
+    }
+    // Run the output function
+    targetOutputFunction(dungeon);
 
-void output_print_current_floor_hardness(Dungeon* dungeon) {
-    output_print_floor_hardness(dungeon, dungeon->currentFloor);
-}
+    if (targetOutputFunction != output_print_endgame) {
+        print(dungeon->window, dungeon->settings->doNCursesPrint, "%s\n", dungeon->textLine1);
+        print(dungeon->window, dungeon->settings->doNCursesPrint, "%s\n", dungeon->textLine2);
+        print(dungeon->window, dungeon->settings->doNCursesPrint, "%s\n", dungeon->textLine3);
+    }
 
-void output_print_current_floor_tunneler_view(Dungeon* dungeon) {
-    output_print_floor_tunneler_view(dungeon, dungeon->currentFloor);
-}
-
-void output_print_current_floor_non_tunneler_view(Dungeon* dungeon) {
-    output_print_floor_non_tunneler_view(dungeon, dungeon->currentFloor);
+    if (dungeon->settings->doNCursesPrint) {
+        // Refresh the window
+        refresh();
+    }
 }
 
 void output_print_all_floors(Dungeon* dungeon) {
     u_char index;
     for (index = 0; index < dungeon->floorCount; index++) {
-        output_print_floor(dungeon, index);
+        output_print_floor(dungeon->floors[index]);
     }
 }
 
-void output_print_floor(Dungeon* dungeon, u_char floor) {
+void output_print_current_floor(Dungeon* dungeon) {
+    output_print_floor(dungeon->floor);
+}
+
+void output_print_current_floor_hardness(Dungeon* dungeon) {
+    output_print_floor_hardness(dungeon->floor);
+}
+
+void output_print_current_floor_tunneler(Dungeon* dungeon) {
+    output_print_floor_tunneler_view(dungeon->floor);
+}
+
+void output_print_current_floor_non_tunneler(Dungeon* dungeon) {
+    output_print_floor_non_tunneler_view(dungeon->floor);
+}
+
+void output_print_floor(Floor* floor) {
     u_char width;
     u_char height;
+    Dungeon* dungeon = floor->dungeon;
+    bool ncurses = dungeon->settings->doNCursesPrint;
+    bool expanded = dungeon->settings->expandedPrint;
 
-    if (dungeon->settings->expandedPrint) {
-        printf("  ");
-        for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3d", width);
+    if (expanded) {
+        print(dungeon->window, ncurses, "  ");
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            print(dungeon->window, ncurses, "%3d", width);
         }
-        printf("\n");
+        print(dungeon->window, ncurses, "\n");
+    }
 
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            printf("%2d ", height);
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                printf(" %c ", dungeon->floors[floor]->floorPlan[height][width]->character);
-            }
-            printf("\n");
+    for (height = 0; height < FLOOR_HEIGHT; height++) {
+        if (expanded) {
+            print(dungeon->window, ncurses, "%2d ", height);
         }
-    } else {
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                printf("%c", dungeon->floors[floor]->floorPlan[height][width]->character);
+
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            if (expanded) {
+                print(dungeon->window, ncurses, " %c ", floor_character_at(floor, width, height));
+            } else {
+                print(dungeon->window, ncurses, "%c", floor_character_at(floor, width, height));
             }
-            printf("\n");
         }
+
+        print(dungeon->window, ncurses, "\n");
     }
 }
 
-void output_print_floor_hardness(Dungeon* dungeon, u_char floor) {
+void output_print_floor_hardness(Floor* floor) {
     u_char width;
     u_char height;
+    Dungeon* dungeon = floor->dungeon;
+    bool ncurses = dungeon->settings->doNCursesPrint;
+    bool expanded = dungeon->settings->expandedPrint;
 
-    if (dungeon->settings->expandedPrint) {
-        printf("   ");
-        for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3d", width);
+    if (expanded) {
+        print(dungeon->window, ncurses, "  ");
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            print(dungeon->window, ncurses, "%3d", width);
         }
-        printf("\n");
+        print(dungeon->window, ncurses, "\n");
+    }
 
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            printf("%2d ", height);
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                printf("%3d", dungeon->floors[floor]->floorPlan[height][width]->hardness);
-            }
-            printf("\n");
+    for (height = 0; height < FLOOR_HEIGHT; height++) {
+        if (expanded) {
+            print(dungeon->window, ncurses, "%2d ", height);
         }
-    } else {
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                printf("%d", dungeon->floors[floor]->floorPlan[height][width]->hardness % 10);
+
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            if (expanded) {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, " %c ", floor_character_at(floor, width, height));
+                } else {
+                    print(dungeon->window, ncurses, "%3d", floor->terrains[height][width]->hardness);
+                }
+            } else {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, "%c", floor_character_at(floor, width, height));
+                } else {
+                    print(dungeon->window, ncurses, "%d", floor->terrains[height][width]->hardness % 10);
+                }
             }
-            printf("\n");
         }
+
+        print(dungeon->window, ncurses, "\n");
     }
 }
 
-void output_print_floor_tunneler_view(Dungeon* dungeon, u_char floor) {
+void output_print_floor_tunneler_view(Floor* floor) {
     u_char width;
     u_char height;
+    Dungeon* dungeon = floor->dungeon;
+    bool ncurses = dungeon->settings->doNCursesPrint;
+    bool expanded = dungeon->settings->expandedPrint;
 
-    if (dungeon->settings->expandedPrint) {
-        printf("   ");
-        for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3d", width);
+    if (expanded) {
+        print(dungeon->window, ncurses, "  ");
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            print(dungeon->window, ncurses, "%3d", width);
         }
-        printf("\n");
+        print(dungeon->window, ncurses, "\n");
+    }
 
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            printf("%2d ", height);
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                if (dungeon->floors[floor]->floorPlan[height][width]->type == type_border) {
-                    printf(" %c ", dungeon->floors[floor]->floorPlan[height][width]->character);
+    for (height = 0; height < FLOOR_HEIGHT; height++) {
+        if (expanded) {
+            print(dungeon->window, ncurses, "%2d ", height);
+        }
+
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            if (expanded) {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, " %c ", floor_character_at(floor, width, height));
                 } else {
-                    printf("%3d", dungeon->floors[floor]->tunnelerCost[height][width]);
+                    print(dungeon->window, ncurses, "%3d", floor->tunnelerView[height][width]);
+                }
+            } else {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, "%c", floor_character_at(floor, width, height));
+                } else {
+                    print(dungeon->window, ncurses, "%d", floor->tunnelerView[height][width] % 10);
                 }
             }
-            printf("\n");
         }
-    } else {
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                if (dungeon->floors[floor]->floorPlan[height][width]->type == type_border) {
-                    printf("%c", dungeon->floors[floor]->floorPlan[height][width]->character);
-                } else {
-                    printf("%d", dungeon->floors[floor]->tunnelerCost[height][width] % 10);
-                }
-            }
-            printf("\n");
-        }
+
+        print(dungeon->window, ncurses, "\n");
     }
 }
 
-void output_print_floor_non_tunneler_view(Dungeon* dungeon, u_char floor) {
+void output_print_floor_non_tunneler_view(Floor* floor) {
     u_char width;
     u_char height;
+    Dungeon* dungeon = floor->dungeon;
+    bool ncurses = dungeon->settings->doNCursesPrint;
+    bool expanded = dungeon->settings->expandedPrint;
 
-    if (dungeon->settings->expandedPrint) {
-        printf("   ");
-        for (width = 0; width < dungeon->floors[floor]->width; width++) {
-            printf("%3d", width);
+    if (expanded) {
+        print(dungeon->window, ncurses, "  ");
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            print(dungeon->window, ncurses, "%3d", width);
         }
-        printf("\n");
+        print(dungeon->window, ncurses, "\n");
+    }
 
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            printf("%2d ", height);
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                if (dungeon->floors[floor]->floorPlan[height][width]->type == type_border) {
-                    printf(" %c ", dungeon->floors[floor]->floorPlan[height][width]->character);
-                } else if (dungeon->floors[floor]->nonTunnelerCost[height][width] == BORDER_HARDNESS) {
-                    printf("   ");
+    for (height = 0; height < FLOOR_HEIGHT; height++) {
+        if (expanded) {
+            print(dungeon->window, ncurses, "%2d ", height);
+        }
+
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            if (expanded) {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, " %c ", floor_character_at(floor, width, height));
+                } else if (floor->terrains[height][width]->isRock) {
+                    print(dungeon->window, ncurses, "   ");
                 } else {
-                    printf("%3d", dungeon->floors[floor]->nonTunnelerCost[height][width]);
+                    print(dungeon->window, ncurses, "%3d", floor->nonTunnelerView[height][width]);
+                }
+            } else {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, "%c", floor_character_at(floor, width, height));
+                } else if (floor->terrains[height][width]->isRock) {
+                    print(dungeon->window, ncurses, " ");
+                } else {
+                    print(dungeon->window, ncurses, "%d", floor->nonTunnelerView[height][width] % 10);
                 }
             }
-            printf("\n");
         }
-    } else {
-        for (height = 0; height < dungeon->floors[floor]->height; height++) {
-            for (width = 0; width < dungeon->floors[floor]->width; width++) {
-                if (dungeon->floors[floor]->floorPlan[height][width]->type == type_border) {
-                    printf("%c", dungeon->floors[floor]->floorPlan[height][width]->character);
-                } else if (dungeon->floors[floor]->nonTunnelerCost[height][width] == BORDER_HARDNESS) {
-                    printf(" ");
-                } else {
-                    printf("%d", dungeon->floors[floor]->nonTunnelerCost[height][width] % 10);
-                }
-            }
-            printf("\n");
-        }
+
+        print(dungeon->window, ncurses, "\n");
     }
 }
 
 void output_print_endgame(Dungeon* dungeon) {
-    if (!dungeon->player->isAlive && monster_count(dungeon) > 0) {
-        printf("Queue completely empty, terminating the program safely\n");
+    bool ncurses = dungeon->settings->doNCursesPrint;
+
+    if (ncurses) {
+        clear();
+    }
+
+    if (dungeon->player->isAlive && monster_alive_count(dungeon) > 0) {
+        print(dungeon->window, ncurses, "Queue completely empty, terminating the program safely\n");
     } else {
         u_char height;
-        for (height = 0; height < FLOOR_HEIGHT; height++) {
-            printf("\n");
+        if (!ncurses) {
+            for (height = 0; height < FLOOR_HEIGHT; height++) {
+                print(dungeon->window, ncurses, "\n");
+            }
         }
-        printf("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
-        printf("| Player Level   | %5d |                                                    |\n", dungeon->player->level);
-        printf("| Days Survived  | %5d |                                                    |\n", dungeon->player->daysSurvived);
-        printf("| Monsters Slain | %5d |                                                    |\n", dungeon->player->monstersSlain);
-        printf("| Tiles Explored | %5d |                                                    |\n", dungeon->player->tilesExplored);
-        printf("| Alive          | %5d |                                                    |\n", dungeon->player->isAlive);
-        printf("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+
+        print(dungeon->window, ncurses, "+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+        print(dungeon->window, ncurses, "| Player Level   | %5d |                                                    |\n", dungeon->player->level);
+        print(dungeon->window, ncurses, "| Days Survived  | %5d |                                                    |\n", dungeon->player->daysSurvived);
+        print(dungeon->window, ncurses, "| Monsters Slain | %5d |                                                    |\n", dungeon->player->monstersSlain);
+        print(dungeon->window, ncurses, "| Alive          | %5d |                                                    |\n", dungeon->player->isAlive);
+        print(dungeon->window, ncurses, "+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
     }
+
+    if (ncurses) {
+        refresh();
+        print(dungeon->window, ncurses, "Press any key to continue...\n");
+        getch();
+    }
+
+}
+
+void print_error(WINDOW* window, const bool ncurses, const char* format, ...) {
+    if (ncurses) {
+        // If ncurses, clear the screen
+        clear();
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    if (ncurses) {
+        printw(format, args);
+        printf("Press any key to continue...\n");
+
+        refresh();
+
+        getch();
+    } else {
+        printf(format, args);
+    }
+
+    va_end(args);
+}
+
+void print(WINDOW* window, const bool ncurses, const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    if (ncurses) {
+        vw_printw(window, format, args);
+    } else {
+        vprintf(format, args);
+    }
+
+    va_end(args);
 }

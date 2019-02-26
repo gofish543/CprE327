@@ -7,7 +7,7 @@ typedef struct Staircase Staircase;
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "character_listings.h"
+#include "../character_listings.h"
 
 struct Staircase {
     u_char x;

@@ -6,11 +6,10 @@
 #include <stdlib.h>
 #include "dungeon.h"
 #include "resource.h"
-#include "output.h"
 #include "characters/monster.h"
 #include "characters/player.h"
+#include "output.h"
 
-void action_player_vs_monster(Player* player, Monster* monster);
-void action_monster_vs_monster(Monster* monsterA, Monster* monsterB);
+void actions_battle(Player* player, Monster* monster);
 
 #endif

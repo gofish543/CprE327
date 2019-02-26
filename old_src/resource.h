@@ -19,7 +19,7 @@ typedef unsigned char u_char;
 typedef unsigned short u_short;
 typedef unsigned int u_int;
 
-int random_number_between(int min, int max);
+int randomNumberBetween(int min, int max);
 int error_check_fread(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream);
 int error_check_fwrite(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream);
 int check_if_file_exists(const char* filename);

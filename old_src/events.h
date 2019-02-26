@@ -21,22 +21,21 @@ enum EventType {
 
 struct EventManager {
     Dungeon* dungeon;
-    u_int tick;
+    u_int currentTick;
     heap_t* queue;
 };
 
 struct Event {
     u_int tick;
-    enum EventType type;
+    EventType type;
     void* structure;
     int (* handler)(Event*);
-    int (* nextTick)(Event*);
 };
 
 EventManager* event_manager_initialize(Dungeon* dungeon);
 EventManager* event_manager_terminate(EventManager* eventManager);
 
-Event* event_initialize(EventManager* eventManager, u_int tick, enum EventType type, void* structure, int (* handler)(Event*), int (* nextTick)(Event*));
+Event* event_initialize(EventManager* eventManager, u_int tick, u_char type, void* structure, int (* handler)(Event*));
 Event* event_terminate(Event* event);
 
 int32_t event_compare(const void* A, const void* B);

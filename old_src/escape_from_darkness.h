@@ -13,6 +13,9 @@
 #include "settings.h"
 #include "resource.h"
 #include "output.h"
+#include "characters/character.h"
+#include "characters/monster.h"
+#include "characters/player.h"
 
 int game_tick(Dungeon* dungeon);
 

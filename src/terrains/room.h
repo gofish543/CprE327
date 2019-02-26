@@ -4,16 +4,15 @@
 struct Room;
 typedef struct Room Room;
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include "resource.h"
-#include "character_listings.h"
-
 #define ROOM_MIN_WIDTH 4
 #define ROOM_MAX_WIDTH 8
 #define ROOM_MIN_HEIGHT 4
 #define ROOM_MAX_HEIGHT 8
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "../character_listings.h"
 
 struct Room {
     u_char width;

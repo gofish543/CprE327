@@ -4,37 +4,45 @@
 struct Dungeon;
 typedef struct Dungeon Dungeon;
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include "resource.h"
-#include "player.h"
-#include "save_load.h"
-#include "floor.h"
-#include "settings.h"
-#include "events.h"
-
 #define DUNGEON_FLOORS_MIN 1
 #define DUNGEON_FLOORS_MAX 1
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <ncurses.h>
+#include "terrains/terrain.h"
+#include "terrains/room.h"
+#include "terrains/staircase.h"
+#include "characters/player.h"
+#include "events.h"
+#include "resource.h"
+#include "floor.h"
+#include "settings.h"
+#include "output.h"
+#include "save_load.h"
+
 struct Dungeon {
     u_char floorCount;
-    u_char currentFloor;
+    Floor* floor;
+
+    EventManager* eventManager;
 
     Player* player;
     Floor** floors;
     Settings* settings;
-    EventManager* eventManager;
 
     char* textLine1;
     char* textLine2;
     char* textLine3;
+
+    WINDOW* window;
 };
 
 Dungeon* dungeon_initialize(Settings* settings);
 Dungeon* dungeon_terminate(Dungeon* dungeon);
 
-int dungeon_prepend_message(Dungeon* dungeon, const char* message);
-int dungeon_append_message(Dungeon* dungeon, const char* message);
+int dungeon_prepend_message(Dungeon* dungeon, const char* message, ...);
+int dungeon_append_message(Dungeon* dungeon, const char* message, ...);
 
 #endif

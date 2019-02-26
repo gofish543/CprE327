@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <ncurses.h>
 #include "dungeon.h"
 #include "resource.h"
@@ -25,7 +24,7 @@ void output_print_floor_non_tunneler_view(Floor* floor);
 
 void output_print_endgame(Dungeon* dungeon);
 
-void print_error(WINDOW* window, const bool ncurses, const char* format, ...);
-void print(WINDOW* window, const bool ncurses, const char* format, ...);
+void print_error(const bool ncurses, const char* format, ...);
+void print(const bool ncurses, const char* format, ...);
 
 #endif

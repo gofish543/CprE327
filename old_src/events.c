@@ -4,7 +4,7 @@ EventManager* event_manager_initialize(Dungeon* dungeon) {
     EventManager* eventManager = malloc(sizeof(EventManager));
 
     eventManager->dungeon = dungeon;
-    eventManager->tick = 0;
+    eventManager->currentTick = 0;
     eventManager->queue = malloc(sizeof(heap_t));
 
     heap_init(eventManager->queue, event_compare, null);
@@ -22,18 +22,17 @@ EventManager* event_manager_terminate(EventManager* eventManager) {
     return null;
 }
 
-Event* event_initialize(EventManager* eventManager, u_int tick, enum EventType type, void* structure, int (* handler)(Event*), int (* nextTick)(Event*)) {
+Event* event_initialize(EventManager* eventManager, u_int tick, u_char type, void* structure, int (* handler)(Event*)) {
     Event* event = malloc(sizeof(Event));
 
     event->tick = tick;
-    event->nextTick = nextTick;
     event->handler = handler;
     event->type = type;
     event->structure = structure;
 
     heap_insert(eventManager->queue, event);
 
-    eventManager->tick++;
+    eventManager->currentTick++;
 
     return event;
 }
@@ -60,20 +59,12 @@ int event_handle_next(EventManager* eventManager) {
 
     nextEvent->handler(nextEvent);
 
-    if (nextEvent->tick > eventManager->tick) {
-        eventManager->tick = nextEvent->tick;
-    } else {
-        eventManager->tick++;
+    // Fast forward the game tick to the event's if in the future
+    if (nextEvent->tick > eventManager->currentTick) {
+        eventManager->currentTick = nextEvent->tick;
     }
 
-    nextEvent->tick = nextEvent->nextTick(nextEvent);
-
-    if (nextEvent->tick == -1) {
-        // Don't re-insert
-        event_terminate(nextEvent);
-    } else {
-        heap_insert(eventManager->queue, nextEvent);
-    }
+    event_terminate(nextEvent);
 
     return 0;
 }
