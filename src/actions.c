@@ -35,10 +35,13 @@ int action_monster_vs_monster(Monster* monsterA, Monster* monsterB) {
         // Monster A won
         monster_slain(monsterB);
         monsterB->character->floor->characters[monsterB->character->y][monsterB->character->x] = null;
+        dungeon_prepend_message(monsterA->character->floor->dungeon, "Monster %c and %c just battled. Monster %c won", monsterA->character->character, monsterB->character->character, monsterA->character->character);
+
     } else if (result < 0) {
         // Monster B win
         monster_slain(monsterA);
         monsterA->character->floor->characters[monsterA->character->y][monsterA->character->x] = null;
+        dungeon_prepend_message(monsterA->character->floor->dungeon, "Monster %c and %c just battled. Monster %c won", monsterA->character->character, monsterB->character->character, monsterB->character->character);
     }
 
     return result;

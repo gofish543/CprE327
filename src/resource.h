@@ -25,5 +25,6 @@ int error_check_fwrite(void* __restrict ptr, size_t size, size_t nmemb, FILE* st
 int check_if_file_exists(const char* filename);
 u_char convert_base10_to_char(u_int integerValue);
 bool strstarts(const char* string, const char* prefix);
+int get_sign(int value);
 
 #endif

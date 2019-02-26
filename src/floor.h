@@ -43,6 +43,7 @@ struct Floor {
 
     u_char tunnelerView[FLOOR_HEIGHT][FLOOR_WIDTH];
     u_char nonTunnelerView[FLOOR_HEIGHT][FLOOR_WIDTH];
+    u_char cheapestPathToPlayer[FLOOR_HEIGHT][FLOOR_WIDTH];
 
     Monster** monsters;
     Staircase** upStairs;

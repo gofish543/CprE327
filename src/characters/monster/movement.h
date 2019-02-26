@@ -8,6 +8,11 @@
 #include "../../resource.h"
 #include "../monster.h"
 
+#define EVOLVE_CHANCE 2
+#define TELEPORT_CHANCE (EVOLVE_CHANCE + 3)
+#define RANDOM_MOVE_CHANCE (TELEPORT_CHANCE + 45)
+#define OTHER_CHARACTERISTIC_CHANCE (RANDOM_MOVE_CHANCE + 50)
+
 void monster_move_0(Monster* monster, u_char* x, u_char* y);
 void monster_move_1(Monster* monster, u_char* x, u_char* y);
 void monster_move_2(Monster* monster, u_char* x, u_char* y);

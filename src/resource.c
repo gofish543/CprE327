@@ -53,3 +53,12 @@ bool strstarts(const char* string, const char* prefix) {
     size_t lengthStr = strlen(string);
     return lengthStr < lengthPre ? false : strncmp(prefix, string, lengthPre) == 0;
 }
+
+int get_sign(int value) {
+    if(value < 0) {
+        return -1;
+    }
+    else {
+        return 1;
+    }
+}

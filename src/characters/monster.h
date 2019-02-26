@@ -12,20 +12,20 @@ typedef struct MonsterCost MonsterCost;
 
 #define MONSTER_HARDNESS_PER_TURN 85
 
-#define MONSTER_INTELLIGENT_VALUE   0x1
-#define MONSTER_TELEPATHIC_VALUE    0x2
-#define MONSTER_TUNNELER_VALUE      0x4
-#define MONSTER_ERRATIC_VALUE       0x8
+#define MONSTER_INTELLIGENT_VALUE   0x0001
+#define MONSTER_TELEPATHIC_VALUE    0x0002
+#define MONSTER_TUNNELER_VALUE      0x0004
+#define MONSTER_ERRATIC_VALUE       0x0008
 
 #define MONSTER_INTELLIGENT_LEVEL 8
 #define MONSTER_TELEPATHIC_LEVEL 4
 #define MONSTER_TUNNELER_LEVEL 2
 #define MONSTER_ERRATIC_LEVEL 1
 
-#define monster_is_intelligent(classification)  (classification >> 1)
-#define monster_is_telepathic(classification)   (classification >> 2)
-#define monster_is_tunneler(classification)     (classification >> 3)
-#define monster_is_erratic(classification)      (classification >> 4)
+#define monster_is_intelligent(monster)  (monster->classification & 0x0001)
+#define monster_is_telepathic(monster)   (monster->classification & 0x0002)
+#define monster_is_tunneler(monster)     (monster->classification & 0x0004)
+#define monster_is_erratic(monster)      (monster->classification & 0x0008)
 
 #define monster_next_action(monster)   (monster->character->floor->dungeon->eventManager->tick + ( 1000 / monster->speed))
 
@@ -34,6 +34,7 @@ typedef struct MonsterCost MonsterCost;
 #include <stdbool.h>
 #include <limits.h>
 #include "character.h"
+#include "player.h"
 #include "./monster/movement.h"
 #include "../vendor/heap.h"
 #include "../character_listings.h"
@@ -50,6 +51,9 @@ struct Monster {
     u_char speed;
     u_char level;
     bool isAlive;
+
+    u_char playerLastSpottedX;
+    u_char playerLastSpottedY;
 };
 
 struct MonsterCost {
@@ -74,6 +78,8 @@ int monster_alive_count(Dungeon* dungeon);
 
 int32_t monster_dijkstra_compare(const void* A, const void* B);
 int monster_run_dijkstra_on_floor(Floor* floor);
-void monster_run_dijkstra(Floor* floor, bool isTunneler, u_char costChart[FLOOR_HEIGHT][FLOOR_WIDTH]);
+void monster_run_dijkstra(Floor* floor, char type, u_char costChart[FLOOR_HEIGHT][FLOOR_WIDTH]);
+
+bool monster_has_line_of_sight(Monster* monster);
 
 #endif

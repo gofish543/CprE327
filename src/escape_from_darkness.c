@@ -8,12 +8,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    while (dungeon->player->isAlive && monster_alive_count(dungeon)) {
+    while (dungeon->player->isAlive && monster_alive_count(dungeon) && !dungeon->player->requestTerminate) {
         if (game_tick(dungeon)) {
             print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Game tick error encountered, exiting while loop\n");
             break;
         }
-//        usleep(TIME_HALF_SECOND_MICRO_SECONDS);
+        usleep(TIME_HALF_SECOND_MICRO_SECONDS / 2);
     }
     output(dungeon, output_print_endgame);
 

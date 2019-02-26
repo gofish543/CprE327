@@ -23,6 +23,7 @@ struct Player {
 
     u_char speed;
     bool isAlive;
+    bool requestTerminate;
 
     // Statistical data
     u_int level;

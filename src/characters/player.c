@@ -5,6 +5,7 @@ Player* player_initialize(Floor* floor, u_char x, u_char y) {
 
     player->speed = PLAYER_SPEED;
     player->isAlive = true;
+    player->requestTerminate = false;
 
     player->daysSurvived = 0;
     player->monstersSlain = 0;
@@ -33,7 +34,6 @@ int player_next_tick(Event* event) {
 }
 
 int player_event(Event* event) {
-    return 0;
     u_char move;
     u_char x;
     u_char y;
@@ -52,37 +52,76 @@ int player_event(Event* event) {
         y = player->character->y;
 
         switch (move) {
-            case 'q':
+            // Upper Left
+            case '7':
+            case 'y':
                 y--;
                 x--;
                 break;
-            case 'w':
+                // Up
+            case '8':
+            case 'k':
                 y--;
                 break;
-            case 'e':
+                // Upper right
+            case '9':
+            case 'u':
                 y--;
                 x++;
                 break;
-            case 'a':
+                // Left
+            case '4':
+            case 'h':
                 x--;
                 break;
-            case 'd':
+                // Right
+            case '6':
+            case 'l':
                 x++;
                 break;
-            case 'z':
+                // Down left
+            case '1':
+            case 'b':
                 y++;
                 x--;
                 break;
-            case 'x':
+                // Down
+            case '2':
+            case 'j':
                 y++;
                 break;
-            case 'c':
+            case '3':
+            case 'n':
+                // Down right
                 y++;
                 x++;
                 break;
-            case 's':
+            case 'Q':
+                player->requestTerminate = true;
+                // Take stairs down, if standing on
+            case '>':
+                break;
+                // Take stairs up, if standing on
+            case '<':
+                break;
+                // Show monster window
+            case 'm':
+                break;
+                // Scroll up on monsters
+            case 3: // Up Arrow
+                break;
+                // Scroll down on monsters
+            case 2: // Down Arrow
+                break;
+                // Close monster window
+            case 27: // ESC key
+                break;
+                // Rest for a turn
+            case '5':
+            case '.':
             default:
-                player->isAlive = false;
+                printf("%d", move);
+                exit(1);
                 break;
         }
 

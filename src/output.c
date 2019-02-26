@@ -43,6 +43,10 @@ void output_print_current_floor_non_tunneler(Dungeon* dungeon) {
     output_print_floor_non_tunneler_view(dungeon->floor);
 }
 
+void output_print_current_floor_shortest_path(Dungeon* dungeon) {
+    output_print_floor_shortest_path(dungeon->floor);
+}
+
 void output_print_floor(Floor* floor) {
     u_char width;
     u_char height;
@@ -199,6 +203,46 @@ void output_print_floor_non_tunneler_view(Floor* floor) {
     }
 }
 
+void output_print_floor_shortest_path(Floor* floor) {
+    u_char width;
+    u_char height;
+    Dungeon* dungeon = floor->dungeon;
+    bool ncurses = dungeon->settings->doNCursesPrint;
+    bool expanded = dungeon->settings->expandedPrint;
+
+    if (expanded) {
+        print(dungeon->window, ncurses, "  ");
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            print(dungeon->window, ncurses, "%3d", width);
+        }
+        print(dungeon->window, ncurses, "\n");
+    }
+
+    for (height = 0; height < FLOOR_HEIGHT; height++) {
+        if (expanded) {
+            print(dungeon->window, ncurses, "%2d ", height);
+        }
+
+        for (width = 0; width < FLOOR_WIDTH; width++) {
+            if (expanded) {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, " %c ", floor_character_at(floor, width, height));
+                } else {
+                    print(dungeon->window, ncurses, "%3d", floor->cheapestPathToPlayer[height][width]);
+                }
+            } else {
+                if (floor->terrains[height][width]->isImmutable) {
+                    print(dungeon->window, ncurses, "%c", floor_character_at(floor, width, height));
+                } else {
+                    print(dungeon->window, ncurses, "%d", floor->cheapestPathToPlayer[height][width] % 10);
+                }
+            }
+        }
+
+        print(dungeon->window, ncurses, "\n");
+    }
+}
+
 void output_print_endgame(Dungeon* dungeon) {
     bool ncurses = dungeon->settings->doNCursesPrint;
 
@@ -206,7 +250,9 @@ void output_print_endgame(Dungeon* dungeon) {
         clear();
     }
 
-    if (dungeon->player->isAlive && monster_alive_count(dungeon) > 0) {
+    if (dungeon->player->requestTerminate) {
+        print(dungeon->window, ncurses, "Thank you for playing, safely exiting\n");
+    } else if (dungeon->player->isAlive && monster_alive_count(dungeon) > 0) {
         print(dungeon->window, ncurses, "Queue completely empty, terminating the program safely\n");
     } else {
         u_char height;
