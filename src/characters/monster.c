@@ -3,14 +3,15 @@
 Monster* monster_initialize(Floor* floor, u_char x, u_char y, u_char type, u_char speed) {
     Monster* monster = malloc(sizeof(Monster));
 
-    monster->classification = 0;
+    monster->classification = 1;
     monster->speed = speed;
     monster->isAlive = true;
     monster->level =
             (monster_is_intelligent(monster->classification) ? MONSTER_INTELLIGENT_LEVEL : 0) +
             (monster_is_telepathic(monster->classification) ? MONSTER_TELEPATHIC_LEVEL : 0) +
             (monster_is_tunneler(monster->classification) ? MONSTER_TUNNELER_LEVEL : 0) +
-            (monster_is_erratic(monster->classification) ? MONSTER_ERRATIC_LEVEL : 0);
+            (monster_is_erratic(monster->classification) ? MONSTER_ERRATIC_LEVEL : 0) +
+            1;
 
     monster->character = character_initialize(floor, monster, null, x, y);
 
@@ -39,7 +40,9 @@ int monster_event(Event* event) {
 
     // Only move alive monsters
     if (monster->isAlive) {
-        bool (* monster_movement[])(Monster*, u_char*, u_char*) = {
+        Floor* floor = monster->character->floor;
+
+        void (* monster_movement[])(Monster*, u_char*, u_char*) = {
                 monster_move_0, monster_move_1,
                 monster_move_2, monster_move_3,
                 monster_move_4, monster_move_5,
@@ -52,11 +55,31 @@ int monster_event(Event* event) {
         u_char x = monster->character->x;
         u_char y = monster->character->y;
 
-        bool movementSuccessful = monster_movement[monster->classification](monster, &x, &y);
+        monster_movement[monster->classification](monster, &x, &y);
 
-        if (movementSuccessful) {
-            monster_move_to(monster, x, y);
+        // Now a few things could happen
+        // 0) The monster just moved on themselves
+        // 1) The monster just fell on the player
+        // 2) The monster just fell on another monster
+        // 3) The monster just fell on open land
+        if (x == monster->character->x && y == monster->character->y) { // 0) The monster just moved onto themselves
+            return 0;
+        } else if (floor->characters[y][x] != null) {
+            if (floor->characters[y][x]->player != null) { // 1) The monster fell on the player
+                // Let the battle happen
+                if (action_player_vs_monster(floor->characters[y][x]->player, monster)) {
+                    // The player won if it is true
+                    return 0;
+                }
+            } else if (floor->characters[y][x]->monster != null) {// 2) The monster fell on another monster
+                // Let the battle happen
+                if (action_monster_vs_monster(monster, floor->characters[y][x]->monster) == -1) {
+                    // The other monster won
+                    return 0;
+                }
+            }
         }
+        monster_move_to(monster, x, y);
     }
 
     return 0;

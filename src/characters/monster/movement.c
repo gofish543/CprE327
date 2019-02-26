@@ -1,6 +1,6 @@
 #include "movement.h"
 
-int monster_move(Monster* monster, u_char visionTable[FLOOR_HEIGHT][FLOOR_WIDTH]) {
+void monster_move(Monster* monster, u_char visionTable[FLOOR_HEIGHT][FLOOR_WIDTH]) {
     // Default stay right where they are
     u_char cheapestX = monster->character->x;
     u_char cheapestY = monster->character->y;
@@ -21,15 +21,18 @@ int monster_move(Monster* monster, u_char visionTable[FLOOR_HEIGHT][FLOOR_WIDTH]
 
     // Decrement the hardness of the rock, if it is 1, move there
     monster_move_to(monster, cheapestX, cheapestY);
-
-    return 0;
 }
 
 /*
  * MONSTER 0
+ *      INTELLIGENT     = 0
+ *      TELEPATHIC      = 0
+ *      TUNNELER        = 0
+ *      ERRATIC         = 0
+ *
  * This monster is stupid, and will move in a random direction that it can move in
  */
-bool monster_move_0(Monster* monster, u_char* x, u_char* y) {
+void monster_move_0(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->character->floor;
 
     do {
@@ -39,70 +42,67 @@ bool monster_move_0(Monster* monster, u_char* x, u_char* y) {
         *x = (*x + random_number_between(-1, 1));
         *y = (*y + random_number_between(-1, 1));
     } while (!floor->terrains[*y][*x]->isWalkable);
+}
 
-    // Now a few things could happen
-    // 0) The monster just moved on themselves
-    // 1) The monster just fell on the player
-    // 2) The monster just fell on another monster
-    // 3) The monster just fell on open land
-    if(*x == monster->character->x && *y == monster->character->y) { // 0) The monster just moved onto themselves
-        return false;
+/*
+ * MONSTER 1
+ *      INTELLIGENT     = 1
+ *      TELEPATHIC      = 0
+ *      TUNNELER        = 0
+ *      ERRATIC         = 0
+ *
+ * This monster is intelligent and will move towards the player if it has line of sight, if not, it moves in a random direction
+ */
+void monster_move_1(Monster* monster, u_char* x, u_char* y) {
+    printf("Moving 1\n");
+    exit(1);
+
+    if (monster_has_line_of_signt(monster, monster->character->floor->dungeon->player)) {
+
+    } else {
+        monster_move_0(monster, x, y);
     }
-    else if (floor->characters[*y][*x] != null) {
-        if (floor->characters[*y][*x]->player != null) {         // 1) The monster fell on the player
-            // Let the battle happen
-            return !action_player_vs_monster(floor->characters[*y][*x]->player, monster);
-        } else if (floor->characters[*y][*x]->monster != null) {// 2) The monster fell on another monster
-            // Let the battle happen
-            return action_monster_vs_monster(monster, floor->characters[*y][*x]->monster) == 1;
-        }
-    }
-
-    return true; // The monster is making a valid move
 }
-bool monster_move_1(Monster* monster, u_char* x, u_char* y) {
+void monster_move_2(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_2(Monster* monster, u_char* x, u_char* y) {
+void monster_move_3(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_3(Monster* monster, u_char* x, u_char* y) {
+void monster_move_4(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_4(Monster* monster, u_char* x, u_char* y) {
+void monster_move_5(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_5(Monster* monster, u_char* x, u_char* y) {
+void monster_move_6(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_6(Monster* monster, u_char* x, u_char* y) {
+void monster_move_7(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_7(Monster* monster, u_char* x, u_char* y) {
+void monster_move_8(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_8(Monster* monster, u_char* x, u_char* y) {
+void monster_move_9(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_9(Monster* monster, u_char* x, u_char* y) {
+void monster_move_10(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_10(Monster* monster, u_char* x, u_char* y) {
-
-}
-bool monster_move_11(Monster* monster, u_char* x, u_char* y) {
+void monster_move_11(Monster* monster, u_char* x, u_char* y) {
 
 }
 
-bool monster_move_12(Monster* monster, u_char* x, u_char* y) {
+void monster_move_12(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_13(Monster* monster, u_char* x, u_char* y) {
+void monster_move_13(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_14(Monster* monster, u_char* x, u_char* y) {
+void monster_move_14(Monster* monster, u_char* x, u_char* y) {
 
 }
-bool monster_move_15(Monster* monster, u_char* x, u_char* y) {
+void monster_move_15(Monster* monster, u_char* x, u_char* y) {
 
 }
