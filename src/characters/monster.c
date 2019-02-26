@@ -49,8 +49,8 @@ int monster_event(Event* event) {
                 monster_move_12, monster_move_13,
                 monster_move_14, monster_move_15
         };
-        u_char x = 0;
-        u_char y = 0;
+        u_char x = monster->character->x;
+        u_char y = monster->character->y;
 
         bool movementSuccessful = monster_movement[monster->classification](monster, &x, &y);
 

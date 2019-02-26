@@ -25,44 +25,40 @@ int monster_move(Monster* monster, u_char visionTable[FLOOR_HEIGHT][FLOOR_WIDTH]
     return 0;
 }
 
+/*
+ * MONSTER 0
+ * This monster is stupid, and will move in a random direction that it can move in
+ */
 bool monster_move_0(Monster* monster, u_char* x, u_char* y) {
-    return false;
-//    // If moving to the same spot, just exit
-//    if (toX == monster->character->x && toY == monster->character->y) {
-//        return 0;
-//    }
-//
-//    // Check out the target point
-//    if (floor->characters[toY][toX] != null) {
-//        if (floor->characters[toY][toX]->player != null) {
-//            // Player battle happening
-//        } else if (floor->characters[toY][toX]->monster != null) {
-//            // Monster stepping on top of another monster, BATTLE TO THE DEATH!
-//            action_monster_vs_monster(monster, floor->characters[toY][toX]->monster)
-//        }
-//    } else if (floor->terrains[monster->character->y][monster->character->x]->hardness > MONSTER_HARDNESS_PER_TURN) {
-//        // Take out the hardness, the monster is "tunneling"
-//        floor->terrains[monster->character->y][monster->character->x]->hardness -= MONSTER_HARDNESS_PER_TURN;
-//
-//        monster_run_dijkstra_on_floor(floor);
-//    } else {
-//        // Tunneler monsters leave corridors behind if tunneling
-//        if (monster_is_tunneler(monster->classification) && floor->terrains[monster->character->y][monster->character->x]->isRock) {
-//            floor->terrains[monster->character->y][monster->character->x]->isRock = false;
-//            floor->terrains[monster->character->y][monster->character->x]->isWalkable = true;
-//            floor->terrains[monster->character->y][monster->character->x]->hardness = CORRIDOR_HARDNESS;
-//            floor->terrains[monster->character->y][monster->character->x]->character = CORRIDOR_CHARACTER;
-//        }
-//        // Remove where they were previously standing
-//        floor->characters[monster->character->y][monster->character->x] = null;
-//
-//        // Update the character's x and y
-//        monster->character->x = toX;
-//        monster->character->y = toY;
-//
-//        // Simply move the player there
-//        floor->characters[monster->character->y][monster->character->x] = monster->character;
-//    }
+    Floor* floor = monster->character->floor;
+
+    do {
+        *x = monster->character->x;
+        *y = monster->character->y;
+
+        *x = (*x + random_number_between(-1, 1));
+        *y = (*y + random_number_between(-1, 1));
+    } while (!floor->terrains[*y][*x]->isWalkable);
+
+    // Now a few things could happen
+    // 0) The monster just moved on themselves
+    // 1) The monster just fell on the player
+    // 2) The monster just fell on another monster
+    // 3) The monster just fell on open land
+    if(*x == monster->character->x && *y == monster->character->y) { // 0) The monster just moved onto themselves
+        return false;
+    }
+    else if (floor->characters[*y][*x] != null) {
+        if (floor->characters[*y][*x]->player != null) {         // 1) The monster fell on the player
+            // Let the battle happen
+            return !action_player_vs_monster(floor->characters[*y][*x]->player, monster);
+        } else if (floor->characters[*y][*x]->monster != null) {// 2) The monster fell on another monster
+            // Let the battle happen
+            return action_monster_vs_monster(monster, floor->characters[*y][*x]->monster) == 1;
+        }
+    }
+
+    return true; // The monster is making a valid move
 }
 bool monster_move_1(Monster* monster, u_char* x, u_char* y) {
 

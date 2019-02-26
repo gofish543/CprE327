@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
             print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Game tick error encountered, exiting while loop\n");
             break;
         }
-        usleep(TIME_HALF_SECOND_MICRO_SECONDS);
+//        usleep(TIME_HALF_SECOND_MICRO_SECONDS);
     }
     output(dungeon, output_print_endgame);
 

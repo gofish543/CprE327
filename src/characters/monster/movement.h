@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "../../actions.h"
 #include "../../resource.h"
 #include "../monster.h"
 

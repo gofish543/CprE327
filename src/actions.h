@@ -10,7 +10,7 @@
 #include "characters/monster.h"
 #include "characters/player.h"
 
-void action_player_vs_monster(Player* player, Monster* monster);
-void action_monster_vs_monster(Monster* monsterA, Monster* monsterB);
+bool action_player_vs_monster(Player* player, Monster* monster);
+int action_monster_vs_monster(Monster* monsterA, Monster* monsterB);
 
 #endif

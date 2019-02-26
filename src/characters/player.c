@@ -141,6 +141,8 @@ int player_move_to(Player* player, u_char toX, u_char toY) {
     return 0;
 }
 
+// Return false on lost fight
+// Return true on won fight
 bool player_battle(Player* player, Monster* monster) {
     if (monster_alive_count(monster->character->floor->dungeon) == 1) {
         return false;
