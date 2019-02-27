@@ -22,6 +22,7 @@ The following is an example run...
 * The file version saves differing amounts of data.<br>=> File version 0: Save the current floor the character is on<br>=> File version 1: Save all floors<br>`--file_version <0 | 1>` 
 * The expanded print flag will add extra padding and include column and row numbers when printing out dungeon information.<br>`--expanded_print`
 * The number of monsters flag specifies the number of monsters per floor to generate. If the flag is not present, a random number is generated. Please note that the use of this flag with `--load` will have no affect.<br>`--nummon <number>`
+* Whether the application uses ncurses or not can be toggled using the `--no_ncurses` flag. By default ncurses will be enabled.<br>`--no_ncurses`
 
 ## Monsters
 * Intelligence: Intelligent monsters understand the dungeon layout and move on the shortest path (as per path finding) toward the PC. Unintelligent monsters move in a straight line toward the PC (which may trap them in a corner or force them to tunnel through the hardest rocks). Intelligent monsters also can remember the last known position of a previously seen PC.

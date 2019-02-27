@@ -3,6 +3,14 @@
 ## Unreleased
 
 ### Added
+
+### Fixed
+
+### Changed
+
+## [v0.1.4 (2019-02-27)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
+
+### Added
 - Added `--nummon` flag to specify number of monsters
 - Added monster speed
 - Added monster boolean values
@@ -18,6 +26,9 @@
 - Added ncurses
 - Added empty player keys
 - Added custom monster movement based on characteristics
+- Added `--no_ncurses flag`
+- Added monster vision function
+- Added shortest path from anywhere to the PC structure within floor
 ### Fixed
 - Fixed error within make file linking libraries
 - Fixed compile warnings on -O2
@@ -35,7 +46,6 @@
     * Moved movement to own folder
     * Refactored floor structure
     * Refactored save methods
-
 
 ## [v0.1.3 (2019-02-13)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
 
