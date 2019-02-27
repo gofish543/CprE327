@@ -28,7 +28,7 @@ The following is an example run...
 * Telepathy: Telepathic monsters always know where the PC is. Non-telepathic monsters only know the position of the PC if they have line of sight (smart ones can remember the position where they last saw the PC when line of sight is broken). Telepathic monsters will always move toward the PC.Non-telepathic monsters will only move toward a visible PC or a remembered last position.
 * Tunneling Ability: Tunneling monsters can tunnel through rock. Non-tunneling monsters cannot. These two classes will use different distance maps. Tunneling monsters when attempting to move through rock will subtract 85 from its hardness, down to a minimum of zero. When the hardness reaches zero, the rock becomes corridor and the monster immediately moves. Reducing the hardness
 of rock forces a tunneling distance map recalculation. Converting rock to corridor forces tunneling and non-tunneling distance map recalculations.
-* Erratic Behavior: Erratic monsters have a 50% chance of moving as per their other characteristics. Otherwise they move to a random neighboring cell (tunnelers may tunnel, but non-tunnelers must move to an open cell).
+* Erratic Behavior: Erratic monsters have; a 50% chance of moving as per their other characteristics, a 45% chance to move to a neighboring cell (per their tunneler abilities), 3% chance to teleport across the map (per tunneling abilities), and a 2% chance to evolve (which can yield no result if they already have the random property chosen to be evolved into).
 
 ** If a monster has none of these characteristics, they will sit and do nothing **
 

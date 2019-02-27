@@ -14,14 +14,28 @@
 - Added monster auto-movement with events and game ticks
 - Added 3 dungeon text strings for message information
 - Implemented monster versus player battle
+- Implemented monster versus monster battle
+- Added ncurses
+- Added empty player keys
+- Added custom monster movement based on characteristics
 ### Fixed
 - Fixed error within make file linking libraries
 - Fixed compile warnings on -O2
+- Fixed memory leaks within monster generation after refactoring
 ### Changed
 - Changed file version 1 to save monster speed and classification
 - Changed file version 1 to load monster speed and classification
 - Altered monster movement
 - Dead monsters can no longer move
+- Moved output of program to output.c with dynamic printf vs printw based on ncurses flag
+- Changed monster and player movement
+- Entire application refactor
+    * Moved terrains to own folder
+    * Moved characters to own folder
+    * Moved movement to own folder
+    * Refactored floor structure
+    * Refactored save methods
+
 
 ## [v0.1.3 (2019-02-13)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
 

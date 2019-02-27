@@ -363,56 +363,14 @@ void monster_move_8(Monster* monster, u_char* x, u_char* y) {
     if (random < EVOLVE_CHANCE) {
         u_char randomCharacteristic = random_number_between(1, 4);
 
-        switch (randomCharacteristic) {
-            case MONSTER_INTELLIGENT_VALUE:
-                if (!monster_is_intelligent(monster)) {
-                    monster->classification |= MONSTER_INTELLIGENT_VALUE;
-                    monster->character->character = convert_base10_to_char(monster->classification);
-                    monster->level =
-                            (monster_is_intelligent(monster) ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                            (monster_is_telepathic(monster) ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                            (monster_is_tunneler(monster) ? MONSTER_TUNNELER_LEVEL : 0) +
-                            (monster_is_erratic(monster) ? MONSTER_ERRATIC_LEVEL : 0) +
-                            1;
-                }
-                break;
-            case 2:
-                if (!monster_is_telepathic(monster)) {
-                    monster->classification |= MONSTER_TELEPATHIC_VALUE;
-                    monster->character->character = convert_base10_to_char(monster->classification);
-                    monster->level =
-                            (monster_is_intelligent(monster) ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                            (monster_is_telepathic(monster) ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                            (monster_is_tunneler(monster) ? MONSTER_TUNNELER_LEVEL : 0) +
-                            (monster_is_erratic(monster) ? MONSTER_ERRATIC_LEVEL : 0) +
-                            1;
-                }
-                break;
-            case 3:
-                if (!monster_is_tunneler(monster)) {
-                    monster->classification |= MONSTER_TUNNELER_VALUE;
-                    monster->character->character = convert_base10_to_char(monster->classification);
-                    monster->level =
-                            (monster_is_intelligent(monster) ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                            (monster_is_telepathic(monster) ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                            (monster_is_tunneler(monster) ? MONSTER_TUNNELER_LEVEL : 0) +
-                            (monster_is_erratic(monster) ? MONSTER_ERRATIC_LEVEL : 0) +
-                            1;
-                }
-                break;
-            case 4:
-                if (!monster_is_erratic(monster)) {
-                    monster->classification |= MONSTER_ERRATIC_VALUE;
-                    monster->character->character = convert_base10_to_char(monster->classification);
-                    monster->level =
-                            (monster_is_intelligent(monster) ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                            (monster_is_telepathic(monster) ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                            (monster_is_tunneler(monster) ? MONSTER_TUNNELER_LEVEL : 0) +
-                            (monster_is_erratic(monster) ? MONSTER_ERRATIC_LEVEL : 0) +
-                            1;
-                }
-                break;
-        }
+        monster->classification |= randomCharacteristic;
+        monster->character->character = convert_base10_to_char(monster->classification);
+        monster->level =
+                (monster_is_intelligent(monster) ? MONSTER_INTELLIGENT_LEVEL : 0) +
+                (monster_is_telepathic(monster) ? MONSTER_TELEPATHIC_LEVEL : 0) +
+                (monster_is_tunneler(monster) ? MONSTER_TUNNELER_LEVEL : 0) +
+                (monster_is_erratic(monster) ? MONSTER_ERRATIC_LEVEL : 0) +
+                1;
 
         dungeon_prepend_message(monster->character->floor->dungeon, "A monster has evolved");
 
