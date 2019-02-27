@@ -8,7 +8,7 @@
 
 ### Changed
 
-## [v0.1.4 (2019-02-27)](https://github.com/gofish543/CprE327/releases/tag/v0.1.3)
+## [v0.1.4 (2019-02-27)](https://github.com/gofish543/CprE327/releases/tag/v0.1.4)
 
 ### Added
 - Added `--nummon` flag to specify number of monsters

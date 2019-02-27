@@ -13,8 +13,8 @@ typedef struct Floor Floor;
 #define FLOOR_STAIRS_MIN 2
 #define FLOOR_STAIRS_MAX 4
 
-#define FLOOR_MONSTERS_MIN 2
-#define FLOOR_MONSTERS_MAX 4
+#define FLOOR_MONSTERS_MIN 5
+#define FLOOR_MONSTERS_MAX 10
 
 #include <stdio.h>
 #include <stdlib.h>

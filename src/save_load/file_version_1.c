@@ -429,7 +429,7 @@ int file_load_floor_1(FILE* file, Dungeon* dungeon, Floor* floor) {
         }
         floor->terrains[floor->downStairs[index]->y][floor->downStairs[index]->x]->staircase = floor->downStairs[index];
         floor->terrains[floor->downStairs[index]->y][floor->downStairs[index]->x]->hardness = STAIRCASE_HARDNESS;
-        floor->terrains[floor->downStairs[index]->y][floor->downStairs[index]->x]->character = STAIRCASE_UP_CHARACTER;
+        floor->terrains[floor->downStairs[index]->y][floor->downStairs[index]->x]->character = STAIRCASE_DOWN_CHARACTER;
     }
     // Write number of monsters
     u_short monsterCount;

@@ -34,6 +34,7 @@ int player_next_tick(Event* event) {
 }
 
 int player_event(Event* event) {
+    return;
     u_char move;
     u_char x;
     u_char y;
