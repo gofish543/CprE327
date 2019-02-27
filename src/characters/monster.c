@@ -195,7 +195,6 @@ void monster_run_dijkstra(Floor* floor, char type, u_char costChart[FLOOR_HEIGHT
     }
 
     monsterCost[playerY][playerX]->cost = 0;
-
     heap_insert(&heap, monsterCost[playerY][playerX]);
 
     MonsterCost* item;

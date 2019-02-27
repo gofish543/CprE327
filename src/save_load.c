@@ -3,9 +3,9 @@
 int save_to_file(Dungeon* dungeon) {
     if (dungeon->settings->doSave) {
         if (dungeon->settings->file_version == 1) {
-//            return file_save_1(dungeon);
+            return file_save_1(dungeon);
         } else {
-//            return file_save_0(dungeon);
+            return file_save_0(dungeon);
         }
     }
 
@@ -27,9 +27,9 @@ void save_error(Dungeon* dungeon) {
 int load_from_file(Dungeon* dungeon) {
     if (dungeon->settings->doLoad) {
         if (dungeon->settings->file_version == 1) {
-//            return file_load_1(dungeon);
+            return file_load_1(dungeon);
         } else {
-//            return file_load_0(dungeon);
+            return file_load_0(dungeon);
         }
     }
 

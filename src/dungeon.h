@@ -4,8 +4,8 @@
 struct Dungeon;
 typedef struct Dungeon Dungeon;
 
-#define DUNGEON_FLOORS_MIN 1
-#define DUNGEON_FLOORS_MAX 2
+#define DUNGEON_FLOORS_MIN 3
+#define DUNGEON_FLOORS_MAX 3
 
 #include <stdio.h>
 #include <stdlib.h>

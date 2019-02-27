@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "save_load/file_version_0.h"
+#include "save_load/file_version_1.h"
 #include "character_listings.h"
 #include "dungeon.h"
 #include "floor.h"

@@ -120,8 +120,6 @@ int player_event(Event* event) {
             case '5':
             case '.':
             default:
-                printf("%d", move);
-                exit(1);
                 break;
         }
 

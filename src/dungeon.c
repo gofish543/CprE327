@@ -18,10 +18,12 @@ Dungeon* dungeon_initialize(Settings* settings) {
     }
 
     // Check if loading from file or from program
-    if (dungeon->settings->doLoad && load_from_file(dungeon)) {
-        print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate dungeon from file specified\n");
-        exit(1);
-        return null;
+    if (dungeon->settings->doLoad) {
+        if (load_from_file(dungeon)) {
+            print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate dungeon from file specified\n");
+            exit(1);
+            return null;
+        }
     } else if (load_from_program(dungeon)) {
         print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate a dungeon programmatically\n");
         exit(1);

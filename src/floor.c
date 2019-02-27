@@ -349,6 +349,7 @@ int floor_generate_corridors(Floor* floor) {
 }
 
 int floor_generate_monsters(Floor* floor) {
+
     u_char width;
     u_char height;
 
@@ -379,7 +380,6 @@ int floor_generate_monsters(Floor* floor) {
     // If there are more monsters trying to be placed than monsters available, set the max number of monsters
     if (floor->monsterCount > maxMonsters) {
         floor->monsterCount = maxMonsters;
-
         // Reassign max monsters
         free(floor->monsters);
         floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));

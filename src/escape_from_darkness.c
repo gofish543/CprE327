@@ -17,6 +17,12 @@ int main(int argc, char* argv[]) {
     }
     output(dungeon, output_print_endgame);
 
+    int index;
+    for (index = 0; index < 3; index++) {
+        dungeon->floor = dungeon->floors[index];
+        output(dungeon, output_print_current_floor);
+    }
+
     if (terminate(&dungeon)) {
         print_error(dungeon->window, dungeon->settings->doNCursesPrint, "An error has occurred terminating the application, exiting\n");
         return 1;
