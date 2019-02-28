@@ -310,7 +310,6 @@ void output_print_endgame(Dungeon* dungeon) {
         print(dungeon->window, ncurses, "Press any key to continue...\n");
         getch();
     }
-
 }
 
 void print_error(WINDOW* window, const bool ncurses, const char* format, ...) {

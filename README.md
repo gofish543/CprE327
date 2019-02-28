@@ -31,8 +31,6 @@ The following is an example run...
 of rock forces a tunneling distance map recalculation. Converting rock to corridor forces tunneling and non-tunneling distance map recalculations.
 * Erratic Behavior: Erratic monsters have; a 50% chance of moving as per their other characteristics, a 45% chance to move to a neighboring cell (per their tunneler abilities), 3% chance to teleport across the map (per tunneling abilities), and a 2% chance to evolve (which can yield no result if they already have the random property chosen to be evolved into).
 
-** If a monster has none of these characteristics, they will sit and do nothing **
-
 | ID | Binary | Erratic | Tunneler | Telepathic | Intelligent |
 |----|--------|---------|----------|------------|-------------|
 |  0 |  0000  | FALSE   | FALSE    | FALSE      | FALSE       |

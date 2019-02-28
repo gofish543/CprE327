@@ -80,14 +80,8 @@ int player_move_to(Player* player, u_char toX, u_char toY) {
             if (!player->isAlive) {
                 return 0;
             }
-        } else {
-            return 0;
         }
-    } else if (floor->terrains[toY][toX]->staircase != null) {
-        // A staircase was hit, handle it
-        return 0;
     }
-
     // By default we move the player to the requested spot
 
     // Remove where they were previously standing

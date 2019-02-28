@@ -25,6 +25,6 @@ struct Staircase {
 Staircase* staircase_initialize(u_char x, u_char y, u_char fromFloor, u_char toFloor);
 Staircase* staircase_terminate(Staircase* staircase);
 
-Dungeon* staircase_take(Dungoen* dungeon, Staircase* staircase);
+Dungeon* staircase_take(Dungeon* dungeon, Staircase* staircase);
 
 #endif

@@ -3,11 +3,20 @@
 ## Unreleased
 
 ### Added
+
+### Fixed
+
+### Changed
+
+## [v0.1.5 (2019-03-01)](https://github.com/gofish543/CprE327/releases/tag/v0.1.5)
+
+### Added
 - Added monster menu
 - Added monster direction print function
 - Added in input class for ncurses vs no ncurses input methods
+- Added the ability to change floors. Upon changing floors all monsters in the target room on the next floor will be teleported away.
 ### Fixed
-
+- Fixed fetching up and down keys from a terminal window on non-ncurses
 ### Changed
 - Changed keys for player movement for assignment
 

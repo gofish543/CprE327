@@ -95,5 +95,6 @@ int dungeon_append_message(Dungeon* dungeon, const char* message, ...) {
     vsprintf(dungeon->textLine3, message, args);
 
     va_end(args);
+
     return 0;
 }

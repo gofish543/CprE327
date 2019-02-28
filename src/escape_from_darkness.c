@@ -7,6 +7,11 @@ int main(int argc, char* argv[]) {
         print_error(dungeon->window, dungeon->settings->doNCursesPrint, "An error has occurred initializing the application, exiting\n");
         return 1;
     }
+    dungeon->floor->characters[dungeon->player->character->y][dungeon->player->character->x] = null;
+
+    dungeon->player->character->x = dungeon->floor->upStairs[0]->x;
+    dungeon->player->character->y = dungeon->floor->upStairs[0]->y;
+    dungeon->floor->characters[dungeon->player->character->y][dungeon->player->character->x] = dungeon->player->character;
 
     while (dungeon->player->isAlive && monster_alive_count(dungeon) && !dungeon->player->requestTerminate) {
         if (game_tick(dungeon)) {
@@ -35,7 +40,7 @@ int game_tick(Dungeon* dungeon) {
 
     // Check if a staircase is taken
     if (dungeon->player->takingStaircase != null) {
-        staircase_take(dungoen, dungeon->player->takingStaircase);
+        staircase_take(dungeon, dungeon->player->takingStaircase);
         dungeon->player->takingStaircase = null;
     }
 

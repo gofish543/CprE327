@@ -253,7 +253,7 @@ int floor_generate_staircases(Floor* floor) {
             stairY = random_number_between(floor->rooms[stairRoom]->startY + 1, floor->rooms[stairRoom]->startY + floor->rooms[stairRoom]->height - 2);
         } while (floor->terrains[stairY][stairX]->staircase != null);
 
-        floor->downStairs[index] = staircase_initialize(stairX, stairY, floor->floorNumber, floor->floorNumber + 1);
+        floor->downStairs[index] = staircase_initialize(stairX, stairY, floor->floorNumber, floor->floorNumber - 1);
 
         floor->terrains[stairY][stairX]->staircase = floor->downStairs[index];
         floor->terrains[stairY][stairX]->hardness = STAIRCASE_HARDNESS;
@@ -349,7 +349,6 @@ int floor_generate_corridors(Floor* floor) {
 }
 
 int floor_generate_monsters(Floor* floor) {
-
     u_char width;
     u_char height;
 
