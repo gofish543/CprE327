@@ -3,10 +3,13 @@
 ## Unreleased
 
 ### Added
-
+- Added monster menu
+- Added monster direction print function
+- Added in input class for ncurses vs no ncurses input methods
 ### Fixed
 
 ### Changed
+- Changed keys for player movement for assignment
 
 ## [v0.1.4 (2019-02-27)](https://github.com/gofish543/CprE327/releases/tag/v0.1.4)
 

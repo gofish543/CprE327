@@ -12,11 +12,13 @@ typedef struct Player Player;
 #include <stdlib.h>
 #include <stdbool.h>
 #include "character.h"
+#include "player/action.h"
 #include "../character_listings.h"
 #include "../dungeon.h"
 #include "../floor.h"
 #include "../events.h"
 #include "../actions.h"
+#include "../input.h"
 
 struct Player {
     Character* character;
@@ -24,6 +26,8 @@ struct Player {
     u_char speed;
     bool isAlive;
     bool requestTerminate;
+
+    Staircase* takingStaircase;
 
     // Statistical data
     u_int level;

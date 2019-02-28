@@ -81,5 +81,6 @@ int monster_run_dijkstra_on_floor(Floor* floor);
 void monster_run_dijkstra(Floor* floor, char type, u_char costChart[FLOOR_HEIGHT][FLOOR_WIDTH]);
 
 bool monster_has_line_of_sight(Monster* monster);
+char* monster_location_string(Monster* monster, char location[19]);
 
 #endif

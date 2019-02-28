@@ -13,7 +13,6 @@ int main(int argc, char* argv[]) {
             print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Game tick error encountered, exiting while loop\n");
             break;
         }
-        usleep(TIME_HALF_SECOND_MICRO_SECONDS / 2);
     }
     output(dungeon, output_print_endgame);
 
@@ -26,13 +25,20 @@ int main(int argc, char* argv[]) {
 }
 
 int game_tick(Dungeon* dungeon) {
-    if (true || event_peek_next(dungeon->eventManager)->type == event_type_player) {
+    if (event_peek_next(dungeon->eventManager)->type == event_type_player) {
         output(dungeon, output_print_current_floor);
     }
 
     event_handle_next(dungeon->eventManager);
 
     dungeon->player->daysSurvived++;
+
+    // Check if a staircase is taken
+    if (dungeon->player->takingStaircase != null) {
+        staircase_take(dungoen, dungeon->player->takingStaircase);
+        dungeon->player->takingStaircase = null;
+    }
+
     return 0;
 }
 

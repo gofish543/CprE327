@@ -28,3 +28,26 @@ Staircase* staircase_terminate(Staircase* staircase) {
 
     return NULL;
 }
+
+Dungeon* staircase_take(Dungeon* dungeon, Staircase* staircase) {
+    // Find the target staircase index
+
+    // Wipe the current queue of events
+
+    // Create a new event manager for the floor upcoming floor
+
+    // Set dungeon floor and player floor pointers
+
+    // Place the character on the upper floor's staircase
+    // Or place at a random location
+
+    // Move monster's on that floor to random locations not in the same room as the user
+
+    // Update monster mappings for that floor
+
+    // Add player to the new queue
+
+    // Add monsters to the new queue
+
+    return dungeon;
+}

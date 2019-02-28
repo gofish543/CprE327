@@ -6,6 +6,7 @@ Player* player_initialize(Floor* floor, u_char x, u_char y) {
     player->speed = PLAYER_SPEED;
     player->isAlive = true;
     player->requestTerminate = false;
+    player->takingStaircase = null;
 
     player->daysSurvived = 0;
     player->monstersSlain = 0;
@@ -34,104 +35,30 @@ int player_next_tick(Event* event) {
 }
 
 int player_event(Event* event) {
-    return;
-    u_char move;
-    u_char x;
-    u_char y;
+    int move;
     Player* player = (Player*) event->structure;
     Dungeon* dungeon = player->character->floor->dungeon;
-    Floor* floor = player->character->floor;
-    do {
-        if (dungeon->settings->doNCursesPrint) {
-            move = getch();
-        } else {
-            print(dungeon->window, dungeon->settings->doNCursesPrint, "Please enter your movement direction\n");
-            move = getchar();
+
+    INPUT:
+    move = getChar(dungeon->window, dungeon->settings->doNCursesPrint);
+
+    if (move == 'm') {
+        // Handle monster menu
+        player_action_monster_menu(dungeon);
+        output_print_current_floor(dungeon);
+
+        goto INPUT;
+    } else if (move == '<' || move == '>') {
+        // Take the staircase if standing on one
+        if (player_action_staircase(dungeon, move)) {
+            goto INPUT;
         }
-
-        x = player->character->x;
-        y = player->character->y;
-
-        switch (move) {
-            // Upper Left
-            case '7':
-            case 'y':
-                y--;
-                x--;
-                break;
-                // Up
-            case '8':
-            case 'k':
-                y--;
-                break;
-                // Upper right
-            case '9':
-            case 'u':
-                y--;
-                x++;
-                break;
-                // Left
-            case '4':
-            case 'h':
-                x--;
-                break;
-                // Right
-            case '6':
-            case 'l':
-                x++;
-                break;
-                // Down left
-            case '1':
-            case 'b':
-                y++;
-                x--;
-                break;
-                // Down
-            case '2':
-            case 'j':
-                y++;
-                break;
-            case '3':
-            case 'n':
-                // Down right
-                y++;
-                x++;
-                break;
-            case 'Q':
-                player->requestTerminate = true;
-                // Take stairs down, if standing on
-            case '>':
-                break;
-                // Take stairs up, if standing on
-            case '<':
-                break;
-                // Show monster window
-            case 'm':
-                break;
-                // Scroll up on monsters
-            case 3: // Up Arrow
-                break;
-                // Scroll down on monsters
-            case 2: // Down Arrow
-                break;
-                // Close monster window
-            case 27: // ESC key
-                break;
-                // Rest for a turn
-            case '5':
-            case '.':
-            default:
-                break;
+    } else {
+        // Handle the key press
+        if (player_action_movement(dungeon, move)) {
+            goto INPUT;
         }
-
-        // Empty out the buffer for non-ncurse runs
-        if (!dungeon->settings->doNCursesPrint) {
-            while ((move = getchar()) != '\n' && move != EOF);
-        }
-    } while (!floor->terrains[y][x]->isWalkable);
-
-    player_move_to(player, x, y);
-
+    }
     return 0;
 }
 

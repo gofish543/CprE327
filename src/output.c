@@ -47,6 +47,10 @@ void output_print_current_floor_shortest_path(Dungeon* dungeon) {
     output_print_floor_shortest_path(dungeon->floor);
 }
 
+void output_print_current_floor_monster_menu(Dungeon* dungeon, u_short startIndex) {
+    output_print_floor_monster_menu(dungeon->floor, startIndex);
+}
+
 void output_print_floor(Floor* floor) {
     u_char width;
     u_char height;
@@ -240,6 +244,37 @@ void output_print_floor_shortest_path(Floor* floor) {
         }
 
         print(dungeon->window, ncurses, "\n");
+    }
+}
+
+void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
+    u_char height;
+    u_short index;
+    char locationBuffer[19] = "";
+    WINDOW* window = floor->dungeon->window;
+    bool ncurses = floor->dungeon->settings->doNCursesPrint;
+
+    if(ncurses) {
+        clear();
+    }
+
+    print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
+    print(window, ncurses, "| MONSTER | INTELLIGENT | TELEPATHIC | TUNNELER | ERRATIC |      LOCATION      |\n");
+    print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
+    for (index = startIndex, height = 0; height < FLOOR_HEIGHT && index < floor->monsterCount; index++, height++) {
+        print(window, ncurses, "| %7d | %11s | %10s | %8s | %7s | %18s |\n",
+              index,
+              monster_is_intelligent(floor->monsters[index]) ? "YES" : "NO",
+              monster_is_telepathic(floor->monsters[index]) ? "YES" : "NO",
+              monster_is_tunneler(floor->monsters[index]) ? "YES" : "NO",
+              monster_is_erratic(floor->monsters[index]) ? "YES" : "NO",
+              monster_location_string(floor->monsters[index], locationBuffer)
+        );
+    }
+    print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
+
+    if(ncurses) {
+        refresh();
     }
 }
 

@@ -302,3 +302,35 @@ bool monster_has_line_of_sight(Monster* monster) {
     }
     return true;
 }
+
+char* monster_location_string(Monster* monster, char location[19]) {
+    Player* player = monster->character->floor->dungeon->player;
+
+    char deltaX = player->character->x - monster->character->x;
+    char deltaY = player->character->y - monster->character->y;
+
+    char north[] = "NORTH";
+    char south[] = "SOUTH";
+    char east[] = "EAST";
+    char west[] = "WEST";
+
+    char deltaYString[9] = "";
+    char deltaXString[8] = "";
+
+    u_char index;
+    for (index = 0; index < 19; index++) {
+        location[0] = '\0';
+    }
+
+    if (deltaY != 0) {
+        sprintf(deltaYString, "%2d %5s", abs(deltaY), (deltaY > 0 ? south : north));
+    }
+    if (deltaX != 0) {
+        sprintf(deltaXString, "%2d %4s", abs(deltaX), (deltaX > 0 ? east : west));
+    }
+
+    sprintf(location, "%8s | %7s", deltaYString, deltaXString);
+    location[18] = '\0';
+
+    return location;
+}
