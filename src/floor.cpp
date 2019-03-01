@@ -1,7 +1,7 @@
 #include "floor.h"
 
 Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_char numberOfMonsters) {
-    Floor* floor = malloc(sizeof(Floor));
+    Floor* floor =(Floor*) malloc(sizeof(Floor));
 
     floor->dungeon = dungeon;
     floor->floorNumber = floorNumber;
@@ -16,10 +16,10 @@ Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short roomCount,
         floor->monsterCount = numberOfMonsters;
     }
 
-    floor->rooms = malloc(floor->roomCount * sizeof(Room*));
-    floor->upStairs = malloc(floor->stairUpCount * sizeof(Staircase*));
-    floor->downStairs = malloc(floor->stairDownCount * sizeof(Staircase*));
-    floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));
+    floor->rooms =(Room**) malloc(floor->roomCount * sizeof(Room*));
+    floor->upStairs = (Staircase**)malloc(floor->stairUpCount * sizeof(Staircase*));
+    floor->downStairs = (Staircase**)malloc(floor->stairDownCount * sizeof(Staircase*));
+    floor->monsters = (Monster**)malloc(floor->monsterCount * sizeof(Monster*));
 
     if (
             floor_generate_empty_characters(floor) ||
@@ -381,7 +381,7 @@ int floor_generate_monsters(Floor* floor) {
         floor->monsterCount = maxMonsters;
         // Reassign max monsters
         free(floor->monsters);
-        floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));
+        floor->monsters = (Monster**) malloc(floor->monsterCount * sizeof(Monster*));
     }
 
     for (index = 0; index < floor->monsterCount; index++) {

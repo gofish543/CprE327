@@ -1,7 +1,7 @@
 #include "character.h"
 
 Character* character_initialize(Floor* floor, Monster* monster, Player* player, u_char x, u_char y) {
-    Character* character = malloc(sizeof(Character));
+    Character* character = (Character*) malloc(sizeof(Character));
 
     character->floor = floor;
     character->monster = monster;

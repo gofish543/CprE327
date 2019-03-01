@@ -5,8 +5,10 @@
 ### Added
 
 ### Fixed
+- Fixed .cpp malloc and calloc casting issues
 
 ### Changed
+- Converted all .c files to .cpp
 
 ## [v0.1.5 (2019-03-01)](https://github.com/gofish543/CprE327/releases/tag/v0.1.5)
 

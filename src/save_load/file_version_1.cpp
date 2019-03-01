@@ -3,7 +3,7 @@
 int file_save_1(Dungeon* dungeon) {
     if (dungeon->settings->doSave) {
         // Move current file to a tmp file in case save fails
-        char* tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
+        char* tempName = (char*) malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
         sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
         rename(dungeon->settings->savePath, tempName);
         free(tempName);
@@ -88,7 +88,7 @@ int file_save_1(Dungeon* dungeon) {
         fclose(file);
         file = null;
 
-        tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
+        tempName = (char*) malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
         sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
         remove(tempName);
         free(tempName);
@@ -289,11 +289,11 @@ int file_load_1(Dungeon* dungeon) {
             return 1;
         }
         dungeon->floorCount = floorCount;
-        dungeon->floors = malloc(floorCount * sizeof(Floor*));
+        dungeon->floors = (Floor**) malloc(floorCount * sizeof(Floor*));
 
         u_char index;
         for (index = 0; index < dungeon->floorCount; index++) {
-            dungeon->floors[index] = malloc(sizeof(Floor));
+            dungeon->floors[index] = (Floor*) malloc(sizeof(Floor));
             dungeon->floors[index]->floorNumber = index;
             dungeon->floors[index]->dungeon = dungeon;
 
@@ -350,10 +350,10 @@ int file_load_floor_1(FILE* file, Dungeon* dungeon, Floor* floor) {
         return 1;
     }
     floor->roomCount = be16toh(numberOfRooms);
-    floor->rooms = malloc(floor->roomCount * sizeof(Room*));
+    floor->rooms = (Room**) malloc(floor->roomCount * sizeof(Room*));
     // Load room locations
     for (index = 0; index < floor->roomCount; index++) {
-        floor->rooms[index] = malloc(sizeof(Room));
+        floor->rooms[index] = (Room*) malloc(sizeof(Room));
         // Read x position
         if (error_check_fread(&(floor->rooms[index]->startX), sizeof(floor->rooms[index]->startX), 1, file)) {
             return 1;
@@ -391,10 +391,10 @@ int file_load_floor_1(FILE* file, Dungeon* dungeon, Floor* floor) {
         return 1;
     }
     floor->stairUpCount = be16toh(stairUpCount);
-    floor->upStairs = malloc(floor->stairUpCount * sizeof(Staircase*));
+    floor->upStairs = (Staircase**) malloc(floor->stairUpCount * sizeof(Staircase*));
     // Read location of upward staircases
     for (index = 0; index < floor->stairUpCount; index++) {
-        floor->upStairs[index] = malloc(sizeof(Staircase));
+        floor->upStairs[index] = (Staircase*) malloc(sizeof(Staircase));
         // Read x position
         if (error_check_fread(&(floor->upStairs[index]->x), sizeof(floor->upStairs[index]->x), 1, file)) {
             return 1;
@@ -415,10 +415,10 @@ int file_load_floor_1(FILE* file, Dungeon* dungeon, Floor* floor) {
         return 1;
     }
     floor->stairDownCount = be16toh(stairDownCount);
-    floor->downStairs = malloc(floor->stairDownCount * sizeof(Staircase*));
+    floor->downStairs = (Staircase**) malloc(floor->stairDownCount * sizeof(Staircase*));
     // Read location of downward staircases
     for (index = 0; index < floor->stairDownCount; index++) {
-        floor->downStairs[index] = malloc(sizeof(Staircase));
+        floor->downStairs[index] = (Staircase*) malloc(sizeof(Staircase));
         // Read x position
         if (error_check_fread(&(floor->downStairs[index]->x), sizeof(floor->downStairs[index]->x), 1, file)) {
             return 1;
@@ -437,7 +437,7 @@ int file_load_floor_1(FILE* file, Dungeon* dungeon, Floor* floor) {
         return 1;
     }
     floor->monsterCount = be16toh(monsterCount);
-    floor->monsters = malloc(floor->monsterCount * sizeof(Monster*));
+    floor->monsters = (Monster**) malloc(floor->monsterCount * sizeof(Monster*));
     u_char tempX;
     u_char tempY;
     u_char tempType;

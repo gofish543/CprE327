@@ -3,14 +3,14 @@
 Dungeon* dungeon_initialize(Settings* settings) {
     u_short index;
 
-    Dungeon* dungeon = malloc(sizeof(Dungeon));
+    Dungeon* dungeon =(Dungeon*) malloc(sizeof(Dungeon));
 
     dungeon->settings = settings;
     dungeon->eventManager = event_manager_initialize(dungeon);
 
-    dungeon->textLine1 = malloc(sizeof(u_char) * (FLOOR_WIDTH + 1));
-    dungeon->textLine2 = malloc(sizeof(u_char) * (FLOOR_WIDTH + 1));
-    dungeon->textLine3 = malloc(sizeof(u_char) * (FLOOR_WIDTH + 1));
+    dungeon->textLine1 = (char*) malloc(sizeof(u_char) * (FLOOR_WIDTH + 1));
+    dungeon->textLine2 = (char*) malloc(sizeof(u_char) * (FLOOR_WIDTH + 1));
+    dungeon->textLine3 = (char*) malloc(sizeof(u_char) * (FLOOR_WIDTH + 1));
     for (index = 0; index < FLOOR_WIDTH + 1; index++) {
         dungeon->textLine1[index] = '\0';
         dungeon->textLine2[index] = '\0';

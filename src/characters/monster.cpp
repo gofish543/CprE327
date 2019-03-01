@@ -1,7 +1,7 @@
 #include "monster.h"
 
 Monster* monster_initialize(Floor* floor, u_char x, u_char y, u_char type, u_char speed) {
-    Monster* monster = malloc(sizeof(Monster));
+    Monster* monster = (Monster*) malloc(sizeof(Monster));
 
     monster->classification = type;
     monster->speed = speed;
@@ -177,7 +177,7 @@ void monster_run_dijkstra(Floor* floor, char type, u_char costChart[FLOOR_HEIGHT
 
     for (height = 0; height < FLOOR_HEIGHT; height++) {
         for (width = 0; width < FLOOR_WIDTH; width++) {
-            monsterCost[height][width] = malloc(sizeof(MonsterCost));
+            monsterCost[height][width] = (MonsterCost*) malloc(sizeof(MonsterCost));
 
             monsterCost[height][width]->y = height;
             monsterCost[height][width]->x = width;
@@ -198,7 +198,7 @@ void monster_run_dijkstra(Floor* floor, char type, u_char costChart[FLOOR_HEIGHT
     heap_insert(&heap, monsterCost[playerY][playerX]);
 
     MonsterCost* item;
-    while ((item = heap_remove_min(&heap))) {
+    while ((item = (MonsterCost*) heap_remove_min(&heap))) {
         if (!floor->terrains[item->y][item->x]->isImmutable) {
             if (type == 1) {
                 for (height = item->y - 1; height <= item->y + 1; height++) {

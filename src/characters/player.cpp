@@ -1,7 +1,7 @@
 #include "player.h"
 
 Player* player_initialize(Floor* floor, u_char x, u_char y) {
-    Player* player = malloc(sizeof(Player));
+    Player* player =(Player*) malloc(sizeof(Player));
 
     player->speed = PLAYER_SPEED;
     player->isAlive = true;

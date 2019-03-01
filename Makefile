@@ -1,7 +1,7 @@
 # Version we are currently on
 MAJOR		= 0
 MINOR		= 1
-PATCH		= 4
+PATCH		= 6
 
 # Compiler and Linker
 CC			= gcc
@@ -16,7 +16,7 @@ INCDIR		= inc
 BUILDDIR	= obj
 TARGETDIR	= bin
 RESDIR		= res
-SRCEXT		= c
+SRCEXT		= cpp
 DEPEXT		= d
 OBJEXT		= o
 
@@ -24,6 +24,7 @@ OBJEXT		= o
 CFLAGS		= -Wall -Wpedantic -g -ggdb3 -funroll-loops -pg
 #CFLAGS		= -Wall -Werror -Wpedantic -funroll-loops -pg -O2
 CXXFLAGS	= -Wall -Werror -Wpedantic -g -ggdb3 -funroll-loops -pg
+#CXXFLAGS	= -Wall -Werror -Wpedantic -funroll-loops -pg -O2
 LIB			= -lm -lncurses -lpthread -pg
 INC			= -I$(INCDIR) -I/usr/local/include
 INCDEP		= -I$(INCDIR)
@@ -70,14 +71,14 @@ cleaner: clean
 # Linker
 $(TARGET): $(OBJECTS)
 	@$(ECHO) Linking $^
-	@$(CC) -o $(TARGETDIR)/$(TARGET) $^ $(LIB)
+	@$(CXX) -o $(TARGETDIR)/$(TARGET) $^ $(LIB)
 
 # Compiler
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(dir $@)
 	@$(ECHO) Compiling $^
-	@$(CC) $(CFLAGS) $(INC) -c -o $@ $<
-	@$(CC) $(CFLAGS) $(INCDEP) -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
+	@$(CXX) $(CFLAGS) $(INC) -c -o $@ $<
+	@$(CXX) $(CFLAGS) $(INCDEP) -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
 	@cp -f $(BUILDDIR)/$*.$(DEPEXT) $(BUILDDIR)/$*.$(DEPEXT).tmp
 	@sed -e 's|.*:|$(BUILDDIR)/$*.$(OBJEXT):|' < $(BUILDDIR)/$*.$(DEPEXT).tmp > $(BUILDDIR)/$*.$(DEPEXT)
 	@sed -e 's/.*://' -e 's/\\$$//' < $(BUILDDIR)/$*.$(DEPEXT).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(BUILDDIR)/$*.$(DEPEXT)

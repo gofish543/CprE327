@@ -1,11 +1,11 @@
 #include "events.h"
 
 EventManager* event_manager_initialize(Dungeon* dungeon) {
-    EventManager* eventManager = malloc(sizeof(EventManager));
+    EventManager* eventManager =(EventManager*) malloc(sizeof(EventManager));
 
     eventManager->dungeon = dungeon;
     eventManager->tick = 0;
-    eventManager->queue = malloc(sizeof(heap_t));
+    eventManager->queue =(heap_t*) malloc(sizeof(heap_t));
 
     heap_init(eventManager->queue, event_compare, null);
 
@@ -23,7 +23,7 @@ EventManager* event_manager_terminate(EventManager* eventManager) {
 }
 
 Event* event_initialize(EventManager* eventManager, u_int tick, enum EventType type, void* structure, int (* handler)(Event*), int (* nextTick)(Event*)) {
-    Event* event = malloc(sizeof(Event));
+    Event* event = (Event*) malloc(sizeof(Event));
 
     event->tick = tick;
     event->nextTick = nextTick;
@@ -68,7 +68,7 @@ int event_handle_next(EventManager* eventManager) {
 
     nextEvent->tick = nextEvent->nextTick(nextEvent);
 
-    if (nextEvent->tick == -1) {
+    if (nextEvent->tick == (u_int) -1) {
         // Don't re-insert
         event_terminate(nextEvent);
     } else {

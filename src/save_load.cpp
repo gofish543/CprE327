@@ -17,7 +17,7 @@ void save_error(Dungeon* dungeon) {
 
     print(dungeon->window, ncurses, "Failed to save file\n");
     print(dungeon->window, ncurses, "Attempting to restore original file contents...\n");
-    char* tempName = malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
+    char* tempName = (char*) malloc((strlen(dungeon->settings->savePath) * sizeof(char)) + (strlen(".tmp") * sizeof(char)) + 1);
     sprintf(tempName, "%s%s", dungeon->settings->savePath, ".tmp");
     rename(tempName, dungeon->settings->savePath);
     free(tempName);
@@ -44,7 +44,7 @@ int load_from_program(Dungeon* dungeon) {
 
     // This creates a dynamically sized array. Going to need to do that because of load and save features later
     u_char index;
-    dungeon->floors = malloc(dungeon->floorCount * sizeof(Floor*));
+    dungeon->floors = (Floor**) malloc(dungeon->floorCount * sizeof(Floor*));
     for (index = 0; index < dungeon->floorCount; index++) {
         monsterCount = random_number_between(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX);
         roomCount = random_number_between(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX);
@@ -64,7 +64,7 @@ int load_from_program(Dungeon* dungeon) {
     dungeon->player = player_initialize(dungeon->floor, playerX, playerY);
     dungeon->floor->characters[playerY][playerX] = dungeon->player->character;
 
-    for(index = 0; index < dungeon->floorCount; index++) {
+    for (index = 0; index < dungeon->floorCount; index++) {
         if (floor_generate_monsters(dungeon->floors[index])) {
             print_error(dungeon->window, dungeon->settings->doNCursesPrint, "Failed to generate monsters\n");
             return 1;

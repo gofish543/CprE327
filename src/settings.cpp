@@ -1,7 +1,7 @@
 #include "settings.h"
 
 Settings* settings_initialize(int argc, char* argv[]) {
-    Settings* settings = malloc(sizeof(Settings));
+    Settings* settings =(Settings*) malloc(sizeof(Settings));
 
     if (settings_load_arguments(settings, argc, argv)) {
         return null;
@@ -29,10 +29,10 @@ int create_home_folders() {
     u_char index;
     char* homePath = getenv("HOME");
     u_char folderCount = 1;
-    char* folders[] = {DATA_PATH};
+    const char* folders[] = {DATA_PATH};
 
     for (index = 0; index < folderCount; index++) {
-        tempCreation = malloc((sizeof(char) * strlen(homePath)) + (sizeof(char) * strlen(folders[index])) + 1);
+        tempCreation = (char*) malloc((sizeof(char) * strlen(homePath)) + (sizeof(char) * strlen(folders[index])) + 1);
 
         // Load the folder path
         sprintf(tempCreation, "%s%s", homePath, folders[index]);
@@ -69,7 +69,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
 
             // The file path we will be using
             char* filePathCopy = argv[index + 1];
-            char* filePath = malloc((strlen(filePathCopy) * sizeof(char)) + 1);
+            char* filePath = (char*) malloc((strlen(filePathCopy) * sizeof(char)) + 1);
             strcpy(filePath, filePathCopy);
 
             // Step 1) Check if the path specified is either a file or invalid path
@@ -94,7 +94,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
                 DIR* homeDirectory = opendir(homePath);
                 if (homeDirectory == null) {
                     // Save path to internal game file
-                    filePath = malloc((sizeof(char) * strlen(resourcePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
+                    filePath = (char*) malloc((sizeof(char) * strlen(resourcePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
                     sprintf(filePath, "%s%s%s", resourcePath, dotFolder, fileName);
                 } else {
                     // Home directory exists
@@ -102,7 +102,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
                     // Create home hidden folders
                     create_home_folders();
                     // Save path to that file
-                    filePath = malloc((sizeof(char) * strlen(homePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
+                    filePath = (char*) malloc((sizeof(char) * strlen(homePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
                     sprintf(filePath, "%s%s%s", homePath, dotFolder, fileName);
                 }
             }
@@ -127,7 +127,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
 
             // The file path we will be using
             char* filePathCopy = argv[index + 1];
-            char* filePath = malloc((strlen(filePathCopy) * sizeof(char)) + 1);
+            char* filePath = (char*) malloc((strlen(filePathCopy) * sizeof(char)) + 1);
             strcpy(filePath, filePathCopy);
 
             // Step 1) Check if the path specified is either a file or invalid path
@@ -152,7 +152,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
                 DIR* homeDirectory = opendir(homePath);
                 if (homeDirectory == null) {
                     // Save path to internal game file
-                    filePath = malloc((sizeof(char) * strlen(resourcePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
+                    filePath = (char*) malloc((sizeof(char) * strlen(resourcePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
                     sprintf(filePath, "%s%s%s", resourcePath, dotFolder, fileName);
                 } else {
                     // Home directory exists
@@ -160,7 +160,7 @@ int settings_load_arguments(Settings* settings, int argc, char* argv[]) {
                     // Create home hidden folders
                     create_home_folders();
                     // Save path to that file
-                    filePath = malloc((sizeof(char) * strlen(homePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
+                    filePath = (char*) malloc((sizeof(char) * strlen(homePath)) + (sizeof(char) * strlen(dotFolder) + (sizeof(char) * strlen(argv[index + 1]))) + 1);
                     sprintf(filePath, "%s%s%s", homePath, dotFolder, fileName);
                 }
             }
