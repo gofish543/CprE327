@@ -49,3 +49,23 @@ of rock forces a tunneling distance map recalculation. Converting rock to corrid
 | 13 |  1101  | TRUE    | TRUE     | FALSE      | TRUE        |
 | 14 |  1110  | TRUE    | TRUE     | TRUE       | FALSE       |
 | 15 |  1111  | TRUE    | TRUE     | TRUE       | TRUE        |
+
+## Key Bindings
+|  Primary Key  | Secondary Key |      Action      |
+|---------------|---------------|------------------|
+|             7 |             y | Move Up Left     |
+|             8 |             k | Move Up          |
+|             9 |             u | Move Up Right    |
+|             6 |             l | Move Right       | 
+|             3 |             n | Move Bot Right   |
+|             2 |             j | Move Down        |
+|             1 |             b | Move Down Left   |
+|             4 |             h | Move Left        |
+|             > |               | Go Down Stairs   |
+|             < |               | Go Up Stairs     |
+|             5 |             . | No Action        |
+|             m |               | Monster Menu     |
+|            UP |               | Scroll Monsters  |
+|          DOWN |               | Scroll Monsters  |
+|           ESC |               | Quit Menu        |
+|             Q |               | Quit Game        |
