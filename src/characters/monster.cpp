@@ -68,15 +68,30 @@ int Monster::HandleEvent(Event* event) {
                 }
             } else if (floor->getCharacterAt(x, y)->getIsMonster()) { // The monster fell on another monster
                 auto otherMonster = (Monster*) floor->getCharacterAt(x, y);
+                Monster* deadMonster;
 
                 monster->battleMonster(otherMonster);
 
+                if(monster->getIsAlive()) {
+                    // Our monster lived
+                    deadMonster = otherMonster;
+                }
+                else {
+                    // Other monster lived
+                    deadMonster = monster;
+                }
+
+                // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
+                if (deadMonster->isTunneler() && floor->getTerrainAt(deadMonster->getX(), deadMonster->getY())->isRock()) {
+                    delete (floor->getTerrainAt(deadMonster->getX(), deadMonster->getY()));
+                    floor->setTerrainAt(new Corridor(floor, 0, deadMonster->getX(), deadMonster->getY()), deadMonster->getX(), deadMonster->getY());
+                }
+
+                // Remove this monster's corpse
+                floor->setCharacterAt(null, deadMonster->getX(), deadMonster->getY());
+
                 if (!monster->getIsAlive()) { // The other monster won
-                    // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
-                    if (monster->isTunneler() && floor->getTerrainAt(monster->getX(), monster->getY())->isRock()) {
-                        delete (floor->getTerrainAt(monster->getX(), monster->getY()));
-                        floor->setTerrainAt(new Corridor(floor, 0, monster->getX(), monster->getY()), monster->getX(), monster->getY());
-                    }
+                    // Stop running this monster
                     return 0;
                 }
             } else {
@@ -289,7 +304,7 @@ bool Monster::hasLineOfSightTo(Player* player) {
     return true;
 }
 
-std::string Monster::locationString() {
+char* Monster::locationString(char location[19]) {
     Player* player = this->getFloor()->getDungeon()->getPlayer();
 
     char deltaX = player->getX() - this->x;
@@ -300,10 +315,13 @@ std::string Monster::locationString() {
     char east[] = "EAST";
     char west[] = "WEST";
 
-    char deltaYString[9] = "";
-    char deltaXString[8] = "";
+    char deltaYString[10] = "";
+    char deltaXString[9] = "";
 
-    char location[19] = "";
+    u_char index;
+    for (index = 0; index < 19; index++) {
+        location[index] = '\0';
+    }
 
     if (deltaY != 0) {
         sprintf(deltaYString, "%2d %5s", abs(deltaY), (deltaY > 0 ? south : north));
@@ -315,9 +333,7 @@ std::string Monster::locationString() {
     sprintf(location, "%8s | %7s", deltaYString, deltaXString);
     location[18] = '\0';
 
-    std::string returnLocation = location;
-
-    return returnLocation;
+    return location;
 }
 
 bool Monster::isIntelligent() {

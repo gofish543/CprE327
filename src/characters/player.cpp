@@ -53,8 +53,10 @@ int Player::HandleEvent(Event* event) {
             return 0;
         case '<':
         case '>':
-            player->handleEventKeyStaircase(move);
-            return Player::HandleEvent(event);
+            if(player->handleEventKeyStaircase(move)) {
+                return Player::HandleEvent(event);
+            }
+            return 0;
         default:
             if (player->handleEventKeyMovement(move)) {
                 return Player::HandleEvent(event);
@@ -71,6 +73,7 @@ int Player::handleEventKeyMonsterMenu() {
     while (character != 27) {
         output_print_current_floor_monster_menu(dungeon, startIndex);
 
+        print(dungeon->getWindow(),dungeon->getSettings()->doNCursesPrint(), "Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
         character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
 
         switch (character) {
@@ -88,6 +91,8 @@ int Player::handleEventKeyMonsterMenu() {
                 break;
         }
     }
+
+    output_print_current_floor(dungeon);
 
     return 0;
 }
@@ -114,6 +119,7 @@ int Player::handleEventKeyStaircase(int command) {
             // Trying to take a down staircase, and standing on a down staircase
             // Trying to take an up staircase and standing on an up staircase
             this->takingStaircase = (Staircase*) onTerrain;
+            printf("Moving %s a staircase\n", (this->takingStaircase->isUp() ? "Up" : "Down"));
             dungeon->prependText("Moving %s a staircase", (this->takingStaircase->isUp() ? "Up" : "Down"));
             return 0;
         }
@@ -241,13 +247,20 @@ int Player::moveTo(u_char toX, u_char toY) {
     return 0;
 }
 
-void Player::battleMonster(App::Monster* monster) {
+void Player::battleMonster(Monster* monster) {
     if (Monster::MonstersAlive(this->floor->getDungeon()) == 1) {
         // Player died
         this->killCharacter();
+
+        // Remove player corps
+        this->floor->setCharacterAt(null, this->getX(), this->getY());
+
     } else {
         // Monster died
         monster->killCharacter();
+
+        // Remove monster corps
+        this->floor->setCharacterAt(null, monster->getX(), monster->getY());
 
         // Add level to the player
         this->addLevel(monster->getLevel());

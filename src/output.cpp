@@ -251,6 +251,7 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
     u_char height;
     u_short index;
     WINDOW* window = floor->getDungeon()->getWindow();
+    char location[19] = "";
     bool ncurses = floor->getDungeon()->getSettings()->doNCursesPrint();
 
     if (ncurses) {
@@ -267,7 +268,7 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
               (floor->getMonsters().at(index)->isTelepathic())? "YES" : "NO",
               (floor->getMonsters().at(index)->isTunneler()) ? "YES" : "NO",
               (floor->getMonsters().at(index)->isErratic())? "YES" : "NO",
-              floor->getMonsters().at(index)->locationString().c_str()
+              floor->getMonsters().at(index)->locationString(location)
         );
     }
     print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");

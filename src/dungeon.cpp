@@ -9,6 +9,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     }
 
     this->settings = new Settings(argc, argv);
+    this->player = null;
 
     if (settings->doLoad()) {
 
@@ -30,6 +31,8 @@ Dungeon::Dungeon(int argc, char* argv[]) {
         }
         this->setCurrentFloor(this->getFloors().at(0));
     }
+
+    Monster::RunDijkstraOnFloor(this->getCurrentFloor());
 
     if (this->settings->doNCursesPrint()) {
         this->window = initscr();
@@ -55,7 +58,7 @@ Dungeon::~Dungeon() {
         // Save the game state
     }
 
-    for (index = 0; index < this->getFloorCount(); index++) {
+    for (index = 0; index < this->floorCount; index++) {
         delete (this->floors.at(index));
     }
 
@@ -63,7 +66,8 @@ Dungeon::~Dungeon() {
         endwin();
     }
 
-    delete (this->settings);
+    delete(this->eventManager);
+    delete(this->settings);
 }
 
 std::string* Dungeon::prependText(std::string message, ...) {

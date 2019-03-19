@@ -89,8 +89,14 @@ void Monster::Move1(Monster* monster, u_char* x, u_char* y) {
     player->setY(playerY);
     Monster::RunDijkstra(floor, -1, floor->nonTunnelerView);
 
-    *x = cheapestX;
-    *y = cheapestY;
+    if(floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
+        *x = cheapestX;
+        *y = cheapestY;
+    }
+    else {
+        *x = monster->getX();
+        *y = monster->getY();
+    }
 }
 
 /*
@@ -157,8 +163,14 @@ void Monster::Move3(Monster* monster, u_char* x, u_char* y) {
         }
     }
 
-    *x = cheapestX;
-    *y = cheapestY;
+    if(floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
+        *x = cheapestX;
+        *y = cheapestY;
+    }
+    else {
+        *x = monster->getX();
+        *y = monster->getY();
+    }
 }
 
 /*
@@ -218,7 +230,7 @@ void Monster::Move4(Monster* monster, u_char* x, u_char* y) {
  *      TUNNELER        = 1
  *      ERRATIC         = 0
  *
- * This monster is intelligent with tunneling and will move towards the player if it has line of sight
+ * This monster is intelligent with tunneling and will move towards the player if it has line of sight or last spotted
  */
 void Monster::Move5(Monster* monster, u_char* x, u_char* y) {
     // If the monster has line of sight, store previous location
@@ -269,8 +281,14 @@ void Monster::Move5(Monster* monster, u_char* x, u_char* y) {
     player->setY(playerY);
     Monster::RunDijkstra(floor, 1, floor->tunnelerView);
 
-    *x = cheapestX;
-    *y = cheapestY;
+    if(floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
+        *x = monster->getX();
+        *y = monster->getY();
+    }
+    else {
+        *x = cheapestX;
+        *y = cheapestY;
+    }
 }
 
 /*
@@ -339,8 +357,14 @@ void Monster::Move7(Monster* monster, u_char* x, u_char* y) {
         }
     }
 
-    *x = cheapestX;
-    *y = cheapestY;
+    if(floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
+        *x = monster->getX();
+        *y = monster->getY();
+    }
+    else {
+        *x = cheapestX;
+        *y = cheapestY;
+    }
 }
 
 /*

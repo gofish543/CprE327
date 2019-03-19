@@ -57,8 +57,8 @@ Floor::~Floor() {
         delete (this->monsters.at(index));
     }
 
-    if(this->getDungeon()->getPlayer() != null) {
-        delete(this->getDungeon()->getPlayer());
+    if (this->getDungeon()->getPlayer() != null) {
+        delete (this->getDungeon()->getPlayer());
         this->getDungeon()->setPlayer(null);
     }
 }
@@ -270,6 +270,7 @@ Floor* Floor::initializeToNull() {
 
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            this->characters[height][width] = null;
             this->terrains[height][width] = null;
             this->tunnelerView[height][width] = U_CHAR_MIN;
             this->nonTunnelerView[height][width] = U_CHAR_MIN;
@@ -340,7 +341,7 @@ Floor* Floor::generateRock() {
         }
     }
 
-    for (index = 0; index < 3; index++) {
+    for (index = 0; index < 2; index++) {
         for (y = 0; y < DUNGEON_FLOOR_HEIGHT; y++) {
             for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
                 for (s = t = p = 0; p < 5; p++) {
@@ -386,16 +387,16 @@ Floor* Floor::generateRooms() {
     u_char stairX;
     u_char stairY;
 
-    u_short upStairRooms[this->stairUpCount];
-    u_short downStairRooms[this->stairDownCount];
+    std::vector<u_short> upStairRooms;
+    std::vector<u_short> downStairRooms;
 
     // Determine the rooms for each of the staircases
     for (roomIndex = 0; roomIndex < this->stairUpCount; roomIndex++) {
-        upStairRooms[roomIndex] = u_short(random_number_between(0, this->roomCount - 1));
+        upStairRooms.push_back(u_short(random_number_between(0, this->roomCount - 1)));
     }
 
     for (roomIndex = 0; roomIndex < this->stairDownCount; roomIndex++) {
-        downStairRooms[roomIndex] = u_short(random_number_between(0, this->roomCount - 1));
+        downStairRooms.push_back(u_short(random_number_between(0, this->roomCount - 1)));
     }
 
     // Place each room
@@ -430,24 +431,26 @@ Floor* Floor::generateRooms() {
 
         // Are we placing any staircases in this room?
         for (roomIndex = 0; roomIndex < this->stairUpCount; roomIndex++) {
-            if (upStairRooms[roomIndex] == index) {
+            if (upStairRooms.at(roomIndex) == index) {
                 // Place the up staircase
-                stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
-                stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
-
-                this->terrains[stairY][stairX] = new Staircase(this, index, stairX, stairY, STAIRCASE_TYPE_UP);
-                this->upStairs.push_back(new Staircase(this, index, stairX, stairY, STAIRCASE_TYPE_UP));
+                do {
+                    stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
+                    stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
+                } while (this->terrains[stairY][stairX] != null);
+                this->terrains[stairY][stairX] = new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_UP);
+                this->upStairs.push_back(new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_UP));
             }
         }
 
         for (roomIndex = 0; roomIndex < this->stairDownCount; roomIndex++) {
-            if (downStairRooms[roomIndex] == index) {
+            if (downStairRooms.at(roomIndex) == index) {
                 // Place the down staircase
-                stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
-                stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
-
-                this->terrains[stairY][stairX] = new Staircase(this, index, stairX, stairY, STAIRCASE_TYPE_DOWN);
-                this->downStairs.push_back(new Staircase(this, index, stairX, stairY, STAIRCASE_TYPE_DOWN));
+                do {
+                    stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
+                    stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
+                } while (this->terrains[stairY][stairX] != null);
+                this->terrains[stairY][stairX] = new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_DOWN);
+                this->downStairs.push_back(new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_DOWN));
             }
         }
 
@@ -614,7 +617,6 @@ Floor* Floor::generateMonsters() {
         if (random_number_between(false, true)) {
             classification |= MONSTER_ERRATIC_VALUE;
         }
-
 
         // Select random spots until they are only surrounded by room space
         do {

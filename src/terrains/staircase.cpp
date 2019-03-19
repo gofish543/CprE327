@@ -23,22 +23,6 @@ int Staircase::take() {
     Dungeon* dungeon = this->getFloor()->getDungeon();
     Player* player = dungeon->getPlayer();
     Floor* currentFloor = dungeon->getCurrentFloor();
-    // Find the target staircase index
-    u_short staircaseIndex;
-    if (this->isUp()) {
-        for (staircaseIndex = 0; staircaseIndex < currentFloor->getStairUpCount(); staircaseIndex++) {
-            if (currentFloor->getUpStairs().at(staircaseIndex) == this) {
-                break;
-            }
-        }
-    } else {
-        for (staircaseIndex = 0; staircaseIndex < currentFloor->getStairDownCount(); staircaseIndex++) {
-            if (currentFloor->getDownStairs().at(staircaseIndex) == this) {
-                break;
-            }
-        }
-    }
-
     // Wipe the current queue of events
     delete (dungeon->getEventManager());
 
@@ -55,24 +39,23 @@ int Staircase::take() {
 
     // Place the character on the upper floor's staircase
     // If up staircase and there is a down staircase to step on
-    if (this->isUp() && staircaseIndex < currentFloor->getStairDownCount()) {
-        player->setX(currentFloor->getDownStairs().at(staircaseIndex)->getX());
-        player->setY(currentFloor->getDownStairs().at(staircaseIndex)->getY());
+    if (this->isUp() && this->getId() < currentFloor->getStairDownCount()) {
+        player->setX(currentFloor->getDownStairs().at(this->getId())->getX());
+        player->setY(currentFloor->getDownStairs().at(this->getId())->getY());
     }
         // If down staircase and there is an up staircase to step on
-    else if (this->isDown() && staircaseIndex < currentFloor->getStairUpCount()) {
-        player->setX(currentFloor->getUpStairs().at(staircaseIndex)->getX());
-        player->setY(currentFloor->getUpStairs().at(staircaseIndex)->getY());
+    else if (this->isDown() && this->getId() < currentFloor->getStairUpCount()) {
+        player->setX(currentFloor->getUpStairs().at(this->getId())->getX());
+        player->setY(currentFloor->getUpStairs().at(this->getId())->getY());
     }
         // Else random location
     else {
         u_char playerX;
         u_char playerY;
         auto room = u_short(random_number_between(0, currentFloor->getRoomCount() - 1));
-        do {
-            playerX = u_char(random_number_between(currentFloor->getRooms().at(room)->getStartingX(), currentFloor->getRooms().at(room)->getStartingX() + currentFloor->getRooms().at(room)->getWidth() - 1));
-            playerY = u_char(random_number_between(currentFloor->getRooms().at(room)->getStartingY(), currentFloor->getRooms().at(room)->getStartingY() + currentFloor->getRooms().at(room)->getHeight() - 1));
-        } while (currentFloor->getTerrainAt(playerX, playerY)->getCharacter() != STAIRCASE_UP_CHARACTER && currentFloor->getTerrainAt(playerX, playerY)->getCharacter() != STAIRCASE_DOWN_CHARACTER);
+
+        playerX = u_char(random_number_between(currentFloor->getRooms().at(room)->getStartingX(), currentFloor->getRooms().at(room)->getStartingX() + currentFloor->getRooms().at(room)->getWidth() - 1));
+        playerY = u_char(random_number_between(currentFloor->getRooms().at(room)->getStartingY(), currentFloor->getRooms().at(room)->getStartingY() + currentFloor->getRooms().at(room)->getHeight() - 1));
 
         if (currentFloor->getCharacterAt(playerX, playerY) != null) {
             currentFloor->getCharacterAt(playerX, playerY)->killCharacter();

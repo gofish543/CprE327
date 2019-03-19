@@ -42,7 +42,7 @@ namespace App {
         void battleMonster(Monster* otherMonster);
         void battlePlayer(Player* player);
         bool hasLineOfSightTo(Player* player);
-        std::string locationString();
+        char* locationString(char location[19]);
 
         bool isIntelligent();
         bool isTelepathic();
