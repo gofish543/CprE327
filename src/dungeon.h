@@ -1,48 +1,56 @@
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
-struct Dungeon;
-typedef struct Dungeon Dungeon;
+#define DUNGEON_TEXT_LINES 3
 
 #define DUNGEON_FLOORS_MIN 3
 #define DUNGEON_FLOORS_MAX 5
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <ncurses.h>
-#include "terrains/terrain.h"
-#include "terrains/room.h"
-#include "terrains/staircase.h"
-#include "characters/player.h"
-#include "events.h"
-#include "resource.h"
+#define DUNGEON_FLOOR_WIDTH 80
+#define DUNGEON_FLOOR_HEIGHT 21
+
+#include "../include/forward_declarations.h"
 #include "floor.h"
+#include "resource.h"
 #include "settings.h"
-#include "output.h"
-#include "save_load.h"
+#include <string>
+#include <vector>
+#include <ncurses.h>
 
-struct Dungeon {
-    u_char floorCount;
-    Floor* floor;
+namespace App {
+    class Dungeon {
 
-    EventManager* eventManager;
+    public:
+        explicit Dungeon(int argc, char* argv[]);
+        ~Dungeon();
 
-    Player* player;
-    Floor** floors;
-    Settings* settings;
+        std::string* prependText(std::string message, ...);
+        std::string* appendText(std::string message, ...);
 
-    char* textLine1;
-    char* textLine2;
-    char* textLine3;
+        WINDOW* getWindow();
+        Floor* getCurrentFloor();
+        std::vector<Floor*> getFloors();
+        Settings* getSettings();
+        u_char getFloorCount();
+        std::string* getTextLines();
+        std::string getText(u_char index);
 
-    WINDOW* window;
-};
+        Dungeon* setCurrentFloor(Floor* floor);
 
-Dungeon* dungeon_initialize(Settings* settings);
-Dungeon* dungeon_terminate(Dungeon* dungeon);
+    protected:
 
-int dungeon_prepend_message(Dungeon* dungeon, const char* message, ...);
-int dungeon_append_message(Dungeon* dungeon, const char* message, ...);
+    private:
+        Settings* settings;
+        WINDOW* window;
+        Floor* floor;
+        std::vector<Floor*> floors;
+        u_char floorCount;
+        std::string textLines[DUNGEON_TEXT_LINES];
+    };
+}
+
+using App::Dungeon;
+using App::Settings;
+using App::Floor;
 
 #endif

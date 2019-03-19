@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="CprE327"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/srv/CprE327/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/srv/CprE327/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CprE327">
+				<Option output="/srv/CprE327/cmake-build-debug/CprE327" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/srv/CprE327/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/8"/>
+					<Add directory="/usr/include/c++/8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 CprE327"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CprE327/fast">
+				<Option output="/srv/CprE327/cmake-build-debug/CprE327" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/srv/CprE327/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/8"/>
+					<Add directory="/usr/include/c++/8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 CprE327/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/srv/CprE327/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/srv/CprE327/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/srv/CprE327/include/forward_declarations.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/dungeon.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/dungeon.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/escape_from_darkness.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/escape_from_darkness.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/floor.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/floor.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/output.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/output.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/resource.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/resource.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/settings.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/settings.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/border.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/border.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/corridor.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/corridor.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/rock.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/rock.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/room.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/room.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/staircase.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/staircase.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/terrain.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/terrains/terrain.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/vendor/queue.cpp">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/src/vendor/queue.h">
+			<Option target="CprE327"/>
+		</Unit>
+		<Unit filename="/srv/CprE327/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

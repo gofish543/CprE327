@@ -1,35 +1,46 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-struct Terrain;
-typedef struct Terrain Terrain;
+#include "../../include/forward_declarations.h"
+#include "../character_listings.h"
+#include "../resource.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include "../floor.h"
-#include "room.h"
-#include "staircase.h"
+namespace App {
+    class Floor;
 
-struct Terrain {
-    Floor* floor;
-    Room* room;
-    Staircase* staircase;
+    class Terrain {
+    public:
+        explicit Terrain(Floor* floor, u_short id, u_char x, u_char y);
 
-    u_char character;
-    u_char hardness;
+        Terrain* setCharacter(u_char character);
+        Terrain* setHardness(u_char hardness);
 
-    u_char x;
-    u_char y;
+        Floor* getFloor();
+        u_short getId();
+        u_char getX();
+        u_char getY();
+        u_char getCharacter();
+        u_char getHardness();
 
-    bool isWalkable;
-    bool isImmutable;
-    bool isRock;
-};
+        bool isWalkable;
+        bool isImmutable;
+        bool isRock;
+    protected:
+        Floor* floor;
 
-Terrain* terrain_initialize(Floor* floor, u_char x, u_char y, u_char character, u_char hardness);
-Terrain* terrain_terminate(Terrain* terrain);
+        u_short id;
 
-bool terrain_is_empty(Terrain* terrain);
+        u_char x;
+        u_char y;
+
+        u_char character;
+        u_char hardness;
+    private:
+
+    };
+}
+
+using App::Floor;
+using App::Terrain;
 
 #endif

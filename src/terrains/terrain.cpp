@@ -1,30 +1,51 @@
 #include "terrain.h"
 
-Terrain* terrain_initialize(Floor* floor, u_char x, u_char y, u_char character, u_char hardness) {
-    Terrain* terrain = (Terrain*) malloc(sizeof(Terrain));
+Terrain::Terrain(Floor* floor, u_short id, u_char x, u_char y) {
+    this->floor = floor;
+    this->id = id;
+    this->x = x;
+    this->y = y;
 
-    terrain->floor = floor;
-    terrain->x = x;
-    terrain->y = y;
-    terrain->character = character;
-    terrain->hardness = hardness;
+    this->character = UNKNOWN_CHARACTER;
+    this->hardness = 0;
 
-    terrain->staircase = null;
-    terrain->room = null;
-
-    terrain->isWalkable = false;
-    terrain->isImmutable = false;
-    terrain->isRock = false;
-
-    return terrain;
+    this->isImmutable = false;
+    this->isRock = false;
+    this->isWalkable = false;
 }
 
-Terrain* terrain_terminate(Terrain* terrain) {
-    free(terrain);
+Terrain* Terrain::setCharacter(u_char character) {
+    this->character = character;
 
-    return null;
+    return this;
 }
 
-bool terrain_is_empty(Terrain* terrain) {
-    return terrain->staircase == null && terrain->room == null && !terrain->isImmutable;
+Terrain* Terrain::setHardness(u_char hardness) {
+    this->hardness = hardness;
+
+    return this;
+}
+
+Floor* Terrain::getFloor() {
+    return this->floor;
+}
+
+u_short Terrain::getId() {
+    return this->id;
+}
+
+u_char Terrain::getX() {
+    return this->x;
+}
+
+u_char Terrain::getY() {
+    return this->y;
+}
+
+u_char Terrain::getCharacter() {
+    return this->character;
+}
+
+u_char Terrain::getHardness() {
+    return this->hardness;
 }

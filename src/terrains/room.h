@@ -1,28 +1,39 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-struct Room;
-typedef struct Room Room;
-
 #define ROOM_MIN_WIDTH 4
 #define ROOM_MAX_WIDTH 8
+
 #define ROOM_MIN_HEIGHT 4
 #define ROOM_MAX_HEIGHT 8
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "../../include/forward_declarations.h"
 #include "../character_listings.h"
+#include "../floor.h"
+#include "terrain.h"
 
-struct Room {
-    u_char width;
-    u_char height;
+namespace App {
+    class Room : public Terrain {
+    public:
+        Room(Floor* floor, u_short id, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height);
 
-    u_char startX;
-    u_char startY;
-};
+        u_char getWidth();
+        u_char getHeight();
+        u_char getStartingX();
+        u_char getStartingY();
 
-Room* room_initialize(u_char startX, u_char startY, u_char width, u_char height);
-Room* room_terminate(Room* room);
+    protected:
+
+    private:
+        u_char width;
+        u_char height;
+        u_char startingX;
+        u_char startingY;
+    };
+}
+
+using App::Floor;
+using App::Terrain;
+using App::Room;
 
 #endif

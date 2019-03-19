@@ -1,12 +1,6 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
-struct Floor;
-typedef struct Floor Floor;
-
-#define FLOOR_WIDTH 80
-#define FLOOR_HEIGHT 21
-
 #define FLOOR_ROOMS_MIN 8
 #define FLOOR_ROOMS_MAX 8
 
@@ -16,52 +10,86 @@ typedef struct Floor Floor;
 #define FLOOR_MONSTERS_MIN 5
 #define FLOOR_MONSTERS_MAX 10
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "../include/forward_declarations.h"
 #include "dungeon.h"
 #include "resource.h"
 #include "character_listings.h"
-#include "./terrains/terrain.h"
-#include "./terrains/room.h"
-#include "./terrains/staircase.h"
-#include "./characters/character.h"
-#include "./characters/player.h"
-#include "./characters/monster.h"
+#include "terrains/terrain.h"
+#include "terrains/border.h"
+#include "terrains/corridor.h"
+#include "terrains/rock.h"
+#include "terrains/staircase.h"
+#include "terrains/room.h"
+#include "vendor/queue.h"
+#include <cstdio>
+#include <iostream>
+#include <cstdlib>
+#include <vector>
 
-struct Floor {
-    Dungeon* dungeon;
-    u_char floorNumber;
+namespace App {
+    class Floor {
 
-    u_short roomCount;
-    u_short stairUpCount;
-    u_short stairDownCount;
-    u_short monsterCount;
+    public:
+        explicit Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters);
+        ~Floor();
 
-    Terrain* terrains[FLOOR_HEIGHT][FLOOR_WIDTH];
-    Character* characters[FLOOR_HEIGHT][FLOOR_WIDTH];
+        Dungeon* getDungeon();
+        u_char getFloorNumber();
+        u_short getRoomCount();
+        u_short getStairUpCount();
+        u_short getStairDownCount();
+        u_short getMonsterCount();
+        const std::vector<Staircase*> getUpStairs();
+        const std::vector<Staircase*> getDownStairs();
+        const std::vector<Room*> getRooms();
+        Terrain* getTerrainAt(u_char width, u_char height);
+        u_char getCharacterAt(u_char width, u_char height);
+        u_char getHardnessAt(u_char width, u_char height);
 
-    u_char tunnelerView[FLOOR_HEIGHT][FLOOR_WIDTH];
-    u_char nonTunnelerView[FLOOR_HEIGHT][FLOOR_WIDTH];
-    u_char cheapestPathToPlayer[FLOOR_HEIGHT][FLOOR_WIDTH];
+        u_char getTunnelerViewAt(u_char width, u_char height);
+        u_char getNonTunnelerViewAt(u_char width, u_char height);
+        u_char getCheapestPathToPlayerAt(u_char width, u_char height);
 
-    Monster** monsters;
-    Staircase** upStairs;
-    Staircase** downStairs;
-    Room** rooms;
-};
+        Floor* setHardnessAt(u_char hardness, u_char width, u_char height);
 
-Floor* floor_initialize(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_char numberOfMonsters);
-Floor* floor_terminate(Floor* floor);
+    protected:
+    private:
+        Dungeon* dungeon;
+        u_char floorNumber;
 
-u_char floor_character_at(Floor* floor, u_char x, u_char y);
+        u_short roomCount;
+        u_short stairUpCount;
+        u_short stairDownCount;
+        u_short monsterCount;
 
-int floor_generate_empty_characters(Floor* floor);
-int floor_generate_empty_terrains(Floor* floor);
-int floor_generate_borders(Floor* floor);
-int floor_generate_rooms(Floor* floor);
-int floor_generate_staircases(Floor* floor);
-int floor_generate_corridors(Floor* floor);
-int floor_generate_monsters(Floor* floor);
+        Terrain* terrains[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+//        Character* characters[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+
+        u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+        u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+        u_char cheapestPathToPlayer[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+
+//        Monster** monsters;
+        std::vector<Staircase*> upStairs;
+        std::vector<Staircase*> downStairs;
+        std::vector<Room*> rooms;
+
+        Floor* initializeToNull();
+
+        // Generate class of functions
+        Floor* generateBorders();
+        Floor* generateRock();
+        Floor* generateRooms();
+        Floor* generateCorridors();
+        Floor* generateMonsters();
+
+        // Load class of functions
+
+    };
+}
+
+using App::Dungeon;
+using App::Floor;
+using App::Terrain;
 
 #endif

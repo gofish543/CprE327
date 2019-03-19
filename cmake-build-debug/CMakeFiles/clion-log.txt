@@ -1,1 +1,4 @@
-CMakeLists.txt not found in /srv/CprE327 Select CMakeLists.txt file...
+/opt/Clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /srv/CprE327
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /srv/CprE327/cmake-build-debug

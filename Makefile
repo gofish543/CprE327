@@ -12,7 +12,7 @@ TARGET		= coms327_dykhuizen_$(MAJOR).$(MINOR).$(PATCH)
 
 # Directories
 SRCDIR		= src
-INCDIR		= inc
+INCDIR		= include
 BUILDDIR	= obj
 TARGETDIR	= bin
 RESDIR		= res
@@ -21,11 +21,11 @@ DEPEXT		= d
 OBJEXT		= o
 
 # Flags
-CFLAGS		= -Wall -Wpedantic -g -ggdb3 -funroll-loops -pg
+#CFLAGS		= -Wall -Wpedantic -g -ggdb3 -funroll-loops -pg
 #CFLAGS		= -Wall -Werror -Wpedantic -funroll-loops -pg -O2
-CXXFLAGS	= -Wall -Werror -Wpedantic -g -ggdb3 -funroll-loops -pg
+CXXFLAGS	= -Wall -Wpedantic -g -ggdb3
 #CXXFLAGS	= -Wall -Werror -Wpedantic -funroll-loops -pg -O2
-LIB			= -lm -lncurses -lpthread -pg
+LIB			= -lm -lncurses -lpthread
 INC			= -I$(INCDIR) -I/usr/local/include
 INCDEP		= -I$(INCDIR)
 

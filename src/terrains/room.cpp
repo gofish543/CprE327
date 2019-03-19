@@ -1,19 +1,31 @@
 #include "room.h"
 
-Room* room_initialize(u_char startX, u_char startY, u_char width, u_char height) {
-    Room* room = (Room*) malloc(sizeof(Room));
+Room::Room(Floor* floor, u_short id, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height) : Terrain(floor, id, x, y) {
+    this->width = width;
+    this->height = height;
+    this->startingX = startingX;
+    this->startingY = startingY;
 
-    room->width = width;
-    room->height = height;
+    this->isWalkable = true;
+    this->isRock = false;
+    this->isImmutable = false;
 
-    room->startX = startX;
-    room->startY = startY;
-
-    return room;
+    this->hardness = ROOM_HARDNESS;
+    this->character = ROOM_CHARACTER;
 }
 
-Room* room_terminate(Room* room) {
-    free(room);
+u_char Room::getWidth() {
+    return this->width;
+}
 
-    return NULL;
+u_char Room::getHeight() {
+    return this->height;
+}
+
+u_char Room::getStartingX(){
+    return this->startingX;
+}
+
+u_char Room::getStartingY() {
+    return this->startingY;
 }

@@ -1,0 +1,3 @@
+/srv/CprE327/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/srv/CprE327/cmake-build-debug/CMakeFiles/CprE327.dir
+/srv/CprE327/cmake-build-debug/CMakeFiles/edit_cache.dir

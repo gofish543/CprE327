@@ -1,39 +1,64 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-struct Settings;
-typedef struct Settings Settings;
+namespace App {
+    class Settings;
+}
 
-#include <stdbool.h>
-#include <libgen.h>
-#include <dirent.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include "resource.h"
-
+#define PATH_SEPARATOR '/'
 #define RESOURCE_PATH "./res"
 #define DATA_PATH "/.rlg327/"
 #define FILE_HEADING "RLG327-S2019"
 
-struct Settings {
-    bool expandedPrint;
-    bool doNCursesPrint;
-    bool doNumberOfMonsters;
-    bool doSave;
-    bool doLoad;
+#include "resource.h"
+#include <iostream>
+#include <cerrno>
+#include <cstdio>
+#include <filesystem>
+#include <cstring>
+#include <dirent.h>
+#include <libgen.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-    u_char file_version;
-    char* savePath;
-    char* loadPath;
+namespace App {
+    class Settings {
+    private:
+        bool expandedPrint;
+        bool nCursesPrint;
+        bool setNumberOfMonsters;
+        bool save;
+        bool load;
 
-    u_int numberOfMonsters;
-};
+        u_char fileVersion;
+        std::string savePath;
+        std::string loadPath;
 
-Settings* settings_initialize(int argc, char* argv[]);
-Settings* settings_terminate(Settings* settings);
+        u_short numberOfMonsters;
 
-int create_home_folders();
-int settings_load_arguments(Settings* settings, int argc, char* argv[]);
+    protected:
+        int loadArguments(int argc, char* argv[]);
+        std::string getFileName(const std::string &string);
+        bool fileExists(const std::string &fileString);
+        int createFolder(const std::string &path);
+
+    public:
+        Settings(int argc, char* argv[]);
+
+        bool doExpandPrint();
+        bool doNCursesPrint();
+        bool doNumberOfMonsters();
+        bool doSave();
+        bool doLoad();
+
+        u_char getFileVersion();
+        std::string getSavePath();
+        std::string getLoadPath();
+        u_short getNumberOfMonsters();
+
+    };
+}
+
+using App::Settings;
 
 #endif
