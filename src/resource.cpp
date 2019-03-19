@@ -1,7 +1,19 @@
 #include "resource.h"
 
-unsigned short offset = 0;
+bool global_ncurses = false;
+unsigned short global_offset = 0;
 
+void set_global_ncurses(bool value) {
+    global_ncurses = value;
+}
+
+void debug_terminate() {
+    if (global_ncurses) {
+        endwin();
+    }
+    std::cout << "Stopping here" << std::endl;
+    exit(1);
+}
 int random_number_between(int min, int max) {
     int fd = open("/dev/urandom", O_RDWR);
     struct timeval time = {};
@@ -11,15 +23,15 @@ int random_number_between(int min, int max) {
         defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
     } else {
         size_t buffer[1];
-        lseek(fd, offset, 0);
+        lseek(fd, global_offset, 0);
         if (read(fd, buffer, sizeof(size_t)) != sizeof(size_t)) {
             defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
         } else {
             defaultSeed = (u_int) buffer[0];
-            offset += 8;
+            global_offset += 8;
 
-            if (offset > 2048) {
-                offset = 0;
+            if (global_offset > 2048) {
+                global_offset = 0;
             }
         }
         close(fd);

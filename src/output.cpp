@@ -112,7 +112,7 @@ void output_print_floor_hardness(Floor* floor) {
                 }
             } else {
                 if (floor->getTerrainAt(width, height)->isImmutable()) {
-                    print(dungeon->getWindow(), ncurses, "%c",  floor->getTerrainAt(width, height)->getCharacter());
+                    print(dungeon->getWindow(), ncurses, "%c", floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%d", floor->getTerrainAt(width, height)->getHardness() % 10);
                 }
@@ -152,7 +152,7 @@ void output_print_floor_tunneler_view(Floor* floor) {
                 }
             } else {
                 if (floor->getTerrainAt(width, height)->isImmutable()) {
-                    print(dungeon->getWindow(), ncurses, "%c",  floor->getTerrainAt(width, height)->getCharacter());
+                    print(dungeon->getWindow(), ncurses, "%c", floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%d", floor->getTunnelerViewAt(width, height) % 10);
                 }
@@ -186,11 +186,11 @@ void output_print_floor_non_tunneler_view(Floor* floor) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
                 if (floor->getTerrainAt(width, height)->isImmutable()) {
-                    print(dungeon->getWindow(), ncurses, " %c ",  floor->getTerrainAt(width, height)->getCharacter());
+                    print(dungeon->getWindow(), ncurses, " %c ", floor->getTerrainAt(width, height)->getCharacter());
                 } else if (floor->getTerrainAt(width, height)->isRock()) {
                     print(dungeon->getWindow(), ncurses, "   ");
                 } else {
-                    print(dungeon->getWindow(), ncurses, "%3d",  floor->getTerrainAt(width, height)->getCharacter());
+                    print(dungeon->getWindow(), ncurses, "%3d", floor->getTerrainAt(width, height)->getCharacter());
                 }
             } else {
                 if (floor->getTerrainAt(width, height)->isImmutable()) {
@@ -230,13 +230,13 @@ void output_print_floor_shortest_path(Floor* floor) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
                 if (floor->getTerrainAt(width, height)->isImmutable()) {
-                    print(dungeon->getWindow(), ncurses, " %c ",  floor->getTerrainAt(width, height)->getCharacter());
+                    print(dungeon->getWindow(), ncurses, " %c ", floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%3d", floor->getCheapestPathToPlayerAt(width, height));
                 }
             } else {
                 if (floor->getTerrainAt(width, height)->isImmutable()) {
-                    print(dungeon->getWindow(), ncurses, "%c",  floor->getTerrainAt(width, height)->getCharacter());
+                    print(dungeon->getWindow(), ncurses, "%c", floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%d", floor->getCheapestPathToPlayerAt(width, height) % 10);
                 }
@@ -250,7 +250,6 @@ void output_print_floor_shortest_path(Floor* floor) {
 void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
     u_char height;
     u_short index;
-    char locationBuffer[19] = "";
     WINDOW* window = floor->getDungeon()->getWindow();
     bool ncurses = floor->getDungeon()->getSettings()->doNCursesPrint();
 
@@ -264,11 +263,11 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
     for (index = startIndex, height = 0; height < DUNGEON_FLOOR_HEIGHT && index < floor->getMonsterCount(); index++, height++) {
         print(window, ncurses, "| %7d | %11s | %10s | %8s | %7s | %18s |\n",
               index,
-              monster_is_intelligent(floor->getMonsters().at(index)) ? "YES" : "NO",
-              monster_is_telepathic(floor->getMonsters().at(index)) ? "YES" : "NO",
-              monster_is_tunneler(floor->getMonsters().at(index)) ? "YES" : "NO",
-              monster_is_erratic(floor->getMonsters().at(index)) ? "YES" : "NO",
-              monster_location_string(floor->getMonsters().at(index), locationBuffer)
+              (floor->getMonsters().at(index)->isIntelligent()) ? "YES" : "NO",
+              (floor->getMonsters().at(index)->isTelepathic())? "YES" : "NO",
+              (floor->getMonsters().at(index)->isTunneler()) ? "YES" : "NO",
+              (floor->getMonsters().at(index)->isErratic())? "YES" : "NO",
+              floor->getMonsters().at(index)->locationString().c_str()
         );
     }
     print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
@@ -287,7 +286,7 @@ void output_print_endgame(Dungeon* dungeon) {
 
     if (dungeon->getPlayer()->getRequestTerminate()) {
         print(dungeon->getWindow(), ncurses, "Thank you for playing, safely exiting\n");
-    } else if (dungeon->getPlayer()->getIsAlive() && monster_alive_count(dungeon) > 0) {
+    } else if (dungeon->getPlayer()->getIsAlive() && Monster::MonstersAlive(dungeon) > 0) {
         print(dungeon->getWindow(), ncurses, "Queue completely empty, terminating the program safely\n");
     } else {
         u_char height;

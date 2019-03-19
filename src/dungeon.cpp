@@ -28,8 +28,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
                     )
             );
         }
-
-        this->setCurrentFloor(this->getFloors().front());
+        this->setCurrentFloor(this->getFloors().at(0));
     }
 
     if (this->settings->doNCursesPrint()) {
@@ -40,10 +39,21 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     } else {
         this->window = null;
     }
+
+    this->eventManager = new EventManager(this);
+
+    this->eventManager->addToQueue(new Event(0, event_type_player, this->getPlayer(), Player::HandleEvent, Player::NextEventTick));
+    for (index = 0; index < this->getCurrentFloor()->getMonsterCount(); index++) {
+        this->eventManager->addToQueue(new Event(1 + index, event_type_monster, this->getCurrentFloor()->getMonsters().at(index), Monster::HandleEvent, Monster::NextEventTick));
+    }
 }
 
 Dungeon::~Dungeon() {
     u_char index;
+
+    if (this->getSettings()->doSave()) {
+        // Save the game state
+    }
 
     for (index = 0; index < this->getFloorCount(); index++) {
         delete (this->floors.at(index));
@@ -118,7 +128,7 @@ std::string Dungeon::getText(u_char index) {
 /** GETTERS **/
 
 /** SETTERS **/
-Dungeon* Dungeon::setFloors(std::vector<Floor*> floors) {
+Dungeon* Dungeon::setFloors(std::vector<Floor*>& floors) {
     this->floors = floors;
 
     return this;
@@ -136,7 +146,7 @@ Dungeon* Dungeon::setSettings(Settings* settings) {
     return this;
 }
 
-Dungeon* Dungeon::setEventManager(EventManager eventManager) {
+Dungeon* Dungeon::setEventManager(EventManager* eventManager) {
     this->eventManager = eventManager;
 
     return this;

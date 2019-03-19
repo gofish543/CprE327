@@ -8,7 +8,7 @@
 namespace App {
     class Character {
     public:
-        Character(Floor* floor, u_char x, u_char y, u_char character, u_char speed);
+        Character(Floor* floor, u_char x, u_char y, u_char character, u_char speed, bool isPlayer, bool isMonster);
         ~Character();
 
         Character* killCharacter();
@@ -20,6 +20,8 @@ namespace App {
         u_char getCharacter();
         u_char getSpeed();
         bool getIsAlive();
+        bool getIsPlayer();
+        bool getIsMonster();
         /** GETTERS **/
 
         /** SETTERS **/
@@ -29,6 +31,8 @@ namespace App {
         Character* setCharacter(u_char character);
         Character* setSpeed(u_char speed);
         Character* setIsAlive(bool isAlive);
+        Character* setIsPlayer(bool isPlayer);
+        Character* setIsMonster(bool isMonster);
         /** SETTERS **/
     protected:
         Floor* floor;
@@ -39,6 +43,9 @@ namespace App {
 
         u_char speed;
         bool isAlive;
+
+        bool isPlayer;
+        bool isMonster;
 
     private:
     };

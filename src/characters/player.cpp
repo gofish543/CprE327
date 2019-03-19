@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER_CHARACTER, PLAYER_SPEED) {
+Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER_CHARACTER, PLAYER_SPEED, true, false) {
     this->takingStaircase = null;
 
     this->requestTerminate = false;
@@ -23,61 +23,191 @@ Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlai
 
 Player::~Player() = default;
 
-int Player::nextActionTick(Event* event) {
-    if (this->isAlive) {
-        return this->floor->getDungeon()->getEventManager()->getTick() + (1000 / this->speed);
+int Player::NextEventTick(Event* event) {
+    auto player = (Player*) event->character;
+
+    if (player->getIsAlive()) {
+        return player->getFloor()->getDungeon()->getEventManager()->getTick() + (1000 / player->getSpeed());
     } else {
         return -1;
     }
 }
 
-int Player::handleEventKeyMonsterMenu() {
-
-}
-
-int Player::handleEventKeyToggleFog() {
-
-}
-
-int Player::handleEventKeyTeleport() {
-
-}
-
-int Player::handleEventKeyStaircase() {
-
-}
-
-int Player::handleEventKeyMovement() {
-
-}
-
-int Player::handleEvent(Event* event) {
+int Player::HandleEvent(Event* event) {
     int move;
-    Dungeon* dungeon = this->getFloor()->getDungeon();
+    auto player = (Player*) event->character;
+    Dungeon* dungeon = player->getFloor()->getDungeon();
 
     move = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
 
     switch (move) {
         case 'm':
-            this->handleEventKeyMonsterMenu();
-            return this->handleEvent(event);
+            player->handleEventKeyMonsterMenu();
+            return Player::HandleEvent(event);
         case 'f':
-            this->handleEventKeyToggleFog();
-            return this->handleEvent(event);
+            player->handleEventKeyToggleFog();
+            return Player::HandleEvent(event);
         case 't':
-            this->handleEventKeyTeleport();
+            player->handleEventKeyTeleport();
 
             return 0;
         case '<':
         case '>':
-            this->handleEventKeyStaircase();
-            return this->handleEvent(event);
+            player->handleEventKeyStaircase(move);
+            return Player::HandleEvent(event);
         default:
-            if (this->handleEventKeyMovement()) {
-                return this->handleEvent(event);
+            if (player->handleEventKeyMovement(move)) {
+                return Player::HandleEvent(event);
             }
             return 0;
     }
+}
+
+int Player::handleEventKeyMonsterMenu() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    u_short startIndex = 0;
+    int character = 0;
+
+    while (character != 27) {
+        output_print_current_floor_monster_menu(dungeon, startIndex);
+
+        character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (startIndex < dungeon->getCurrentFloor()->getMonsterCount()) {
+                    startIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (startIndex > 0) {
+                    startIndex--;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    return 0;
+}
+
+int Player::handleEventKeyToggleFog() {
+    this->getFloor()->getDungeon()->getSettings()->setFogOfWar(
+            !this->getFloor()->getDungeon()->getSettings()->doFogOfWar()
+    );
+    return 0;
+}
+
+int Player::handleEventKeyTeleport() {
+    return 0;
+}
+
+int Player::handleEventKeyStaircase(int command) {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    Floor* floor = this->getFloor();
+    Terrain* onTerrain = floor->getTerrainAt(this->x, this->y);
+    // We are standing on a staircase
+    if (onTerrain->getCharacter() == STAIRCASE_DOWN_CHARACTER || onTerrain->getCharacter() == STAIRCASE_UP_CHARACTER) {
+        if ((command == STAIRCASE_DOWN_CHARACTER && onTerrain->getCharacter() == STAIRCASE_DOWN_CHARACTER) ||
+            (command == STAIRCASE_UP_CHARACTER && onTerrain->getCharacter() == STAIRCASE_UP_CHARACTER)) {
+            // Trying to take a down staircase, and standing on a down staircase
+            // Trying to take an up staircase and standing on an up staircase
+            this->takingStaircase = (Staircase*) onTerrain;
+            dungeon->prependText("Moving %s a staircase", (this->takingStaircase->isUp() ? "Up" : "Down"));
+            return 0;
+        }
+    }
+
+    dungeon->prependText("Not standing on a valid staircase");
+    output(dungeon, output_print_current_floor);
+
+    // Not on staircase, cant take a staircase
+    // Or not on a staircase facing the right direction
+    return 1;
+}
+
+int Player::handleEventKeyMovement(int command) {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+
+    u_char x = dungeon->getPlayer()->getX();
+    u_char y = dungeon->getPlayer()->getY();
+
+    switch (command) {
+        // Upper Left
+        case '7':
+        case 'y':
+            dungeon->prependText("Moving upper left");
+            y--;
+            x--;
+            break;
+            // Up
+        case '8':
+        case 'k':
+            dungeon->prependText("Moving up");
+            y--;
+            break;
+            // Upper right
+        case '9':
+        case 'u':
+            dungeon->prependText("Moving upper right");
+            y--;
+            x++;
+            break;
+            // Left
+        case '4':
+        case 'h':
+            dungeon->prependText("Moving left");
+            x--;
+            break;
+            // Right
+        case '6':
+        case 'l':
+            dungeon->prependText("Moving right");
+            x++;
+            break;
+            // Down left
+        case '1':
+        case 'b':
+            dungeon->prependText("Moving down left");
+            y++;
+            x--;
+            break;
+            // Down
+        case '2':
+        case 'j':
+            dungeon->prependText("Moving down");
+            y++;
+            break;
+            // Down right
+        case '3':
+        case 'n':
+            dungeon->prependText("Moving down right");
+            y++;
+            x++;
+            break;
+        case 'Q':
+            dungeon->getPlayer()->setRequestTerminate(true);
+            // Rest for a turn
+        case '5':
+        case '.':
+            dungeon->prependText("A day of rest...");
+            break;
+        default:
+            dungeon->prependText("Invalid key entered");
+            output(dungeon, output_print_current_floor);
+            return 1;
+    }
+
+    if (!dungeon->getCurrentFloor()->getTerrainAt(x, y)->isWalkable()) {
+        dungeon->prependText("Terrain is not walkable, invalid key entered");
+        output(dungeon, output_print_current_floor);
+        return 1;
+    }
+
+    this->moveTo(x, y);
+
+    return 0;
 }
 
 int Player::moveTo(u_char toX, u_char toY) {
@@ -106,16 +236,22 @@ int Player::moveTo(u_char toX, u_char toY) {
 
     floor->setCharacterAt(this, this->x, this->y);
 
-    Monster::RunRijkstraOnFloor(floor);
+    Monster::RunDijkstraOnFloor(floor);
 
     return 0;
 }
 
-bool Player::battleMonster(App::Monster* monster) {
-    if (Monster::AliveCount(this->floor->getDungeon()) == 1) {
-        return false;
+void Player::battleMonster(App::Monster* monster) {
+    if (Monster::MonstersAlive(this->floor->getDungeon()) == 1) {
+        // Player died
+        this->killCharacter();
     } else {
-        return true;
+        // Monster died
+        monster->killCharacter();
+
+        // Add level to the player
+        this->addLevel(monster->getLevel());
+        this->incrementMonstersSlain();
     }
 }
 
@@ -170,7 +306,7 @@ u_int Player::getDaysSurvived() {
 /** GETTERS **/
 
 /** SETTERS **/
-Player* Player::setTakingStaircase(Staircase*& takingStaircase) {
+Player* Player::setTakingStaircase(Staircase* takingStaircase) {
     this->takingStaircase = takingStaircase;
 
     return this;

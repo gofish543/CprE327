@@ -10,6 +10,7 @@
 #define DUNGEON_FLOOR_HEIGHT 21
 
 #include "../include/forward_declarations.h"
+#include "events.h"
 #include "floor.h"
 #include "resource.h"
 #include "settings.h"
@@ -40,10 +41,10 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
-        Dungeon* setFloors(std::vector<Floor*> floors);
+        Dungeon* setFloors(std::vector<Floor*> &floors);
         Dungeon* setCurrentFloor(Floor* floor);
         Dungeon* setSettings(Settings* settings);
-        Dungeon* setEventManager(EventManager eventManager);
+        Dungeon* setEventManager(EventManager* eventManager);
         Dungeon* setPlayer(Player* player);
         Dungeon* setWindow(WINDOW* window);
         Dungeon* setFloorCount(u_char floorCount);

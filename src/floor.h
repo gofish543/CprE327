@@ -41,6 +41,10 @@ namespace App {
 
         u_char getPrintCharacterAt(u_char width, u_char height);
 
+        u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+        u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+        u_char cheapestPathToPlayer[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+
         /** GETTERS **/
         Dungeon* getDungeon();
         u_char getFloorNumber();
@@ -71,10 +75,10 @@ namespace App {
         Floor* setTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setNonTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setCheapestPathToPlayer(u_char value, u_char width, u_char height);
-        Floor* setMonsters(std::vector<Monster*> &monsters);
-        Floor* setUpStairs(std::vector<Staircase*> &upStairs);
-        Floor* setDownStairs(std::vector<Staircase*> &downStairs);
-        Floor* setRooms(std::vector<Room*> &rooms);
+        Floor* setMonsters(std::vector<Monster*>& monsters);
+        Floor* setUpStairs(std::vector<Staircase*>& upStairs);
+        Floor* setDownStairs(std::vector<Staircase*>& downStairs);
+        Floor* setRooms(std::vector<Room*>& rooms);
         /** SETTERS **/
 
     protected:
@@ -90,10 +94,6 @@ namespace App {
 
         Terrain* terrains[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         Character* characters[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
-
-        u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
-        u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
-        u_char cheapestPathToPlayer[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
 
         std::vector<Monster*> monsters;
         std::vector<Staircase*> upStairs;

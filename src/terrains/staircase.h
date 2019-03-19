@@ -18,6 +18,7 @@ namespace App {
         Floor* getTargetFloor();
         bool isUp();
         bool isDown();
+        int take();
 
         /** GETTERS **/
         char getType();

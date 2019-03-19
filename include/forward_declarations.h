@@ -24,6 +24,8 @@ namespace App {
 
     class Monster;
 
+    class MonsterCost;
+
     class Player;
 
     class EventManager;
@@ -43,6 +45,7 @@ using App::Room;
 using App::Staircase;
 using App::Character;
 using App::Monster;
+using App::MonsterCost;
 using App::Player;
 using App::EventManager;
 using App::Event;

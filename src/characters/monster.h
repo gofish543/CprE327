@@ -16,39 +16,31 @@
 #define MONSTER_TUNNELER_LEVEL 2
 #define MONSTER_ERRATIC_LEVEL 1
 
-//#define monster_is_intelligent(monster)  (monster->classification & 0x0001)
-//#define monster_is_telepathic(monster)   (monster->classification & 0x0002)
-//#define monster_is_tunneler(monster)     (monster->classification & 0x0004)
-//#define monster_is_erratic(monster)      (monster->classification & 0x0008)
-//
-//#define monster_next_action(monster)   (monster->character->floor->dungeon->eventManager->tick + ( 1000 / monster->speed))
-
 #include "../../include/forward_declarations.h"
 #include "../vendor/heap.h"
 #include "../terrains/staircase.h"
 #include "../character_listings.h"
 #include "../resource.h"
-
 #include "character.h"
 #include <climits>
 
 namespace App {
     class Monster : public Character {
     public:
-        Monster(Floor* floor, u_char x, u_char y);
         Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char speed);
         ~Monster();
 
-        static int MonstersAlive(Dungeon* dungeon);
+        static u_int MonstersAlive(Dungeon* dungeon);
         static int DijkstraCompare(const void* A, const void* B);
         static int RunDijkstraOnFloor(Floor* floor);
-        static void RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH]);
+        static int RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH]);
 
-        int nextActionTick(Event* event);
-        int handleEvent(Event* event);
+        static int NextEventTick(Event* event);
+        static int HandleEvent(Event* event);
+
         int moveTo(u_char toX, u_char toY);
-        int battleMonster(Monster* otherMonster);
-        int battlePlayer(Player* player);
+        void battleMonster(Monster* otherMonster);
+        void battlePlayer(Player* player);
         bool hasLineOfSightTo(Player* player);
         std::string locationString();
 
@@ -72,22 +64,22 @@ namespace App {
         /** SETTERS **/
 
         /** MOVEMENT PATTERNS **/
-        void Move0();
-        void Move1();
-        void Move2();
-        void Move3();
-        void Move4();
-        void Move5();
-        void Move6();
-        void Move7();
-        void Move8();
-        void Move9();
-        void Move10();
-        void Move11();
-        void Move12();
-        void Move13();
-        void Move14();
-        void Move15();
+        static void Move0(Monster* monster, u_char* x, u_char* y);
+        static void Move1(Monster* monster, u_char* x, u_char* y);
+        static void Move2(Monster* monster, u_char* x, u_char* y);
+        static void Move3(Monster* monster, u_char* x, u_char* y);
+        static void Move4(Monster* monster, u_char* x, u_char* y);
+        static void Move5(Monster* monster, u_char* x, u_char* y);
+        static void Move6(Monster* monster, u_char* x, u_char* y);
+        static void Move7(Monster* monster, u_char* x, u_char* y);
+        static void Move8(Monster* monster, u_char* x, u_char* y);
+        static void Move9(Monster* monster, u_char* x, u_char* y);
+        static void Move10(Monster* monster, u_char* x, u_char* y);
+        static void Move11(Monster* monster, u_char* x, u_char* y);
+        static void Move12(Monster* monster, u_char* x, u_char* y);
+        static void Move13(Monster* monster, u_char* x, u_char* y);
+        static void Move14(Monster* monster, u_char* x, u_char* y);
+        static void Move15(Monster* monster, u_char* x, u_char* y);
         /** MOVEMENT PATTERNS **/
     protected:
 
@@ -130,5 +122,7 @@ namespace App {
         u_char cost;
     };
 }
+
+#include "monster/movement.h"
 
 #endif

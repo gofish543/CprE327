@@ -1,6 +1,6 @@
 #include "floor.h"
 
-Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters){
+Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters) {
     this->dungeon = dungeon;
     this->floorNumber = floorNumber;
 
@@ -53,8 +53,13 @@ Floor::~Floor() {
         delete (this->downStairs.at(index));
     }
 
-    for(index = 0; index < this->monsterCount; index++) {
-        delete(this->monsters.at(index));
+    for (index = 0; index < this->monsterCount; index++) {
+        delete (this->monsters.at(index));
+    }
+
+    if(this->getDungeon()->getPlayer() != null) {
+        delete(this->getDungeon()->getPlayer());
+        this->getDungeon()->setPlayer(null);
     }
 }
 
@@ -98,10 +103,9 @@ Floor* Floor::resetCheapestPathToPlayer() {
 }
 
 u_char Floor::getPrintCharacterAt(u_char width, u_char height) {
-    if(this->characters[height][width] == null) {
+    if (this->characters[height][width] == null) {
         return this->terrains[height][width]->getCharacter();
-    }
-    else {
+    } else {
         return this->characters[height][width]->getCharacter();
     }
 }
@@ -212,9 +216,9 @@ Floor* Floor::setTerrainAt(Terrain* terrain, u_char width, u_char height) {
 }
 
 Floor* Floor::setCharacterAt(Character* character, u_char width, u_char height) {
-  this->characters[height][width] = character;
+    this->characters[height][width] = character;
 
-  return this;
+    return this;
 }
 
 Floor* Floor::setTunnelerViewAt(u_char value, u_char width, u_char height) {
@@ -235,25 +239,25 @@ Floor* Floor::setCheapestPathToPlayer(u_char value, u_char width, u_char height)
     return this;
 }
 
-Floor* Floor::setMonsters(std::vector<Monster*> &monsters) {
+Floor* Floor::setMonsters(std::vector<Monster*>& monsters) {
     this->monsters = monsters;
 
     return this;
 }
 
-Floor* Floor::setUpStairs(std::vector<Staircase*> &upStairs) {
+Floor* Floor::setUpStairs(std::vector<Staircase*>& upStairs) {
     this->upStairs = upStairs;
 
     return this;
 }
 
-Floor* Floor::setDownStairs(std::vector<Staircase*> &downStairs) {
+Floor* Floor::setDownStairs(std::vector<Staircase*>& downStairs) {
     this->downStairs = downStairs;
 
     return this;
 }
 
-Floor* Floor::setRooms(std::vector<Room*> &rooms) {
+Floor* Floor::setRooms(std::vector<Room*>& rooms) {
     this->rooms = rooms;
 
     return this;
@@ -537,10 +541,116 @@ Floor* Floor::generateCorridors() {
 }
 
 Floor* Floor::generatePlayer() {
+    if (this->floorNumber == 0 && this->getDungeon()->getPlayer() == null) {
+        // Need to place player
+        // Select random room and random coords and place character there
+        u_char playerX;
+        u_char playerY;
+        auto room = u_short(random_number_between(0, this->roomCount - 1));
+        do {
+            playerX = u_char(random_number_between(this->rooms.at(room)->getStartingX(), this->rooms.at(room)->getStartingX() + this->rooms.at(room)->getWidth() - 1));
+            playerY = u_char(random_number_between(this->rooms.at(room)->getStartingY(), this->rooms.at(room)->getStartingY() + this->rooms.at(room)->getHeight() - 1));
+        } while (this->getTerrainAt(playerX, playerY)->getCharacter() == STAIRCASE_UP_CHARACTER && this->getTerrainAt(playerX, playerY)->getCharacter() == STAIRCASE_DOWN_CHARACTER);
+
+        dungeon->setPlayer(new Player(this, playerX, playerY));
+        this->setCharacterAt(dungeon->getPlayer(), playerX, playerY);
+    }
+
     return this;
 }
 
 Floor* Floor::generateMonsters() {
+    u_char width;
+    u_char height;
+
+    u_short index;
+
+    u_char monsterX;
+    u_char monsterY;
+    u_short monsterRoom;
+
+    u_char classification;
+    u_char speed;
+
+    auto playerRoom = (Room*) this->getTerrainAt(this->dungeon->getPlayer()->getX(), this->dungeon->getPlayer()->getY());
+
+    u_int placementAttempts = 0;
+    u_short maxMonsters = 0;
+    u_char roomIndex;
+
+    // Find out the max number of monsters possible within the program
+    for (roomIndex = 0; roomIndex < this->roomCount; roomIndex++) {
+        if (this->rooms.at(roomIndex)->getId() == playerRoom->getId() && this->rooms.at(roomIndex)->getFloor() == dungeon->getPlayer()->getFloor()) {
+            continue;
+        } else {
+            maxMonsters += (this->rooms.at(roomIndex)->getWidth() * this->rooms.at(roomIndex)->getHeight());
+        }
+    }
+
+    // If there are more monsters trying to be placed than monsters available, set the max number of monsters
+    if (this->monsterCount > maxMonsters) {
+        this->monsterCount = maxMonsters;
+    }
+
+    for (index = 0; index < this->monsterCount; index++) {
+        placementAttempts = 0;
+
+        speed = u_char(random_number_between(MONSTER_MIN_SPEED, MONSTER_MAX_SPEED));
+        classification = 0;
+
+        // If Intelligent
+        if (random_number_between(false, true)) {
+            classification |= MONSTER_INTELLIGENT_VALUE;
+        }
+        // If Telepathic
+        if (random_number_between(false, true)) {
+            classification |= MONSTER_TELEPATHIC_VALUE;
+        }
+        // If Tunneler
+        if (random_number_between(false, true)) {
+            classification |= MONSTER_TUNNELER_VALUE;
+        }
+        // If Erratic
+        if (random_number_between(false, true)) {
+            classification |= MONSTER_ERRATIC_VALUE;
+        }
+
+
+        // Select random spots until they are only surrounded by room space
+        do {
+            do {
+                monsterRoom = u_char(random_number_between(0, this->roomCount - 1));
+            } while (this->rooms.at(monsterRoom)->getId() == playerRoom->getId() && this->rooms.at(monsterRoom)->getFloor() == dungeon->getPlayer()->getFloor());
+
+            // Select random spot inside the room
+            monsterX = u_char(random_number_between(this->rooms.at(monsterRoom)->getStartingX(), this->rooms.at(monsterRoom)->getStartingX() + this->rooms.at(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(this->rooms.at(monsterRoom)->getStartingY(), this->rooms.at(monsterRoom)->getStartingY() + this->rooms.at(monsterRoom)->getHeight() - 1));
+
+            placementAttempts++;
+        } while (this->characters[monsterY][monsterX] != null && placementAttempts < 25);
+
+        // If failed to find, just man handle it through
+        if (placementAttempts >= 25) {
+            for (roomIndex = 0; roomIndex < this->roomCount; roomIndex++) {
+                if (this->rooms.at(roomIndex)->getId() == playerRoom->getId() && this->rooms.at(roomIndex)->getFloor() == dungeon->getPlayer()->getFloor()) {
+                    continue;
+                }
+                // Start looping and find the next open spot
+                for (height = this->rooms.at(roomIndex)->getStartingY(); height < this->rooms.at(roomIndex)->getStartingY() + this->rooms.at(roomIndex)->getHeight(); height++) {
+                    for (width = this->rooms.at(roomIndex)->getStartingX(); width < this->rooms.at(roomIndex)->getStartingX() + this->rooms.at(roomIndex)->getWidth(); width++) {
+                        if (this->characters[height][width] == null) {
+                            monsterX = width;
+                            monsterY = height;
+                        }
+                    }
+                }
+            }
+        }
+
+        this->monsters.push_back(new Monster(this, monsterX, monsterY, classification, speed));
+        this->characters[monsterY][monsterX] = this->monsters.at(index);
+    }
+
     return this;
 }
 
