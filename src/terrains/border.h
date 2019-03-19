@@ -10,15 +10,17 @@ namespace App {
     class Border : public Terrain {
     public:
         Border(Floor* floor, u_short id, u_char x, u_char y, u_char character);
+        ~Border();
 
+        /** GETTERS **/
+        /** GETTERS **/
+
+        /** SETTERS **/
+        /** SETTERS **/
     protected:
 
     private:
     };
 }
-
-using App::Floor;
-using App::Terrain;
-using App::Border;
 
 #endif

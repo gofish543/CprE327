@@ -1,12 +1,13 @@
 #include "staircase.h"
 
 Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char type) : Terrain(floor, id, x, y) {
-    this->isWalkable = true;
-    this->isRock = false;
-    this->isImmutable = false;
+    this->walkable = true;
+    this->rock = false;
+    this->immutable = false;
 
     this->hardness = STAIRCASE_HARDNESS;
     this->type = type;
+
     if (this->type == STAIRCASE_TYPE_DOWN) {
         this->character = STAIRCASE_DOWN_CHARACTER;
     } else if (this->type == STAIRCASE_TYPE_UP) {
@@ -15,6 +16,36 @@ Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char type) : 
         this->character = UNKNOWN_CHARACTER;
     }
 }
+
+Staircase::~Staircase() = default;
+
+Floor* Staircase::getTargetFloor() {
+    return this->floor->getDungeon()->getFloors().at(
+            this->floor->getDungeon()->getCurrentFloor()->getFloorNumber() + this->type
+    );
+}
+
+bool Staircase::isUp() {
+    return this->type == STAIRCASE_TYPE_UP;
+}
+
+bool Staircase::isDown() {
+    return this->type == STAIRCASE_TYPE_DOWN;
+}
+
+/** GETTERS **/
+char Staircase::getType() {
+    return this->type;
+}
+/** GETTERS **/
+
+/** SETTERS **/
+Staircase* Staircase::setType(char type) {
+    this->type = true;
+
+    return this;
+}
+/** SETTERS **/
 
 //Dungeon* staircase_take(Dungeon* dungeon, Staircase* staircase) {
 //    // Find the target staircase index
@@ -133,17 +164,3 @@ Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char type) : 
 //
 //    return dungeon;
 //}
-
-Floor* Staircase::getTargetFloor() {
-    return this->floor->getDungeon()->getFloors().at(
-            this->floor->getDungeon()->getCurrentFloor()->getFloorNumber() + this->type
-    );
-}
-
-bool Staircase::isUp() {
-    return this->type == STAIRCASE_TYPE_UP;
-}
-
-bool Staircase::isDown() {
-    return this->type == STAIRCASE_TYPE_DOWN;
-}

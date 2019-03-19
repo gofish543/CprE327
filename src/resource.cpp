@@ -8,12 +8,12 @@ int random_number_between(int min, int max) {
     ::gettimeofday(&time, null);
     u_int defaultSeed;
     if (fd == 0) {
-        defaultSeed= hash3((u_int)time.tv_sec,(u_int) time.tv_usec, (u_int)getpid());
+        defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
     } else {
         size_t buffer[1];
         lseek(fd, offset, 0);
         if (read(fd, buffer, sizeof(size_t)) != sizeof(size_t)) {
-            defaultSeed = hash3((u_int)time.tv_sec,(u_int) time.tv_usec, (u_int)getpid());
+            defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
         } else {
             defaultSeed = (u_int) buffer[0];
             offset += 8;
@@ -32,8 +32,7 @@ int random_number_between(int min, int max) {
     return ((u_int) randomEngine()) % ((max + 1) - min) + min;
 }
 
-unsigned int hash3(unsigned int h1, unsigned int h2, unsigned int h3)
-{
+unsigned int hash3(unsigned int h1, unsigned int h2, unsigned int h3) {
     return (((h1 * 2654435789U) + h2) * 2654435789U) + h3;
 }
 

@@ -15,8 +15,6 @@
 
 #define null NULL
 
-#define TIME_HALF_SECOND_MICRO_SECONDS 500000
-
 typedef unsigned char u_char;
 typedef unsigned short u_short;
 typedef unsigned int u_int;

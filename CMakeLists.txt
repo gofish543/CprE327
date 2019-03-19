@@ -3,7 +3,7 @@ project(CprE327)
 
 set(CMAKE_CXX_STANDARD 14)
 
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB TERRAINS "src/terrains/*.cpp")
+file(GLOB INCLUDES "include/*")
+file(GLOB SOURCES "src/*")
 
-add_executable(CprE327 ${SOURCES} ${TERRAINS} "./include/forward_declarations.h" src/vendor/queue.cpp src/vendor/queue.h)
+add_executable(CprE327 ${INCLUDES} ${SOURCES})

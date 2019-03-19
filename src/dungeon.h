@@ -21,36 +21,47 @@ namespace App {
     class Dungeon {
 
     public:
-        explicit Dungeon(int argc, char* argv[]);
+        Dungeon(int argc, char* argv[]);
         ~Dungeon();
 
         std::string* prependText(std::string message, ...);
         std::string* appendText(std::string message, ...);
 
-        WINDOW* getWindow();
-        Floor* getCurrentFloor();
+        /** GETTERS **/
         std::vector<Floor*> getFloors();
+        Floor* getCurrentFloor();
         Settings* getSettings();
+        EventManager* getEventManager();
+        Player* getPlayer();
+        WINDOW* getWindow();
         u_char getFloorCount();
         std::string* getTextLines();
         std::string getText(u_char index);
+        /** GETTERS **/
 
+        /** SETTERS **/
+        Dungeon* setFloors(std::vector<Floor*> floors);
         Dungeon* setCurrentFloor(Floor* floor);
-
+        Dungeon* setSettings(Settings* settings);
+        Dungeon* setEventManager(EventManager eventManager);
+        Dungeon* setPlayer(Player* player);
+        Dungeon* setWindow(WINDOW* window);
+        Dungeon* setFloorCount(u_char floorCount);
+        /** SETTERS **/
     protected:
 
     private:
-        Settings* settings;
-        WINDOW* window;
-        Floor* floor;
         std::vector<Floor*> floors;
+        Floor* floor;
+        Settings* settings;
+        EventManager* eventManager;
+        Player* player;
+
+        WINDOW* window;
+
         u_char floorCount;
         std::string textLines[DUNGEON_TEXT_LINES];
     };
 }
-
-using App::Dungeon;
-using App::Settings;
-using App::Floor;
 
 #endif

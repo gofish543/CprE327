@@ -1,18 +1,16 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
+#include "../include/forward_declarations.h"
+#include "characters/monster.h"
+#include "dungeon.h"
+#include "floor.h"
+#include "resource.h"
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
 #include <cstdarg>
 #include <ncurses.h>
-#include "dungeon.h"
-#include "floor.h"
-#include "resource.h"
-
-using App::Dungeon;
-using App::Settings;
-using App::Floor;
 
 void output(Dungeon* dungeon, void (* targetOutputFunction)(Dungeon*));
 

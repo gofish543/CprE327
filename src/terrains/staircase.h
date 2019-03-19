@@ -13,19 +13,24 @@ namespace App {
     class Staircase : public Terrain {
     public:
         Staircase(Floor* floor, u_short id, u_char x, u_char y, char type);
+        ~Staircase();
 
         Floor* getTargetFloor();
         bool isUp();
         bool isDown();
+
+        /** GETTERS **/
+        char getType();
+        /** GETTERS **/
+
+        /** SETTERS **/
+        Staircase* setType(char type);
+        /** SETTERS **/
     protected:
 
     private:
         char type;
     };
 }
-
-using App::Floor;
-using App::Terrain;
-using App::Staircase;
 
 #endif

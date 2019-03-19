@@ -6,25 +6,33 @@
 #include "../resource.h"
 
 namespace App {
-    class Floor;
-
     class Terrain {
     public:
-        explicit Terrain(Floor* floor, u_short id, u_char x, u_char y);
-
-        Terrain* setCharacter(u_char character);
-        Terrain* setHardness(u_char hardness);
-
+        Terrain(Floor* floor, u_short id, u_char x, u_char y);
+        ~Terrain();
+        /** GETTERS **/
         Floor* getFloor();
         u_short getId();
         u_char getX();
         u_char getY();
         u_char getCharacter();
         u_char getHardness();
+        bool isWalkable();
+        bool isImmutable();
+        bool isRock();
+        /** GETTERS **/
 
-        bool isWalkable;
-        bool isImmutable;
-        bool isRock;
+        /** SETTERS **/
+        Terrain* setFloor(Floor* floor);
+        Terrain* setId(u_short id);
+        Terrain* setX(u_char x);
+        Terrain* setY(u_char y);
+        Terrain* setCharacter(u_char character);
+        Terrain* setHardness(u_char hardness);
+        Terrain* setWalkable(bool walkable);
+        Terrain* setImmutable(bool immutable);
+        Terrain* setRock(bool rock);
+        /** SETTERS **/
     protected:
         Floor* floor;
 
@@ -35,12 +43,14 @@ namespace App {
 
         u_char character;
         u_char hardness;
+
+        bool walkable;
+        bool immutable;
+        bool rock;
+
     private:
 
     };
 }
-
-using App::Floor;
-using App::Terrain;
 
 #endif

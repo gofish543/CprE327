@@ -7,13 +7,17 @@ Settings::Settings(int argc, char* argv[]) {
     this->load = false;
     this->save = false;
     this->expandedPrint = false;
-    this->setNumberOfMonsters = false;
+    this->canNumberOfMonsters = false;
     this->nCursesPrint = true;
+    this->fogOfWar = true;
 
     if (this->loadArguments(argc, argv)) {
+        std::cout << "Failed to load settings... Terminating the application" << std::endl;
         exit(1);
     }
 }
+
+Settings::~Settings() = default;
 
 int Settings::loadArguments(int argc, char* argv[]) {
     std::string homePath = getenv("HOME");
@@ -95,7 +99,7 @@ int Settings::loadArguments(int argc, char* argv[]) {
                 return 1;
             }
 
-            this->setNumberOfMonsters = true;
+            this->canNumberOfMonsters = true;
             this->numberOfMonsters = (u_short) strtol(argv[index + 1], null, 0);
         } else if (strcmp(argv[index], "--expanded_print") == 0 || strcmp(argv[index], "-ep") == 0) {
             this->expandedPrint = true;
@@ -138,6 +142,7 @@ int Settings::createFolder(const std::string& path) {
     return 0;
 }
 
+/** GETTERS **/
 bool Settings::doExpandPrint() {
     return this->expandedPrint;
 }
@@ -147,7 +152,7 @@ bool Settings::doNCursesPrint() {
 }
 
 bool Settings::doNumberOfMonsters() {
-    return this->setNumberOfMonsters;
+    return this->canNumberOfMonsters;
 }
 
 bool Settings::doSave() {
@@ -156,6 +161,10 @@ bool Settings::doSave() {
 
 bool Settings::doLoad() {
     return this->load;
+}
+
+bool Settings::doFogOfWar() {
+    return this->fogOfWar;
 }
 
 u_char Settings::getFileVersion() {
@@ -173,3 +182,66 @@ std::string Settings::getLoadPath() {
 u_short Settings::getNumberOfMonsters() {
     return this->numberOfMonsters;
 }
+/** GETTERS **/
+
+/** SETTERS **/
+Settings* Settings::setExpandedPrint(bool expandedPrint) {
+    this->expandedPrint = expandedPrint;
+
+    return this;
+}
+
+Settings* Settings::setNCursesPrint(bool nCursesPrint) {
+    this->nCursesPrint = nCursesPrint;
+
+    return this;
+}
+
+Settings* Settings::setCanNumberOfMonsters(bool canNumberOfMonsters) {
+    this->canNumberOfMonsters = canNumberOfMonsters;
+
+    return this;
+}
+
+Settings* Settings::setSave(bool save) {
+    this->save = save;
+
+    return this;
+}
+
+Settings* Settings::setLoad(bool load) {
+    this->load = load;
+
+    return this;
+}
+
+Settings* Settings::setFogOfWar(bool fogOfWar) {
+    this->fogOfWar = fogOfWar;
+
+    return this;
+}
+
+Settings* Settings::setFileVersion(u_char fileVersion) {
+    this->fileVersion = fileVersion;
+
+    return this;
+}
+
+Settings* Settings::setSavePath(std::string savePath) {
+    this->savePath = std::move(savePath);
+
+    return this;
+}
+
+Settings* Settings::setLoadPath(std::string loadPath) {
+    this->loadPath = std::move(loadPath);
+
+    return this;
+}
+
+Settings* Settings::setNumberOfMonsters(u_short numberOfMonsters) {
+    this->numberOfMonsters = numberOfMonsters;
+
+    return this;
+}
+/** SETTERS **/

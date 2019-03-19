@@ -17,10 +17,19 @@ namespace App {
     public:
         Room(Floor* floor, u_short id, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height);
 
+        /** GETTERS **/
         u_char getWidth();
         u_char getHeight();
         u_char getStartingX();
         u_char getStartingY();
+        /** GETTERS **/
+
+        /** SETTERS **/
+        Room* setWidth(u_char width);
+        Room* setHeight(u_char height);
+        Room* setStartingX(u_char startingX);
+        Room* setStartingY(u_char startingY);
+        /** SETTERS */
 
     protected:
 
@@ -31,9 +40,5 @@ namespace App {
         u_char startingY;
     };
 }
-
-using App::Floor;
-using App::Terrain;
-using App::Room;
 
 #endif

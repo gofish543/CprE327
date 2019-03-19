@@ -6,7 +6,7 @@ typedef struct Player Player;
 
 #define PLAYER_SPEED 10
 
-#define player_next_action(player)   (player->character->floor->dungeon->eventManager->tick + ( 1000 / player->speed))
+#defineplayer_next_action(player)   (player->character->floor->dungeon->eventManager->tick + ( 1000 / player->speed))
 
 #include <stdio.h>
 #include <stdlib.h>

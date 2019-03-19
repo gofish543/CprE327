@@ -1,6 +1,6 @@
 #include "floor.h"
 
-Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters) {
+Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters){
     this->dungeon = dungeon;
     this->floorNumber = floorNumber;
 
@@ -26,6 +26,7 @@ Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short st
             ->generateRooms()
             ->generateCorridors()
             ->generateRock()
+            ->generatePlayer()
             ->generateMonsters();
 }
 
@@ -51,29 +52,91 @@ Floor::~Floor() {
     for (index = 0; index < this->stairDownCount; index++) {
         delete (this->downStairs.at(index));
     }
+
+    for(index = 0; index < this->monsterCount; index++) {
+        delete(this->monsters.at(index));
+    }
 }
 
-Floor* Floor::setHardnessAt(u_char hardness, u_char width, u_char height) {
-    this->getTerrainAt(width, height)->setHardness(hardness);
+Floor* Floor::resetTunnelerView() {
+    u_char height;
+    u_char width;
+
+    for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
+        for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            this->tunnelerView[height][width] = U_CHAR_MIN;
+        }
+    }
 
     return this;
+}
+
+Floor* Floor::resetNonTunnelerView() {
+    u_char height;
+    u_char width;
+
+    for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
+        for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            this->nonTunnelerView[height][width] = U_CHAR_MIN;
+        }
+    }
+
+    return this;
+}
+
+Floor* Floor::resetCheapestPathToPlayer() {
+    u_char height;
+    u_char width;
+
+    for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
+        for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            this->cheapestPathToPlayer[height][width] = U_CHAR_MIN;
+        }
+    }
+
+    return this;
+}
+
+u_char Floor::getPrintCharacterAt(u_char width, u_char height) {
+    if(this->characters[height][width] == null) {
+        return this->terrains[height][width]->getCharacter();
+    }
+    else {
+        return this->characters[height][width]->getCharacter();
+    }
+}
+
+/** GETTERS **/
+Dungeon* Floor::getDungeon() {
+    return this->dungeon;
+}
+
+u_char Floor::getFloorNumber() {
+    return this->floorNumber;
+}
+
+u_short Floor::getRoomCount() {
+    return this->roomCount;
+}
+
+u_short Floor::getStairUpCount() {
+    return this->stairUpCount;
+}
+
+u_short Floor::getStairDownCount() {
+    return this->stairDownCount;
+}
+
+u_short Floor::getMonsterCount() {
+    return this->monsterCount;
 }
 
 Terrain* Floor::getTerrainAt(u_char width, u_char height) {
     return this->terrains[height][width];
 }
 
-u_char Floor::getCharacterAt(u_char width, u_char height) {
-//    if(this->characters[height][width] == null) {
-    return this->getTerrainAt(width, height)->getCharacter();
-//    }
-//    else {
-//        return this->characters[height][width]->getCharacter();
-//    }
-}
-
-u_char Floor::getHardnessAt(u_char width, u_char height) {
-    return this->getTerrainAt(width, height)->getHardness();
+Character* Floor::getCharacterAt(u_char width, u_char height) {
+    return this->characters[height][width];
 }
 
 u_char Floor::getTunnelerViewAt(u_char width, u_char height) {
@@ -88,6 +151,115 @@ u_char Floor::getCheapestPathToPlayerAt(u_char width, u_char height) {
     return this->cheapestPathToPlayer[height][width];
 }
 
+std::vector<Monster*> Floor::getMonsters() {
+    return this->monsters;
+}
+
+std::vector<Staircase*> Floor::getUpStairs() {
+    return this->upStairs;
+}
+
+std::vector<Staircase*> Floor::getDownStairs() {
+    return this->downStairs;
+}
+
+std::vector<Room*> Floor::getRooms() {
+    return this->rooms;
+}
+/** GETTERS **/
+
+/** SETTERS **/
+Floor* Floor::setDungeon(Dungeon* dungeon) {
+    this->dungeon = dungeon;
+
+    return this;
+}
+
+Floor* Floor::setFloorNumber(u_char floorNumber) {
+    this->floorNumber = floorNumber;
+
+    return this;
+}
+
+Floor* Floor::setRoomCount(u_short roomCount) {
+    this->roomCount = roomCount;
+
+    return this;
+}
+
+Floor* Floor::setStairUpCount(u_short stairUpCount) {
+    this->stairUpCount = stairUpCount;
+
+    return this;
+}
+
+Floor* Floor::setStairDownCount(u_short stairDownCount) {
+    this->stairDownCount = stairDownCount;
+
+    return this;
+}
+
+Floor* Floor::setMonsterCount(u_short monsterCount) {
+    this->monsterCount = monsterCount;
+
+    return this;
+}
+
+Floor* Floor::setTerrainAt(Terrain* terrain, u_char width, u_char height) {
+    this->terrains[height][width] = terrain;
+
+    return this;
+}
+
+Floor* Floor::setCharacterAt(Character* character, u_char width, u_char height) {
+  this->characters[height][width] = character;
+
+  return this;
+}
+
+Floor* Floor::setTunnelerViewAt(u_char value, u_char width, u_char height) {
+    this->tunnelerView[height][width] = value;
+
+    return this;
+}
+
+Floor* Floor::setNonTunnelerViewAt(u_char value, u_char width, u_char height) {
+    this->nonTunnelerView[height][width] = value;
+
+    return this;
+}
+
+Floor* Floor::setCheapestPathToPlayer(u_char value, u_char width, u_char height) {
+    this->cheapestPathToPlayer[height][width] = value;
+
+    return this;
+}
+
+Floor* Floor::setMonsters(std::vector<Monster*> &monsters) {
+    this->monsters = monsters;
+
+    return this;
+}
+
+Floor* Floor::setUpStairs(std::vector<Staircase*> &upStairs) {
+    this->upStairs = upStairs;
+
+    return this;
+}
+
+Floor* Floor::setDownStairs(std::vector<Staircase*> &downStairs) {
+    this->downStairs = downStairs;
+
+    return this;
+}
+
+Floor* Floor::setRooms(std::vector<Room*> &rooms) {
+    this->rooms = rooms;
+
+    return this;
+}
+/** SETTERS **/
+
 Floor* Floor::initializeToNull() {
     u_char height;
     u_char width;
@@ -95,9 +267,9 @@ Floor* Floor::initializeToNull() {
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             this->terrains[height][width] = null;
-            this->tunnelerView[height][width] = 0;
-            this->nonTunnelerView[height][width] = 0;
-            this->cheapestPathToPlayer[height][width] = 0;
+            this->tunnelerView[height][width] = U_CHAR_MIN;
+            this->nonTunnelerView[height][width] = U_CHAR_MIN;
+            this->cheapestPathToPlayer[height][width] = U_CHAR_MIN;
         }
     }
 
@@ -164,7 +336,7 @@ Floor* Floor::generateRock() {
         }
     }
 
-    for(index = 0; index < 3; index++) {
+    for (index = 0; index < 3; index++) {
         for (y = 0; y < DUNGEON_FLOOR_HEIGHT; y++) {
             for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
                 for (s = t = p = 0; p < 5; p++) {
@@ -172,12 +344,12 @@ Floor* Floor::generateRock() {
                         if (y + (p - 2) >= 0 && y + (p - 2) < DUNGEON_FLOOR_HEIGHT &&
                             x + (q - 2) >= 0 && x + (q - 2) < DUNGEON_FLOOR_WIDTH) {
                             s += gaussian[p][q];
-                            t += this->getHardnessAt(u_char(x + (q - 2)), u_char(y + (p - 2))) * gaussian[p][q];
+                            t += this->getTerrainAt(u_char(x + (q - 2)), u_char(y + (p - 2)))->getHardness() * gaussian[p][q];
                         }
                     }
                 }
-                if(this->terrains[y][x]!= null && this->terrains[y][x]->isRock) {
-                    this->setHardnessAt(u_char(t / s), x, y);
+                if (this->terrains[y][x] != null && this->terrains[y][x]->isRock()) {
+                    this->getTerrainAt(x, y)->setHardness(u_char(t / s));
                 }
             }
         }
@@ -311,9 +483,9 @@ Floor* Floor::generateCorridors() {
             firstRoomY = u_char(random_number_between(this->rooms[index]->getStartingY(), this->rooms[index]->getStartingY() + this->rooms[index]->getHeight() - 1));
 
             upValid = this->terrains[firstRoomY - 1][firstRoomX] == null;
-            downValid = this->terrains[firstRoomY + 1][firstRoomX]== null;
-            leftValid = this->terrains[firstRoomY][firstRoomX - 1]== null;
-            rightValid = this->terrains[firstRoomY][firstRoomX + 1]== null;
+            downValid = this->terrains[firstRoomY + 1][firstRoomX] == null;
+            leftValid = this->terrains[firstRoomY][firstRoomX - 1] == null;
+            rightValid = this->terrains[firstRoomY][firstRoomX + 1] == null;
         } while (upValid || downValid || leftValid || rightValid);
 
         // Second we want to select a random spot within the next room, but it needs to be on the border
@@ -321,10 +493,10 @@ Floor* Floor::generateCorridors() {
             secondRoomX = u_char(random_number_between(this->rooms[index + 1]->getStartingX(), this->rooms[index + 1]->getStartingX() + this->rooms[index + 1]->getWidth() - 1));
             secondRoomY = u_char(random_number_between(this->rooms[index + 1]->getStartingY(), this->rooms[index + 1]->getStartingY() + this->rooms[index + 1]->getHeight() - 1));
 
-            upValid = this->terrains[secondRoomY - 1][secondRoomX]== null;
-            downValid = this->terrains[secondRoomY + 1][secondRoomX]== null;
+            upValid = this->terrains[secondRoomY - 1][secondRoomX] == null;
+            downValid = this->terrains[secondRoomY + 1][secondRoomX] == null;
             leftValid = this->terrains[secondRoomY][secondRoomX - 1] == null;
-            rightValid = this->terrains[secondRoomY][secondRoomX + 1]== null;
+            rightValid = this->terrains[secondRoomY][secondRoomX + 1] == null;
         } while (upValid || downValid || leftValid || rightValid);
 
         // Now connect them in the X direction
@@ -350,7 +522,7 @@ Floor* Floor::generateCorridors() {
                 tempY++;
             }
 
-            if (this->terrains[tempY][firstRoomX]== null) {
+            if (this->terrains[tempY][firstRoomX] == null) {
                 this->terrains[tempY][firstRoomX] = new Corridor(this, 0, firstRoomX, tempY);
             }
         }
@@ -364,42 +536,34 @@ Floor* Floor::generateCorridors() {
     return this;
 }
 
+Floor* Floor::generatePlayer() {
+    return this;
+}
+
 Floor* Floor::generateMonsters() {
     return this;
 }
 
-Dungeon* Floor::getDungeon() {
-    return this->dungeon;
+Floor* Floor::loadBorders() {
+    return this;
 }
 
-u_char Floor::getFloorNumber() {
-    return this->floorNumber;
+Floor* Floor::loadRock() {
+    return this;
 }
 
-u_short Floor::getRoomCount() {
-    return this->roomCount;
+Floor* Floor::loadRooms() {
+    return this;
 }
 
-u_short Floor::getStairUpCount() {
-    return this->stairUpCount;
+Floor* Floor::loadCorridors() {
+    return this;
 }
 
-u_short Floor::getStairDownCount() {
-    return this->stairDownCount;
+Floor* Floor::loadPlayer() {
+    return this;
 }
 
-u_short Floor::getMonsterCount() {
-    return this->monsterCount;
-}
-
-const std::vector<Staircase*> Floor::getUpStairs() {
-    return this->upStairs;
-}
-
-const std::vector<Staircase*> Floor::getDownStairs() {
-    return this->downStairs;
-}
-
-const std::vector<Room*> Floor::getRooms() {
-    return this->rooms;
+Floor* Floor::loadMonsters() {
+    return this;
 }

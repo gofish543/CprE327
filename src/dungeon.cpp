@@ -56,6 +56,17 @@ Dungeon::~Dungeon() {
     delete (this->settings);
 }
 
+std::string* Dungeon::prependText(std::string message, ...) {
+    u_char index;
+
+    for (index = 1; index < DUNGEON_TEXT_LINES; index++) {
+        this->textLines[index - 1] = this->textLines[index];
+    }
+    this->textLines[0] = std::move(message);
+
+    return this->textLines;
+}
+
 std::string* Dungeon::appendText(std::string message, ...) {
     u_char index;
 
@@ -68,15 +79,25 @@ std::string* Dungeon::appendText(std::string message, ...) {
     return this->textLines;
 }
 
-std::string* Dungeon::prependText(std::string message, ...) {
-    u_char index;
+/** GETTERS **/
+std::vector<Floor*> Dungeon::getFloors() {
+    return this->floors;
+}
 
-    for (index = 1; index < DUNGEON_TEXT_LINES; index++) {
-        this->textLines[index - 1] = this->textLines[index];
-    }
-    this->textLines[0] = std::move(message);
+Floor* Dungeon::getCurrentFloor() {
+    return this->floor;
+}
 
-    return this->textLines;
+Settings* Dungeon::getSettings() {
+    return this->settings;
+}
+
+EventManager* Dungeon::getEventManager() {
+    return this->eventManager;
+}
+
+Player* Dungeon::getPlayer() {
+    return this->player;
 }
 
 WINDOW* Dungeon::getWindow() {
@@ -87,18 +108,6 @@ u_char Dungeon::getFloorCount() {
     return this->floorCount;
 }
 
-Floor* Dungeon::getCurrentFloor() {
-    return this->floor;
-}
-
-std::vector<Floor*> Dungeon::getFloors() {
-    return this->floors;
-}
-
-Settings* Dungeon::getSettings() {
-    return this->settings;
-}
-
 std::string* Dungeon::getTextLines() {
     return this->textLines;
 }
@@ -106,9 +115,48 @@ std::string* Dungeon::getTextLines() {
 std::string Dungeon::getText(u_char index) {
     return this->textLines[index];
 }
+/** GETTERS **/
+
+/** SETTERS **/
+Dungeon* Dungeon::setFloors(std::vector<Floor*> floors) {
+    this->floors = floors;
+
+    return this;
+}
 
 Dungeon* Dungeon::setCurrentFloor(Floor* floor) {
     this->floor = floor;
 
     return this;
 }
+
+Dungeon* Dungeon::setSettings(Settings* settings) {
+    this->settings = settings;
+
+    return this;
+}
+
+Dungeon* Dungeon::setEventManager(EventManager eventManager) {
+    this->eventManager = eventManager;
+
+    return this;
+}
+
+Dungeon* Dungeon::setPlayer(Player* player) {
+    this->player = player;
+
+    return this;
+}
+
+Dungeon* Dungeon::setWindow(WINDOW* window) {
+    this->window = window;
+
+    return this;
+}
+
+Dungeon* Dungeon::setFloorCount(u_char floorCount) {
+    this->floorCount = floorCount;
+
+    return this;
+}
+/** SETTERS **/

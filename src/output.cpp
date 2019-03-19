@@ -73,9 +73,9 @@ void output_print_floor(Floor* floor) {
 
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
-                print(dungeon->getWindow(), ncurses, " %c ", floor->getCharacterAt(width, height));
+                print(dungeon->getWindow(), ncurses, " %c ", floor->getPrintCharacterAt(width, height));
             } else {
-                print(dungeon->getWindow(), ncurses, "%c", floor->getCharacterAt(width, height));
+                print(dungeon->getWindow(), ncurses, "%c", floor->getPrintCharacterAt(width, height));
             }
         }
 
@@ -105,16 +105,16 @@ void output_print_floor_hardness(Floor* floor) {
 
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, " %c ", floor->getCharacterAt(width, height));
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, " %c ", floor->getTerrainAt(width, height)->getCharacter());
                 } else {
-                    print(dungeon->getWindow(), ncurses, "%3d", floor->getHardnessAt(width, height));
+                    print(dungeon->getWindow(), ncurses, "%3d", floor->getTerrainAt(width, height)->getHardness());
                 }
             } else {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, "%c", floor->getCharacterAt(width, height));
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, "%c",  floor->getTerrainAt(width, height)->getCharacter());
                 } else {
-                    print(dungeon->getWindow(), ncurses, "%d", floor->getHardnessAt(width, height) % 10);
+                    print(dungeon->getWindow(), ncurses, "%d", floor->getTerrainAt(width, height)->getHardness() % 10);
                 }
             }
         }
@@ -145,14 +145,14 @@ void output_print_floor_tunneler_view(Floor* floor) {
 
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, " %c ", floor->getCharacterAt(width, height));
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, " %c ", floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%3d", floor->getTunnelerViewAt(width, height));
                 }
             } else {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, "%c", floor->getCharacterAt(width, height));
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, "%c",  floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%d", floor->getTunnelerViewAt(width, height) % 10);
                 }
@@ -185,17 +185,17 @@ void output_print_floor_non_tunneler_view(Floor* floor) {
 
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, " %c ", floor->getCharacterAt(width, height));
-                } else if (floor->getTerrainAt(width, height)->isRock) {
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, " %c ",  floor->getTerrainAt(width, height)->getCharacter());
+                } else if (floor->getTerrainAt(width, height)->isRock()) {
                     print(dungeon->getWindow(), ncurses, "   ");
                 } else {
-                    print(dungeon->getWindow(), ncurses, "%3d", floor->getNonTunnelerViewAt(width, height));
+                    print(dungeon->getWindow(), ncurses, "%3d",  floor->getTerrainAt(width, height)->getCharacter());
                 }
             } else {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
                     print(dungeon->getWindow(), ncurses, "%c", floor->getCharacterAt(width, height));
-                } else if (floor->getTerrainAt(width, height)->isRock) {
+                } else if (floor->getTerrainAt(width, height)->isRock()) {
                     print(dungeon->getWindow(), ncurses, " ");
                 } else {
                     print(dungeon->getWindow(), ncurses, "%d", floor->getNonTunnelerViewAt(width, height) % 10);
@@ -229,14 +229,14 @@ void output_print_floor_shortest_path(Floor* floor) {
 
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (expanded) {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, " %c ", floor->getCharacterAt(width, height));
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, " %c ",  floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%3d", floor->getCheapestPathToPlayerAt(width, height));
                 }
             } else {
-                if (floor->getTerrainAt(width, height)->isImmutable) {
-                    print(dungeon->getWindow(), ncurses, "%c", floor->getCharacterAt(width, height));
+                if (floor->getTerrainAt(width, height)->isImmutable()) {
+                    print(dungeon->getWindow(), ncurses, "%c",  floor->getTerrainAt(width, height)->getCharacter());
                 } else {
                     print(dungeon->getWindow(), ncurses, "%d", floor->getCheapestPathToPlayerAt(width, height) % 10);
                 }
@@ -262,14 +262,14 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
     print(window, ncurses, "| MONSTER | INTELLIGENT | TELEPATHIC | TUNNELER | ERRATIC |      LOCATION      |\n");
     print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
     for (index = startIndex, height = 0; height < DUNGEON_FLOOR_HEIGHT && index < floor->getMonsterCount(); index++, height++) {
-//        print(window, ncurses, "| %7d | %11s | %10s | %8s | %7s | %18s |\n",
-//              index,
-//              monster_is_intelligent(floor->monsters[index]) ? "YES" : "NO",
-//              monster_is_telepathic(floor->monsters[index]) ? "YES" : "NO",
-//              monster_is_tunneler(floor->monsters[index]) ? "YES" : "NO",
-//              monster_is_erratic(floor->monsters[index]) ? "YES" : "NO",
-//              monster_location_string(floor->monsters[index], locationBuffer)
-//        );
+        print(window, ncurses, "| %7d | %11s | %10s | %8s | %7s | %18s |\n",
+              index,
+              monster_is_intelligent(floor->getMonsters().at(index)) ? "YES" : "NO",
+              monster_is_telepathic(floor->getMonsters().at(index)) ? "YES" : "NO",
+              monster_is_tunneler(floor->getMonsters().at(index)) ? "YES" : "NO",
+              monster_is_erratic(floor->getMonsters().at(index)) ? "YES" : "NO",
+              monster_location_string(floor->getMonsters().at(index), locationBuffer)
+        );
     }
     print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
 
@@ -285,25 +285,25 @@ void output_print_endgame(Dungeon* dungeon) {
         clear();
     }
 
-//    if (dungeon->getPlayer()->requestTerminate) {
-//        print(dungeon->getWindow(), ncurses, "Thank you for playing, safely exiting\n");
-//    } else if (dungeon->getPlayer()->isAlive && monster_alive_count(dungeon) > 0) {
-//        print(dungeon->getWindow(), ncurses, "Queue completely empty, terminating the program safely\n");
-//    } else {
-//        u_char height;
-//        if (!ncurses) {
-//            for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
-//                print(dungeon->getWindow(), ncurses, "\n");
-//            }
-//        }
-//
-//        print(dungeon->getWindow(), ncurses, "+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
-//        print(dungeon->getWindow(), ncurses, "| Player Level   | %5d |                                                    |\n", dungeon->player->level);
-//        print(dungeon->getWindow(), ncurses, "| Days Survived  | %5d |                                                    |\n", dungeon->player->daysSurvived);
-//        print(dungeon->getWindow(), ncurses, "| Monsters Slain | %5d |                                                    |\n", dungeon->player->monstersSlain);
-//        print(dungeon->getWindow(), ncurses, "| Alive          | %5d |                                                    |\n", dungeon->player->isAlive);
-//        print(dungeon->getWindow(), ncurses, "+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
-//    }
+    if (dungeon->getPlayer()->getRequestTerminate()) {
+        print(dungeon->getWindow(), ncurses, "Thank you for playing, safely exiting\n");
+    } else if (dungeon->getPlayer()->getIsAlive() && monster_alive_count(dungeon) > 0) {
+        print(dungeon->getWindow(), ncurses, "Queue completely empty, terminating the program safely\n");
+    } else {
+        u_char height;
+        if (!ncurses) {
+            for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
+                print(dungeon->getWindow(), ncurses, "\n");
+            }
+        }
+
+        print(dungeon->getWindow(), ncurses, "+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+        print(dungeon->getWindow(), ncurses, "| Player Level   | %5d |                                                    |\n", dungeon->getPlayer()->getLevel());
+        print(dungeon->getWindow(), ncurses, "| Days Survived  | %5d |                                                    |\n", dungeon->getPlayer()->getDaysSurvived());
+        print(dungeon->getWindow(), ncurses, "| Monsters Slain | %5d |                                                    |\n", dungeon->getPlayer()->getMonstersSlain());
+        print(dungeon->getWindow(), ncurses, "| Alive          | %5d |                                                    |\n", dungeon->getPlayer()->getIsAlive());
+        print(dungeon->getWindow(), ncurses, "+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+    }
 
     if (ncurses) {
         refresh();
