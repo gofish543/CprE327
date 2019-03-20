@@ -15,7 +15,7 @@
 #define CORRIDOR_CHARACTER '#'
 
 // Player characters
-#define PLAYER_TELEPORT_CHARACTER
+#define PLAYER_TELEPORT_CHARACTER '*'
 #define PLAYER_CHARACTER '@'
 
 // Room characters

@@ -117,6 +117,104 @@ int Player::handleEventKeyToggleFog() {
 }
 
 int Player::handleEventKeyTeleport() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+
+    // Store away original settings
+    bool originalFogOfWar = dungeon->getSettings()->doFogOfWar();
+    u_char originalX = this->x;
+    u_char originalY = this->y;
+    int character = 0;
+    Character* save = null;
+
+    // Change user character, print, and pull from map
+    this->setCharacter(PLAYER_TELEPORT_CHARACTER);
+    dungeon->getSettings()->setFogOfWar(false);
+
+    output(this->getFloor()->getDungeon(), output_print_current_floor);
+
+    this->getFloor()->setCharacterAt(null, this->x, this->y);
+
+    while(character != 27 && character != 't' && character != 'r') {
+        character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
+        this->getFloor()->setCharacterAt(null, this->getX(), this->getY());
+
+        switch(character) {
+            case KEY_UP:
+                this->y = u_char(std::max(1, this->y - 1));
+                break;
+            case KEY_DOWN:
+                this->y = u_char(std::min(DUNGEON_FLOOR_HEIGHT - 1, this->y + 1));
+                break;
+            case KEY_RIGHT:
+                this->x = u_char(std::min(DUNGEON_FLOOR_WIDTH - 1, this->x + 1));
+                break;
+            case KEY_LEFT:
+                this->x = u_char(std::max(1, this->x - 1));
+                break;
+        }
+
+        // Restore previous spot
+        if(save != null) {
+            this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
+        }
+
+        // Store away target spot
+        save = this->getFloor()->getCharacterAt(this->x, this->y);
+
+        // Move our "teleport" character there
+        this->getFloor()->setCharacterAt(this, this->x, this->y);
+
+        // Print
+        output(this->getFloor()->getDungeon(), output_print_current_floor);
+    }
+
+    switch(character) {
+        case 27: // Esc
+            // Revert to original characters
+            this->getFloor()->setCharacterAt(null, this->x, this->y);
+            this->x = originalX;
+            this->y = originalY;
+            break;
+        case 't':
+            break;
+        case 'r':
+            this->getFloor()->setCharacterAt(null, this->x, this->y);
+
+            Room* randomRoom = this->getFloor()->getRooms().at(u_char(random_number_between(0, this->getFloor()->getRoomCount() - 1)));
+            this->x = u_char(random_number_between(randomRoom->getStartingX(), randomRoom->getStartingX() + randomRoom->getWidth() - 1));
+            this->y = u_char(random_number_between(randomRoom->getStartingY(), randomRoom->getStartingY() + randomRoom->getHeight() - 1));
+
+            // Restore previous location
+            if(save != null) {
+                this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
+            }
+
+            save = this->getFloor()->getCharacterAt(this->x, this->y);
+            break;
+    }
+
+    if(save != null && save->getIsMonster()) {
+        // Fight monster
+        this->battleMonster((Monster*) save);
+
+        // If didn't survive, place back character
+        if(!this->getIsAlive()) {
+            this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
+        }
+    }
+
+    // Restore character
+    this->setCharacter(PLAYER_CHARACTER);
+
+    // Place back and restore original fog of war
+    this->getFloor()->setCharacterAt(this, this->getX(), this->getY());
+    dungeon->getSettings()->setFogOfWar(originalFogOfWar);
+
+    // Update visibility
+    this->updateVisibility();
+
+    output(this->getFloor()->getDungeon(), output_print_current_floor);
+
     return 0;
 }
 

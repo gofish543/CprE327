@@ -16,8 +16,15 @@ int getChar(WINDOW* window, const bool ncurses) {
             case 183: // Up arrow
                 userInput = KEY_UP;
                 break;
-            case 184: // Down key
+            case 184: // Down arrow
                 userInput = KEY_DOWN;
+                break;
+            case 185: // Right arrow
+                userInput = KEY_RIGHT;
+                break;
+            case 186:
+                userInput = KEY_LEFT;
+                break;
         }
     }
     return userInput;

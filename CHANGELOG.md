@@ -3,11 +3,16 @@
 ## Unreleased
 
 ### Added
+- Added teleport
+- Added random teleport
+- Added toggle fog of war
 
 ### Fixed
+- Fixed memory leaks
 - Fixed .cpp malloc and calloc casting issues
 
 ### Changed
+- Changed all structs to classes
 - Converted all .c files to .cpp
 
 ## [v0.1.5 (2019-03-01)](https://github.com/gofish543/CprE327/releases/tag/v0.1.5)

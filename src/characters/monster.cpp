@@ -10,6 +10,9 @@ Monster::Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char
             (this->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
             (this->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
             1);
+
+    this->playerLastSpottedX = 0;
+    this->playerLastSpottedY = 0;
 }
 
 Monster::~Monster() = default;
