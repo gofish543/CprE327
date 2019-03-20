@@ -5,8 +5,6 @@ int main(int argc, char* argv[]) {
 
     set_global_ncurses(dungeon->getSettings()->doNCursesPrint());
 
-    dungeon->getPlayer()->moveTo(dungeon->getCurrentFloor()->getUpStairs().at(0)->getX(), dungeon->getCurrentFloor()->getUpStairs().at(0)->getY());
-
     while (dungeon->getPlayer()->getIsAlive() && Monster::MonstersAlive(dungeon) && !dungeon->getPlayer()->getRequestTerminate() && dungeon->getEventManager()->getQueue()->size > 0) {
         if (game_tick(dungeon)) {
             print_error(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint(), "Game tick error encountered, exiting while loop\n");

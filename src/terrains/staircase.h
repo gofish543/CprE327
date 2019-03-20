@@ -8,6 +8,7 @@
 #include "../character_listings.h"
 #include "../floor.h"
 #include "terrain.h"
+#include <vector>
 
 namespace App {
     class Staircase : public Terrain {

@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#define PLAYER_DEFAULT_LIGHT_RADIUS 3
+
 #define PLAYER_SPEED 10
 
 #include "../../include/forward_declarations.h"
@@ -10,6 +12,7 @@
 #include "../output.h"
 #include "../input.h"
 #include "character.h"
+#include <algorithm>
 
 namespace App {
     class Player : public Character {
@@ -36,6 +39,9 @@ namespace App {
         Player* incrementMonstersSlain();
         Player* incrementDaysSurvived();
 
+        Player* updateVisibility();
+        bool hasLineOfSightTo(u_char width, u_char height);
+
         /** GETTERS **/
         Staircase* getTakingStaircase();
         bool getRequestTerminate();
@@ -51,6 +57,8 @@ namespace App {
         Player* setMonstersSlain(u_int monstersSlain);
         Player* setDaysSurvived(u_int daysSurvived);
         /** SETTERS **/
+
+        Terrain* visibility[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
     protected:
     private:
         Staircase* takingStaircase;

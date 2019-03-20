@@ -123,6 +123,4 @@ namespace App {
     };
 }
 
-#include "monster/movement.h"
-
 #endif

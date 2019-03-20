@@ -3,9 +3,9 @@
 
 #include "../../../include/forward_declarations.h"
 #include "../../vendor/heap.h"
-#include "../../terrains/staircase.h"
 #include "../../character_listings.h"
 #include "../../resource.h"
+#include "../monster.h"
 #include <cmath>
 #include <climits>
 

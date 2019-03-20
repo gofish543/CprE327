@@ -103,7 +103,15 @@ Floor* Floor::resetCheapestPathToPlayer() {
 }
 
 u_char Floor::getPrintCharacterAt(u_char width, u_char height) {
-    if (this->characters[height][width] == null) {
+    if (this->getDungeon()->getSettings()->doFogOfWar()) {
+        if (this->getDungeon()->getPlayer()->visibility[height][width] == null) {
+            return ROCK_CHARACTER;
+        } else if (this->characters[height][width] != null && this->getDungeon()->getPlayer()->hasLineOfSightTo(width, height)) {
+            return this->characters[height][width]->getCharacter();
+        } else {
+            return this->getDungeon()->getPlayer()->visibility[height][width]->getCharacter();
+        }
+    } else if (this->characters[height][width] == null) {
         return this->terrains[height][width]->getCharacter();
     } else {
         return this->characters[height][width]->getCharacter();
@@ -437,8 +445,8 @@ Floor* Floor::generateRooms() {
                     stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
                     stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
                 } while (this->terrains[stairY][stairX] != null);
-                this->terrains[stairY][stairX] = new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_UP);
-                this->upStairs.push_back(new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_UP));
+                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_UP);
+                this->upStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_UP));
             }
         }
 
@@ -449,8 +457,8 @@ Floor* Floor::generateRooms() {
                     stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
                     stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
                 } while (this->terrains[stairY][stairX] != null);
-                this->terrains[stairY][stairX] = new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_DOWN);
-                this->downStairs.push_back(new Staircase(this, roomIndex, stairX, stairY, STAIRCASE_TYPE_DOWN));
+                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_DOWN);
+                this->downStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_DOWN));
             }
         }
 

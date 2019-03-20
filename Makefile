@@ -21,10 +21,8 @@ DEPEXT		= d
 OBJEXT		= o
 
 # Flags
-#CFLAGS		= -Wall -Wpedantic -g -ggdb3 -funroll-loops -pg
-#CFLAGS		= -Wall -Werror -Wpedantic -funroll-loops -pg -O2
-CXXFLAGS	= -pipe -Wall -Wpedantic -g -ggdb3
-#CXXFLAGS	= -pipe -Wall -Werror -Wpedantic -funroll-loops -pg -O2
+FLAGS	= -pipe -Wall -Wpedantic -g -ggdb3
+#FLAGS	= -pipe -Wall -Werror -Wpedantic -funroll-loops -pg -O2
 LIB			= -lm -lncurses -lpthread
 INC			= -I$(INCDIR) -I/usr/local/include
 INCDEP		= -I$(INCDIR)
@@ -77,8 +75,8 @@ $(TARGET): $(OBJECTS)
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(dir $@)
 	@$(ECHO) Compiling $^
-	@$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
-	@$(CXX) $(CXXFLAGS) $(INCDEP) -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
+	@$(CXX) $(FLAGS) $(INC) -c -o $@ $<
+	@$(CXX) $(FLAGS) $(INCDEP) -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
 	@cp -f $(BUILDDIR)/$*.$(DEPEXT) $(BUILDDIR)/$*.$(DEPEXT).tmp
 	@sed -e 's|.*:|$(BUILDDIR)/$*.$(OBJEXT):|' < $(BUILDDIR)/$*.$(DEPEXT).tmp > $(BUILDDIR)/$*.$(DEPEXT)
 	@sed -e 's/.*://' -e 's/\\$$//' < $(BUILDDIR)/$*.$(DEPEXT).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(BUILDDIR)/$*.$(DEPEXT)

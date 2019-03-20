@@ -20,6 +20,8 @@ Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char type) : 
 Staircase::~Staircase() = default;
 
 int Staircase::take() {
+    u_char height;
+    u_char width;
     Dungeon* dungeon = this->getFloor()->getDungeon();
     Player* player = dungeon->getPlayer();
     Floor* currentFloor = dungeon->getCurrentFloor();
@@ -68,37 +70,57 @@ int Staircase::take() {
     currentFloor->setCharacterAt(dungeon->getPlayer(), player->getX(), player->getY());
 
     // Move monster's on that floor to random locations not in the same room as the user
-    Room* playerRoom = (Room*) currentFloor->getTerrainAt(player->getX(), player->getY());
-
-    u_char height = 0;
-    u_char width = 0;
+    // We said that staircases cannot be at the edge of rooms, this is why
+    Room* playerRoom = (Room*) currentFloor->getTerrainAt(player->getX() - u_char(1), player->getY());
 
     for (height = playerRoom->getStartingY(); height < playerRoom->getStartingY() + playerRoom->getHeight(); height++) {
         for (width = playerRoom->getStartingX(); width < playerRoom->getStartingX() + playerRoom->getWidth(); width++) {
             if (currentFloor->getCharacterAt(width, height) != null && currentFloor->getCharacterAt(width, height)->getIsMonster()) {
-                // Move that monster somewhere else or kill it
-                Room* randomRoomPlacement;
+                u_char placementAttempts = 0;
+                Room* monsterRoom;
+                u_char monsterX;
+                u_char monsterY;
+                u_short roomIndex;
                 bool placed = false;
-                u_char monsterHeight;
-                u_char monsterWidth;
+                // Select random spots until they are only surrounded by room space
                 do {
-                    randomRoomPlacement = currentFloor->getRooms().at(u_char(random_number_between(0, currentFloor->getRoomCount() - 1)));
-                } while (randomRoomPlacement == playerRoom);
+                    do {
+                        monsterRoom = currentFloor->getRooms().at(u_char(random_number_between(0, currentFloor->getRoomCount() - 1)));
+                    } while (monsterRoom->getId() == playerRoom->getId());
 
-                for (monsterHeight = randomRoomPlacement->getStartingY(); monsterHeight < randomRoomPlacement->getStartingY() + randomRoomPlacement->getWidth() && !placed; monsterHeight++) {
-                    for (monsterWidth = randomRoomPlacement->getStartingX(); monsterWidth < randomRoomPlacement->getStartingX() + randomRoomPlacement->getHeight() && !placed; monsterWidth++) {
-                        if (currentFloor->getCharacterAt(monsterWidth, monsterHeight) == null) {
-                            currentFloor->setCharacterAt(currentFloor->getCharacterAt(width, height), monsterWidth, monsterHeight)
-                                    ->getCharacterAt(monsterWidth, monsterHeight)
-                                    ->setY(monsterHeight)->setX(monsterWidth);
+                    // Select random spot inside the room
+                    monsterX = u_char(random_number_between(monsterRoom->getStartingX(), monsterRoom->getStartingX() + monsterRoom->getWidth() - 1));
+                    monsterY = u_char(random_number_between(monsterRoom->getStartingY(), monsterRoom->getStartingY() + monsterRoom->getHeight() - 1));
 
-                            placed = true;
+                    placementAttempts++;
+                } while (currentFloor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
+
+                // If failed to find, just man handle it through
+                if (placementAttempts >= 25) {
+                    for (roomIndex = 0; roomIndex < currentFloor->getRoomCount(); roomIndex++) {
+                        if (currentFloor->getRooms().at(roomIndex)->getId() == playerRoom->getId()) {
+                            continue;
+                        }
+                        // Start looping and find the next open spot
+                        for (height = currentFloor->getRooms().at(roomIndex)->getStartingY(); height < currentFloor->getRooms().at(roomIndex)->getStartingY() + currentFloor->getRooms().at(roomIndex)->getHeight(); height++) {
+                            for (width = currentFloor->getRooms().at(roomIndex)->getStartingX(); width < currentFloor->getRooms().at(roomIndex)->getStartingX() + currentFloor->getRooms().at(roomIndex)->getWidth(); width++) {
+                                if (currentFloor->getCharacterAt(width, height) == null) {
+                                    monsterX = width;
+                                    monsterY = height;
+                                }
+                            }
                         }
                     }
+                } else {
+                    placed = true;
                 }
 
-                // If not placed, just kill the monster
-                if (!placed) {
+                if (placed) {
+                    // Place monster
+                    currentFloor->getCharacterAt(width, height)->setX(monsterX)->setY(monsterY);
+                    currentFloor->setCharacterAt(currentFloor->getCharacterAt(width, height), monsterX, monsterY);
+                } else {
+                    // Kill it
                     currentFloor->getCharacterAt(width, height)->killCharacter();
                 }
 
@@ -120,6 +142,15 @@ int Staircase::take() {
             dungeon->getEventManager()->addToQueue(new Event(1 + index, event_type_monster, currentFloor->getMonsters().at(index), Monster::HandleEvent, Monster::NextEventTick));
         }
     }
+
+    // Reset visibility
+    for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
+        for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            player->visibility[height][width] = null;
+        }
+    }
+
+    player->updateVisibility();
 
     return 0;
 }

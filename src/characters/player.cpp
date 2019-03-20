@@ -1,6 +1,9 @@
 #include "player.h"
 
 Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER_CHARACTER, PLAYER_SPEED, true, false) {
+    u_char height;
+    u_char width;
+
     this->takingStaircase = null;
 
     this->requestTerminate = false;
@@ -8,6 +11,12 @@ Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER
     this->level = 0;
     this->monstersSlain = 0;
     this->daysSurvived = 0;
+
+    for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
+        for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            this->visibility[height][width] = null;
+        }
+    }
 }
 
 Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived)
@@ -53,7 +62,7 @@ int Player::HandleEvent(Event* event) {
             return 0;
         case '<':
         case '>':
-            if(player->handleEventKeyStaircase(move)) {
+            if (player->handleEventKeyStaircase(move)) {
                 return Player::HandleEvent(event);
             }
             return 0;
@@ -73,7 +82,7 @@ int Player::handleEventKeyMonsterMenu() {
     while (character != 27) {
         output_print_current_floor_monster_menu(dungeon, startIndex);
 
-        print(dungeon->getWindow(),dungeon->getSettings()->doNCursesPrint(), "Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+        print(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint(), "Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
         character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
 
         switch (character) {
@@ -92,7 +101,7 @@ int Player::handleEventKeyMonsterMenu() {
         }
     }
 
-    output_print_current_floor(dungeon);
+    output(dungeon, output_print_current_floor);
 
     return 0;
 }
@@ -101,6 +110,9 @@ int Player::handleEventKeyToggleFog() {
     this->getFloor()->getDungeon()->getSettings()->setFogOfWar(
             !this->getFloor()->getDungeon()->getSettings()->doFogOfWar()
     );
+
+    output(this->getFloor()->getDungeon(), output_print_current_floor);
+
     return 0;
 }
 
@@ -119,7 +131,6 @@ int Player::handleEventKeyStaircase(int command) {
             // Trying to take a down staircase, and standing on a down staircase
             // Trying to take an up staircase and standing on an up staircase
             this->takingStaircase = (Staircase*) onTerrain;
-            printf("Moving %s a staircase\n", (this->takingStaircase->isUp() ? "Up" : "Down"));
             dungeon->prependText("Moving %s a staircase", (this->takingStaircase->isUp() ? "Up" : "Down"));
             return 0;
         }
@@ -244,6 +255,8 @@ int Player::moveTo(u_char toX, u_char toY) {
 
     Monster::RunDijkstraOnFloor(floor);
 
+    this->updateVisibility();
+
     return 0;
 }
 
@@ -282,6 +295,74 @@ Player* Player::removeLevel(int amount) {
     }
 
     return this;
+}
+
+Player* Player::updateVisibility() {
+    u_char height;
+    u_char width;
+    u_char minHeight = u_char(std::max(1, this->getY() - PLAYER_DEFAULT_LIGHT_RADIUS));
+    u_char maxHeight = u_char(std::min(DUNGEON_FLOOR_HEIGHT - 1, this->getY() + PLAYER_DEFAULT_LIGHT_RADIUS));
+    u_char minWidth = u_char(std::max(1, this->getX() - PLAYER_DEFAULT_LIGHT_RADIUS));
+    u_char maxWidth = u_char(std::min(DUNGEON_FLOOR_WIDTH - 1, this->getX() + PLAYER_DEFAULT_LIGHT_RADIUS));
+
+    for (height = minHeight; height < maxHeight; height++) {
+        for (width = minWidth; width < maxWidth; width++) {
+            if (this->hasLineOfSightTo(width, height)) {
+                this->visibility[height][width] = this->getFloor()->getTerrainAt(width, height);
+            }
+        }
+    }
+
+    return this;
+}
+
+bool Player::hasLineOfSightTo(u_char width, u_char height) {
+    Floor* floor = this->getFloor();
+    double slope;
+    double error = 0.0;
+
+    u_char x;
+    u_char y;
+
+    u_char x0 = this->getX();
+    u_char x1 = width;
+
+    u_char y0 = this->getY();
+    u_char y1 = height;
+
+    char deltaX = x1 - x0;
+    char deltaY = y1 - y0;
+
+    if (deltaX == 0) {
+        // Horizontal line case
+        x = x0;
+        for (y = y0; y != y1; y += get_sign(deltaY)) {
+            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+                return false;
+            }
+        }
+    } else {
+        slope = abs(int(double(deltaY) / double(deltaX)));
+        y = y0;
+        for (x = x0; abs(x1 - x) != 0; x += get_sign(deltaX)) {
+            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+                return false;
+            }
+
+            error += slope;
+            if (error >= 0.5) {
+                y += get_sign(deltaY);
+                error -= 1.0;
+            }
+        }
+        // Finish out vertical line case
+        for (; abs(y1 - y) != 0; y += get_sign(deltaY)) {
+            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 Player* Player::incrementMonstersSlain() {

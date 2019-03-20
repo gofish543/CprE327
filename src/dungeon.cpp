@@ -1,4 +1,3 @@
-#include <curses.h>
 #include "dungeon.h"
 
 Dungeon::Dungeon(int argc, char* argv[]) {
@@ -49,6 +48,8 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     for (index = 0; index < this->getCurrentFloor()->getMonsterCount(); index++) {
         this->eventManager->addToQueue(new Event(1 + index, event_type_monster, this->getCurrentFloor()->getMonsters().at(index), Monster::HandleEvent, Monster::NextEventTick));
     }
+
+    this->getPlayer()->updateVisibility();
 }
 
 Dungeon::~Dungeon() {
@@ -74,7 +75,7 @@ std::string* Dungeon::prependText(std::string message, ...) {
     u_char index;
 
     for (index = 1; index < DUNGEON_TEXT_LINES; index++) {
-        this->textLines[index - 1] = this->textLines[index];
+        this->textLines[index - 1] = std::move(this->textLines[index]);
     }
     this->textLines[0] = std::move(message);
 
@@ -85,7 +86,7 @@ std::string* Dungeon::appendText(std::string message, ...) {
     u_char index;
 
     for (index = 0; index < DUNGEON_TEXT_LINES - 1; index++) {
-        this->textLines[index] = this->textLines[index + 1];
+        this->textLines[index] = std::move(this->textLines[index + 1]);
     }
 
     this->textLines[DUNGEON_TEXT_LINES - 1] = std::move(message);
