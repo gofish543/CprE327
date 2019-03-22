@@ -13,6 +13,7 @@
 #include "events.h"
 #include "floor.h"
 #include "resource.h"
+#include "save_load.h"
 #include "settings.h"
 #include <string>
 #include <vector>

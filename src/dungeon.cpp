@@ -11,7 +11,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     this->player = null;
 
     if (settings->doLoad()) {
-
+        load_from_file(this);
     } else {
         this->floorCount = (u_char) random_number_between(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX);
         auto stairCount = (u_short) random_number_between(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX);
@@ -50,6 +50,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     }
 
     this->getPlayer()->updateVisibility();
+
 }
 
 Dungeon::~Dungeon() {
@@ -57,6 +58,7 @@ Dungeon::~Dungeon() {
 
     if (this->getSettings()->doSave()) {
         // Save the game state
+        save_to_file(this);
     }
 
     for (index = 0; index < this->floorCount; index++) {
@@ -67,8 +69,8 @@ Dungeon::~Dungeon() {
         endwin();
     }
 
-    delete(this->eventManager);
-    delete(this->settings);
+    delete (this->eventManager);
+    delete (this->settings);
 }
 
 std::string* Dungeon::prependText(std::string message, ...) {
@@ -133,7 +135,7 @@ std::string Dungeon::getText(u_char index) {
 /** GETTERS **/
 
 /** SETTERS **/
-Dungeon* Dungeon::setFloors(std::vector<Floor*>& floors) {
+Dungeon* Dungeon::setFloors(std::vector<Floor*> &floors) {
     this->floors = floors;
 
     return this;

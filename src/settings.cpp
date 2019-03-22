@@ -20,9 +20,12 @@ Settings::Settings(int argc, char* argv[]) {
 Settings::~Settings() = default;
 
 int Settings::loadArguments(int argc, char* argv[]) {
-    std::string homePath = getenv("HOME");
-    std::string dotFolder = DATA_PATH;
-    std::string resourcePath = RESOURCE_PATH;
+    std::string homePathSave = getenv("HOME");
+    std::string homePathLoad = getenv("HOME");
+    std::string dotFolderSave = DATA_PATH;
+    std::string dotFilterLoad = DATA_PATH;
+    std::string resourcePathSave = RESOURCE_PATH;
+    std::string resourcePathLoad = RESOURCE_PATH;
 
     u_char index;
     for (index = 0; index < argc; index++) {
@@ -34,18 +37,18 @@ int Settings::loadArguments(int argc, char* argv[]) {
             }
 
             // The file path we will be using
-            std::string filePath(argv[index + 1]);
+            std::string savePath(argv[index + 1]);
 
             // Parse out file and path from filePath
-            std::string fileName = this->getFileName(filePath);
+            std::string saveFileName = this->getFileName(savePath);
 
             // Check if the file path exists
-            if (!this->fileExists(filePath)) {
+            if (!this->fileExists(savePath)) {
                 // Check if the name of the file is the same as the file path
-                if (!homePath.empty() &&
-                    fileName == filePath &&
-                    !this->createFolder(homePath)) {
-                    filePath = homePath.append("/") + fileName;
+                if (!homePathSave.empty() &&
+                    saveFileName == savePath &&
+                    !this->createFolder(homePathSave)) {
+                    savePath = homePathSave.append(dotFolderSave).append(saveFileName);
                 } else {
                     // File doesn't exist and we cant use the home directory error out
                     std::cout << "Using --save (-s) requires a valid file and file path. Potentially only a directory was provided or an invalid file path was presented\n" << std::endl;
@@ -54,7 +57,8 @@ int Settings::loadArguments(int argc, char* argv[]) {
                 }
             }
 
-            this->savePath = filePath;
+
+            this->savePath = savePath;
             this->save = true;
         } else if (strcmp(argv[index], "--load") == 0 || strcmp(argv[index], "-l") == 0) {
             // Make sure there is a load path specified
@@ -63,20 +67,26 @@ int Settings::loadArguments(int argc, char* argv[]) {
                 return 1;
             }
             // The file path we will be using
-            std::string filePath(argv[index + 1]);
+            std::string loadPath(argv[index + 1]);
 
             // Parse out file and path from filePath
-            std::string fileName = this->getFileName(filePath);
+            std::string loadFileName = this->getFileName(loadPath);
+
 
             // Check if the file path exists
-            if (!this->fileExists(filePath)) {
-                // File doesn't exist and we cant use the home directory error out
-                std::cout << "Using --load (-s) requires a valid file and file path. Potentially only a directory was provided or an invalid file path was presented\n" << std::endl;
+            if (!this->fileExists(loadPath)) {
+                // Try appending it to the home folder
+                loadPath = homePathLoad.append(dotFilterLoad).append(loadFileName);
 
-                return 1;
+                if (!this->fileExists(loadPath)) {
+                    // File doesn't exist and we cant use the home directory error out
+                    std::cout << "Using --load (-s) requires a valid file and file path. Potentially only a directory was provided or an invalid file path was presented\n" << std::endl;
+
+                    return 1;
+                }
             }
 
-            this->loadPath = filePath;
+            this->loadPath = loadPath;
             this->load = true;
         } else if (strcmp(argv[index], "--file_version") == 0 || strcmp(argv[index], "-fv") == 0) {
             if (index + 1 == argc || strstarts(argv[index + 1], "-")) {

@@ -32,6 +32,7 @@ namespace App {
     class Floor {
 
     public:
+        Floor(Dungeon* dungeon);
         Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters);
         ~Floor();
 
@@ -44,6 +45,14 @@ namespace App {
         u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         u_char cheapestPathToPlayer[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+
+        Terrain* terrains[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+        Character* characters[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+
+        std::vector<Monster*> monsters;
+        std::vector<Staircase*> upStairs;
+        std::vector<Staircase*> downStairs;
+        std::vector<Room*> rooms;
 
         /** GETTERS **/
         Dungeon* getDungeon();
@@ -78,27 +87,8 @@ namespace App {
         Floor* setMonsters(std::vector<Monster*>& monsters);
         Floor* setUpStairs(std::vector<Staircase*>& upStairs);
         Floor* setDownStairs(std::vector<Staircase*>& downStairs);
-        Floor* setRooms(std::vector<Room*>& rooms);
+        Floor* setRooms(std::vector<Room*> &rooms);
         /** SETTERS **/
-
-    protected:
-
-    private:
-        Dungeon* dungeon;
-        u_char floorNumber;
-
-        u_short roomCount;
-        u_short stairUpCount;
-        u_short stairDownCount;
-        u_short monsterCount;
-
-        Terrain* terrains[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
-        Character* characters[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
-
-        std::vector<Monster*> monsters;
-        std::vector<Staircase*> upStairs;
-        std::vector<Staircase*> downStairs;
-        std::vector<Room*> rooms;
 
         // Initialize the class to empty values
         Floor* initializeToNull();
@@ -118,6 +108,16 @@ namespace App {
         Floor* loadCorridors();
         Floor* loadPlayer();
         Floor* loadMonsters();
+    protected:
+
+    private:
+        Dungeon* dungeon;
+        u_char floorNumber;
+
+        u_short roomCount;
+        u_short stairUpCount;
+        u_short stairDownCount;
+        u_short monsterCount;
     };
 }
 

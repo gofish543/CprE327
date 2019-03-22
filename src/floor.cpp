@@ -1,5 +1,12 @@
 #include "floor.h"
 
+Floor::Floor(Dungeon* dungeon) {
+    this->dungeon = dungeon;
+
+    this->initializeToNull()
+            ->generateBorders();
+}
+
 Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters) {
     this->dungeon = dungeon;
     this->floorNumber = floorNumber;
