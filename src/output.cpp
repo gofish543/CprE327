@@ -264,11 +264,11 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
     for (index = startIndex, height = 0; height < DUNGEON_FLOOR_HEIGHT && index < floor->getMonsterCount(); index++, height++) {
         print(window, ncurses, "| %7d | %11s | %10s | %8s | %7s | %18s |\n",
               index,
-              (floor->getMonsters().at(index)->isIntelligent()) ? "YES" : "NO",
-              (floor->getMonsters().at(index)->isTelepathic())? "YES" : "NO",
-              (floor->getMonsters().at(index)->isTunneler()) ? "YES" : "NO",
-              (floor->getMonsters().at(index)->isErratic())? "YES" : "NO",
-              floor->getMonsters().at(index)->locationString(location)
+              (floor->getMonster(index)->isIntelligent()) ? "YES" : "NO",
+              (floor->getMonster(index)->isTelepathic())? "YES" : "NO",
+              (floor->getMonster(index)->isTunneler()) ? "YES" : "NO",
+              (floor->getMonster(index)->isErratic())? "YES" : "NO",
+              floor->getMonster(index)->locationString(location)
         );
     }
     print(window, ncurses, "+---------+-------------+------------+----------+---------+--------------------+\n");
@@ -287,7 +287,7 @@ void output_print_endgame(Dungeon* dungeon) {
 
     if (dungeon->getPlayer()->getRequestTerminate()) {
         print(dungeon->getWindow(), ncurses, "Thank you for playing, safely exiting\n");
-    } else if (dungeon->getPlayer()->getIsAlive() && Monster::MonstersAlive(dungeon) > 0) {
+    } else if (dungeon->getPlayer()->getIsAlive() && Monster::AliveCount(dungeon) > 0) {
         print(dungeon->getWindow(), ncurses, "Queue completely empty, terminating the program safely\n");
     } else {
         u_char height;

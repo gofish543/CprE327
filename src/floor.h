@@ -24,6 +24,7 @@
 #include "characters/monster.h"
 #include "characters/player.h"
 #include <cstdio>
+#include <climits>
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -49,11 +50,6 @@ namespace App {
         Terrain* terrains[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         Character* characters[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
 
-        std::vector<Monster*> monsters;
-        std::vector<Staircase*> upStairs;
-        std::vector<Staircase*> downStairs;
-        std::vector<Room*> rooms;
-
         /** GETTERS **/
         Dungeon* getDungeon();
         u_char getFloorNumber();
@@ -66,10 +62,10 @@ namespace App {
         u_char getTunnelerViewAt(u_char width, u_char height);
         u_char getNonTunnelerViewAt(u_char width, u_char height);
         u_char getCheapestPathToPlayerAt(u_char width, u_char height);
-        std::vector<Monster*> getMonsters();
-        std::vector<Staircase*> getUpStairs();
-        std::vector<Staircase*> getDownStairs();
-        std::vector<Room*> getRooms();
+        Monster* getMonster(u_short index);
+        Staircase* getUpStair(u_short index);
+        Staircase* getDownStair(u_short index);
+        Room* getRoom(u_short index);
         /** GETTERS **/
 
         /** SETTERS **/
@@ -84,10 +80,10 @@ namespace App {
         Floor* setTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setNonTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setCheapestPathToPlayer(u_char value, u_char width, u_char height);
-        Floor* setMonsters(std::vector<Monster*>& monsters);
-        Floor* setUpStairs(std::vector<Staircase*>& upStairs);
-        Floor* setDownStairs(std::vector<Staircase*>& downStairs);
-        Floor* setRooms(std::vector<Room*> &rooms);
+        Floor* setMonster(Monster* monster, u_short index = USHRT_MAX);
+        Floor* setUpStair(Staircase* staircase, u_short index = USHRT_MAX);
+        Floor* setDownStair(Staircase* staircase, u_short index = USHRT_MAX);
+        Floor* setRoom(Room* room, u_short index = USHRT_MAX);
         /** SETTERS **/
 
         // Initialize the class to empty values
@@ -118,6 +114,11 @@ namespace App {
         u_short stairUpCount;
         u_short stairDownCount;
         u_short monsterCount;
+
+        std::vector<Monster*> monsters;
+        std::vector<Staircase*> upStairs;
+        std::vector<Staircase*> downStairs;
+        std::vector<Room*> rooms;
     };
 }
 

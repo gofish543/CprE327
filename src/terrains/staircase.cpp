@@ -42,13 +42,13 @@ int Staircase::take() {
     // Place the character on the upper floor's staircase
     // If up staircase and there is a down staircase to step on
     if (this->isUp() && this->getId() < currentFloor->getStairDownCount()) {
-        player->setX(currentFloor->getDownStairs().at(this->getId())->getX());
-        player->setY(currentFloor->getDownStairs().at(this->getId())->getY());
+        player->setX(currentFloor->getDownStair(this->getId())->getX());
+        player->setY(currentFloor->getDownStair(this->getId())->getY());
     }
         // If down staircase and there is an up staircase to step on
     else if (this->isDown() && this->getId() < currentFloor->getStairUpCount()) {
-        player->setX(currentFloor->getUpStairs().at(this->getId())->getX());
-        player->setY(currentFloor->getUpStairs().at(this->getId())->getY());
+        player->setX(currentFloor->getUpStair(this->getId())->getX());
+        player->setY(currentFloor->getUpStair(this->getId())->getY());
     }
         // Else random location
     else {
@@ -56,8 +56,8 @@ int Staircase::take() {
         u_char playerY;
         auto room = u_short(random_number_between(0, currentFloor->getRoomCount() - 1));
 
-        playerX = u_char(random_number_between(currentFloor->getRooms().at(room)->getStartingX(), currentFloor->getRooms().at(room)->getStartingX() + currentFloor->getRooms().at(room)->getWidth() - 1));
-        playerY = u_char(random_number_between(currentFloor->getRooms().at(room)->getStartingY(), currentFloor->getRooms().at(room)->getStartingY() + currentFloor->getRooms().at(room)->getHeight() - 1));
+        playerX = u_char(random_number_between(currentFloor->getRoom(room)->getStartingX(), currentFloor->getRoom(room)->getStartingX() + currentFloor->getRoom(room)->getWidth() - 1));
+        playerY = u_char(random_number_between(currentFloor->getRoom(room)->getStartingY(), currentFloor->getRoom(room)->getStartingY() + currentFloor->getRoom(room)->getHeight() - 1));
 
         if (currentFloor->getCharacterAt(playerX, playerY) != null) {
             currentFloor->getCharacterAt(playerX, playerY)->killCharacter();
@@ -85,7 +85,7 @@ int Staircase::take() {
                 // Select random spots until they are only surrounded by room space
                 do {
                     do {
-                        monsterRoom = currentFloor->getRooms().at(u_char(random_number_between(0, currentFloor->getRoomCount() - 1)));
+                        monsterRoom = currentFloor->getRoom(u_char(random_number_between(0, currentFloor->getRoomCount() - 1)));
                     } while (monsterRoom->getId() == playerRoom->getId());
 
                     // Select random spot inside the room
@@ -98,12 +98,12 @@ int Staircase::take() {
                 // If failed to find, just man handle it through
                 if (placementAttempts >= 25) {
                     for (roomIndex = 0; roomIndex < currentFloor->getRoomCount(); roomIndex++) {
-                        if (currentFloor->getRooms().at(roomIndex)->getId() == playerRoom->getId()) {
+                        if (currentFloor->getRoom(roomIndex)->getId() == playerRoom->getId()) {
                             continue;
                         }
                         // Start looping and find the next open spot
-                        for (height = currentFloor->getRooms().at(roomIndex)->getStartingY(); height < currentFloor->getRooms().at(roomIndex)->getStartingY() + currentFloor->getRooms().at(roomIndex)->getHeight(); height++) {
-                            for (width = currentFloor->getRooms().at(roomIndex)->getStartingX(); width < currentFloor->getRooms().at(roomIndex)->getStartingX() + currentFloor->getRooms().at(roomIndex)->getWidth(); width++) {
+                        for (height = currentFloor->getRoom(roomIndex)->getStartingY(); height < currentFloor->getRoom(roomIndex)->getStartingY() + currentFloor->getRoom(roomIndex)->getHeight(); height++) {
+                            for (width = currentFloor->getRoom(roomIndex)->getStartingX(); width < currentFloor->getRoom(roomIndex)->getStartingX() + currentFloor->getRoom(roomIndex)->getWidth(); width++) {
                                 if (currentFloor->getCharacterAt(width, height) == null) {
                                     monsterX = width;
                                     monsterY = height;
@@ -138,8 +138,8 @@ int Staircase::take() {
     u_short index = 0;
     // Add monsters to the new queue
     for (index = 0; index < currentFloor->getMonsterCount(); index++) {
-        if (currentFloor->getMonsters().at(index)->getIsAlive()) {
-            dungeon->getEventManager()->addToQueue(new Event(1 + index, event_type_monster, currentFloor->getMonsters().at(index), Monster::HandleEvent, Monster::NextEventTick));
+        if (currentFloor->getMonster(index)->getIsAlive()) {
+            dungeon->getEventManager()->addToQueue(new Event(1 + index, event_type_monster, currentFloor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick));
         }
     }
 

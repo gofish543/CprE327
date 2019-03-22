@@ -6,11 +6,11 @@
 #define PLAYER_SPEED 10
 
 #include "../../include/forward_declarations.h"
-#include "../terrains/staircase.h"
 #include "../character_listings.h"
 #include "../resource.h"
 #include "../output.h"
 #include "../input.h"
+#include "../floor.h"
 #include "character.h"
 #include <algorithm>
 

@@ -1,8 +1,9 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#define CHARACTER_SPEED_NUMERATOR  1000
+
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
 #include "../resource.h"
 
 namespace App {

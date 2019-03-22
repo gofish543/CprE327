@@ -20,7 +20,7 @@ Monster::~Monster() = default;
 int Monster::NextEventTick(Event* event) {
     auto monster = (Monster*) event->character;
     if (monster->getIsAlive()) {
-        return monster->getFloor()->getDungeon()->getEventManager()->getTick() + (1000 / monster->getSpeed());
+        return monster->getFloor()->getDungeon()->getEventManager()->getTick() + (CHARACTER_SPEED_NUMERATOR / monster->getSpeed());
     } else {
         return -1;
     }
@@ -75,11 +75,10 @@ int Monster::HandleEvent(Event* event) {
 
                 monster->battleMonster(otherMonster);
 
-                if(monster->getIsAlive()) {
+                if (monster->getIsAlive()) {
                     // Our monster lived
                     deadMonster = otherMonster;
-                }
-                else {
+                } else {
                     // Other monster lived
                     deadMonster = monster;
                 }
@@ -110,13 +109,13 @@ int Monster::HandleEvent(Event* event) {
     return 0;
 }
 
-u_int Monster::MonstersAlive(Dungeon* dungeon) {
+u_int Monster::AliveCount(Dungeon* dungeon) {
     u_char index;
     u_char monsterIndex;
     u_int monstersAlive = 0;
     for (index = 0; index < dungeon->getFloorCount(); index++) {
-        for (monsterIndex = 0; monsterIndex < dungeon->getFloors().at(index)->getMonsterCount(); monsterIndex++) {
-            if (dungeon->getFloors().at(index)->getMonsters().at(monsterIndex)->getIsAlive()) {
+        for (monsterIndex = 0; monsterIndex < dungeon->getFloor(index)->getMonsterCount(); monsterIndex++) {
+            if (dungeon->getFloor(index)->getMonster(monsterIndex)->getIsAlive()) {
                 monstersAlive++;
             }
         }
@@ -133,12 +132,21 @@ int Monster::DijkstraCompare(const void* A, const void* B) {
 }
 
 int Monster::RunDijkstraOnFloor(Floor* floor) {
-    return Monster::RunDijkstra(floor, 1, floor->tunnelerView) ||
-           Monster::RunDijkstra(floor, -1, floor->nonTunnelerView) ||
-           Monster::RunDijkstra(floor, 0, floor->cheapestPathToPlayer);
+    return Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_TUNNELER, floor->tunnelerView) ||
+           Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH, floor->cheapestPathToPlayer) ||
+           Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_NON_TUNNELER, floor->nonTunnelerView);
 }
 
 int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH]) {
+    switch (type) {
+        case MONSTER_DIJKSTRA_TYPE_TUNNELER:
+        case MONSTER_DIJKSTRA_TYPE_NON_TUNNELER:
+        case MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH:
+            break;
+        default:
+            throw "Invalid Dijkstra option presented";
+    }
+
     MonsterCost* monsterCost[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
     heap_t heap;
     u_char width;
@@ -168,25 +176,12 @@ int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR
     MonsterCost* item;
     while ((item = (MonsterCost*) heap_remove_min(&heap))) {
         if (!floor->getTerrainAt(item->getX(), item->getY())->isImmutable()) {
-            if (type == 1) {
-                for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
-                    for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
-                        if (height != item->getY() || width != item->getX()) {
-                            if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost() && !floor->getTerrainAt(width, height)->isImmutable()) {
-                                monsterCost[height][width]->addCost(item->getCost());
-                                costChart[height][width] = monsterCost[height][width]->getCost();
-
-                                heap_insert(&heap, monsterCost[height][width]);
-                            }
-                        }
-                    }
-                }
-            } else if (type == -1 && floor->getTerrainAt(item->getX(), item->getY())->isWalkable()) {
-                for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
-                    for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
-                        if (height != item->getY() || width != item->getX()) {
-                            if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
-                                if (floor->getTerrainAt(width, height)->isWalkable()) {
+            switch (type) {
+                case MONSTER_DIJKSTRA_TYPE_TUNNELER: // Type == 1
+                    for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
+                        for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
+                            if (height != item->getY() || width != item->getX()) {
+                                if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost() && !floor->getTerrainAt(width, height)->isImmutable()) {
                                     monsterCost[height][width]->addCost(item->getCost());
                                     costChart[height][width] = monsterCost[height][width]->getCost();
 
@@ -195,20 +190,39 @@ int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR
                             }
                         }
                     }
-                }
-            } else {
-                for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
-                    for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
-                        if (height != item->getY() || width != item->getX()) {
-                            if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
-                                monsterCost[height][width]->addCost(item->getCost());
-                                costChart[height][width] = monsterCost[height][width]->getCost();
+                    break;
+                case MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH: // Type == 0
+                    for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
+                        for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
+                            if (height != item->getY() || width != item->getX()) {
+                                if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
+                                    monsterCost[height][width]->addCost(item->getCost());
+                                    costChart[height][width] = monsterCost[height][width]->getCost();
 
-                                heap_insert(&heap, monsterCost[height][width]);
+                                    heap_insert(&heap, monsterCost[height][width]);
+                                }
                             }
                         }
                     }
-                }
+                    break;
+                case MONSTER_DIJKSTRA_TYPE_NON_TUNNELER: // Type == -1
+                    if (floor->getTerrainAt(item->getX(), item->getY())->isWalkable()) {
+                        for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
+                            for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
+                                if (height != item->getY() || width != item->getX()) {
+                                    if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
+                                        if (floor->getTerrainAt(width, height)->isWalkable()) {
+                                            monsterCost[height][width]->addCost(item->getCost());
+                                            costChart[height][width] = monsterCost[height][width]->getCost();
+
+                                            heap_insert(&heap, monsterCost[height][width]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
         }
     }
@@ -234,8 +248,7 @@ int Monster::moveTo(u_char toX, u_char toY) {
 
     floor->setCharacterAt(null, this->getX(), this->getY());
 
-    this->x = toX;
-    this->y = toY;
+    this->setX(toX)->setY(toY);
 
     floor->setCharacterAt(this, this->getX(), this->getY());
 
@@ -243,9 +256,10 @@ int Monster::moveTo(u_char toX, u_char toY) {
 }
 
 void Monster::battleMonster(Monster* otherMonster) {
-    if (this->level > otherMonster->getLevel()) {
+    // Stronger wins
+    if (this->getLevel() > otherMonster->getLevel()) {
         otherMonster->killCharacter();
-    } else if (this->level < otherMonster->getLevel()) {
+    } else if (this->getLevel() < otherMonster->getLevel()) {
         this->killCharacter();
     } else if (random_number_between(false, true)) {
         otherMonster->killCharacter();
@@ -310,8 +324,8 @@ bool Monster::hasLineOfSightTo(Player* player) {
 char* Monster::locationString(char location[19]) {
     Player* player = this->getFloor()->getDungeon()->getPlayer();
 
-    char deltaX = player->getX() - this->x;
-    char deltaY = player->getY() - this->y;
+    char deltaX = player->getX() - this->getX();
+    char deltaY = player->getY() - this->getY();
 
     char north[] = "NORTH";
     char south[] = "SOUTH";

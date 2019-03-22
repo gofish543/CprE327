@@ -3,11 +3,20 @@
 ## Unreleased
 
 ### Added
+
+### Fixed
+
+### Changed
+
+## [v0.1.6 (2019-03-22)](https://github.com/gofish543/CprE327/releases/tag/v0.1.6)
+
+### Added
 - Added teleport
 - Added random teleport
 - Added toggle fog of war
 
 ### Fixed
+- Fixed save and load files
 - Fixed memory leaks
 - Fixed .cpp malloc and calloc casting issues
 

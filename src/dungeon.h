@@ -15,6 +15,7 @@
 #include "resource.h"
 #include "save_load.h"
 #include "settings.h"
+#include <climits>
 #include <string>
 #include <vector>
 #include <ncurses.h>
@@ -30,6 +31,7 @@ namespace App {
         std::string* appendText(std::string message, ...);
 
         /** GETTERS **/
+        Floor* getFloor(u_char index);
         std::vector<Floor*> getFloors();
         Floor* getCurrentFloor();
         Settings* getSettings();
@@ -42,7 +44,7 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
-        Dungeon* setFloors(std::vector<Floor*> &floors);
+        Dungeon* setFloor(Floor* floor, u_char index = UCHAR_MAX);
         Dungeon* setCurrentFloor(Floor* floor);
         Dungeon* setSettings(Settings* settings);
         Dungeon* setEventManager(EventManager* eventManager);

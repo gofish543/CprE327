@@ -19,8 +19,7 @@ Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER
     }
 }
 
-Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived)
-        : Player(floor, x, y) {
+Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived) : Player(floor, x, y) {
     this->takingStaircase = null;
 
     this->requestTerminate = false;
@@ -36,7 +35,7 @@ int Player::NextEventTick(Event* event) {
     auto player = (Player*) event->character;
 
     if (player->getIsAlive()) {
-        return player->getFloor()->getDungeon()->getEventManager()->getTick() + (1000 / player->getSpeed());
+        return player->getFloor()->getDungeon()->getEventManager()->getTick() + (CHARACTER_SPEED_NUMERATOR / player->getSpeed());
     } else {
         return -1;
     }
@@ -52,9 +51,11 @@ int Player::HandleEvent(Event* event) {
     switch (move) {
         case 'm':
             player->handleEventKeyMonsterMenu();
+
             return Player::HandleEvent(event);
         case 'f':
             player->handleEventKeyToggleFog();
+
             return Player::HandleEvent(event);
         case 't':
             player->handleEventKeyTeleport();
@@ -96,8 +97,6 @@ int Player::handleEventKeyMonsterMenu() {
                     startIndex--;
                 }
                 break;
-            default:
-                break;
         }
     }
 
@@ -121,8 +120,8 @@ int Player::handleEventKeyTeleport() {
 
     // Store away original settings
     bool originalFogOfWar = dungeon->getSettings()->doFogOfWar();
-    u_char originalX = this->x;
-    u_char originalY = this->y;
+    u_char originalX = this->getX();
+    u_char originalY = this->getY();
     int character = 0;
     Character* save = null;
 
@@ -172,17 +171,16 @@ int Player::handleEventKeyTeleport() {
         case 27: // Esc
             // Revert to original characters
             this->getFloor()->setCharacterAt(null, this->x, this->y);
-            this->x = originalX;
-            this->y = originalY;
+            this->setX(originalX)->setY(originalY);
             break;
         case 't':
             break;
         case 'r':
             this->getFloor()->setCharacterAt(null, this->x, this->y);
 
-            Room* randomRoom = this->getFloor()->getRooms().at(u_char(random_number_between(0, this->getFloor()->getRoomCount() - 1)));
-            this->x = u_char(random_number_between(randomRoom->getStartingX(), randomRoom->getStartingX() + randomRoom->getWidth() - 1));
-            this->y = u_char(random_number_between(randomRoom->getStartingY(), randomRoom->getStartingY() + randomRoom->getHeight() - 1));
+            Room* randomRoom = this->getFloor()->getRoom(u_short(random_number_between(0, this->getFloor()->getRoomCount() - 1)));
+            this->setX(u_char(random_number_between(randomRoom->getStartingX(), randomRoom->getStartingX() + randomRoom->getWidth() - 1)));
+            this->setY(u_char(random_number_between(randomRoom->getStartingY(), randomRoom->getStartingY() + randomRoom->getHeight() - 1)));
 
             // Restore previous location
             if(save != null) {
@@ -359,7 +357,7 @@ int Player::moveTo(u_char toX, u_char toY) {
 }
 
 void Player::battleMonster(Monster* monster) {
-    if (Monster::MonstersAlive(this->floor->getDungeon()) == 1) {
+    if (Monster::AliveCount(this->floor->getDungeon()) == 1) {
         // Player died
         this->killCharacter();
 

@@ -15,9 +15,7 @@ Character::Character(Floor* floor, u_char x, u_char y, u_char character, u_char 
 Character::~Character() = default;
 
 Character* Character::killCharacter() {
-    this->isAlive = false;
-
-    return this;
+    return this->setIsAlive(false);
 }
 
 /** GETTERS **/

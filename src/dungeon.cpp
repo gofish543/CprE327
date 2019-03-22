@@ -46,7 +46,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
 
     this->eventManager->addToQueue(new Event(0, event_type_player, this->getPlayer(), Player::HandleEvent, Player::NextEventTick));
     for (index = 0; index < this->getCurrentFloor()->getMonsterCount(); index++) {
-        this->eventManager->addToQueue(new Event(1 + index, event_type_monster, this->getCurrentFloor()->getMonsters().at(index), Monster::HandleEvent, Monster::NextEventTick));
+        this->eventManager->addToQueue(new Event(1 + index, event_type_monster, this->getCurrentFloor()->getMonster(index), Monster::HandleEvent, Monster::NextEventTick));
     }
 
     this->getPlayer()->updateVisibility();
@@ -97,6 +97,13 @@ std::string* Dungeon::appendText(std::string message, ...) {
 }
 
 /** GETTERS **/
+Floor* Dungeon::getFloor(u_char index) {
+    if (index < this->getFloorCount()) {
+        return this->floors[index];
+    } else {
+        throw "Floor out of bounds exception";
+    }
+}
 std::vector<Floor*> Dungeon::getFloors() {
     return this->floors;
 }
@@ -135,8 +142,14 @@ std::string Dungeon::getText(u_char index) {
 /** GETTERS **/
 
 /** SETTERS **/
-Dungeon* Dungeon::setFloors(std::vector<Floor*> &floors) {
-    this->floors = floors;
+Dungeon* Dungeon::setFloor(Floor* floor, u_char index) {
+    if (index == UCHAR_MAX) {
+        this->floors.push_back(floor);
+    } else if (index < this->getFloorCount()) {
+        this->floors[index] = floor;
+    } else {
+        throw "Floor out of bounds exception";
+    }
 
     return this;
 }

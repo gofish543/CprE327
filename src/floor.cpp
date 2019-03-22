@@ -170,20 +170,36 @@ u_char Floor::getCheapestPathToPlayerAt(u_char width, u_char height) {
     return this->cheapestPathToPlayer[height][width];
 }
 
-std::vector<Monster*> Floor::getMonsters() {
-    return this->monsters;
+Monster* Floor::getMonster(u_short index) {
+    if (index < this->getMonsterCount()) {
+        return this->monsters[index];
+    } else {
+        throw "Monster out of bounds exception";
+    }
 }
 
-std::vector<Staircase*> Floor::getUpStairs() {
-    return this->upStairs;
+Staircase* Floor::getUpStair(u_short index) {
+    if (index < this->getStairUpCount()) {
+        return this->upStairs[index];
+    } else {
+        throw "Staircase up out of bounds exception";
+    }
 }
 
-std::vector<Staircase*> Floor::getDownStairs() {
-    return this->downStairs;
+Staircase* Floor::getDownStair(u_short index) {
+    if (index < this->getStairDownCount()) {
+        return this->downStairs[index];
+    } else {
+        throw "Staircase up out of bounds exception";
+    }
 }
 
-std::vector<Room*> Floor::getRooms() {
-    return this->rooms;
+Room* Floor::getRoom(u_short index) {
+    if (index < this->getRoomCount()) {
+        return this->rooms[index];
+    } else {
+        throw "Room out of bounds exception";
+    }
 }
 /** GETTERS **/
 
@@ -254,26 +270,50 @@ Floor* Floor::setCheapestPathToPlayer(u_char value, u_char width, u_char height)
     return this;
 }
 
-Floor* Floor::setMonsters(std::vector<Monster*>& monsters) {
-    this->monsters = monsters;
+Floor* Floor::setMonster(Monster* monster, u_short index) {
+    if (index == USHRT_MAX) {
+        this->monsters.push_back(monster);
+    } else if (index < this->getRoomCount()) {
+        this->monsters[index] = monster;
+    } else {
+        throw "Monster out of bounds exception";
+    }
 
     return this;
 }
 
-Floor* Floor::setUpStairs(std::vector<Staircase*>& upStairs) {
-    this->upStairs = upStairs;
+Floor* Floor::setUpStair(Staircase* staircase, u_short index) {
+    if (index == USHRT_MAX) {
+        this->upStairs.push_back(staircase);
+    } else if (index < this->getStairUpCount()) {
+        this->upStairs[index] = staircase;
+    } else {
+        throw "Staircase up out of bounds exception";
+    }
 
     return this;
 }
 
-Floor* Floor::setDownStairs(std::vector<Staircase*>& downStairs) {
-    this->downStairs = downStairs;
+Floor* Floor::setDownStair(Staircase* staircase, u_short index) {
+    if (index == USHRT_MAX) {
+        this->downStairs.push_back(staircase);
+    } else if (index < this->getStairDownCount()) {
+        this->downStairs[index] = staircase;
+    } else {
+        throw "Staircase down out of bounds exception";
+    }
 
     return this;
 }
 
-Floor* Floor::setRooms(std::vector<Room*>& rooms) {
-    this->rooms = rooms;
+Floor* Floor::setRoom(Room* room, u_short index) {
+    if (index == USHRT_MAX) {
+        this->rooms.push_back(room);
+    } else if (index < this->getRoomCount()) {
+        this->rooms[index] = room;
+    } else {
+        throw "Room out of bounds exception";
+    }
 
     return this;
 }

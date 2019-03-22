@@ -16,10 +16,13 @@
 #define MONSTER_TUNNELER_LEVEL 2
 #define MONSTER_ERRATIC_LEVEL 1
 
+#define MONSTER_DIJKSTRA_TYPE_TUNNELER 1
+#define MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH 0
+#define MONSTER_DIJKSTRA_TYPE_NON_TUNNELER -1
+
 #include "../../include/forward_declarations.h"
 #include "../vendor/heap.h"
-#include "../terrains/staircase.h"
-#include "../character_listings.h"
+#include "../floor.h"
 #include "../resource.h"
 #include "character.h"
 #include <climits>
@@ -30,7 +33,7 @@ namespace App {
         Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char speed);
         ~Monster();
 
-        static u_int MonstersAlive(Dungeon* dungeon);
+        static u_int AliveCount(Dungeon* dungeon);
         static int DijkstraCompare(const void* A, const void* B);
         static int RunDijkstraOnFloor(Floor* floor);
         static int RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH]);

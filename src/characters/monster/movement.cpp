@@ -412,8 +412,8 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -422,8 +422,8 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -490,8 +490,8 @@ void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -500,8 +500,8 @@ void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -568,8 +568,8 @@ void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -578,8 +578,8 @@ void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -646,8 +646,8 @@ void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -656,8 +656,8 @@ void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -724,8 +724,8 @@ void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -734,8 +734,8 @@ void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -802,8 +802,8 @@ void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -812,8 +812,8 @@ void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -880,8 +880,8 @@ void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -890,8 +890,8 @@ void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;
@@ -958,8 +958,8 @@ void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingX(), floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRooms().at(monsterRoom)->getStartingY(), floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -968,8 +968,8 @@ void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
         if (placementAttempts >= 25) {
             for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
                 // Start looping and find the next open spot
-                for (height = floor->getRooms().at(monsterRoom)->getStartingY(); height < floor->getRooms().at(monsterRoom)->getStartingY() + floor->getRooms().at(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRooms().at(monsterRoom)->getStartingX(); width < floor->getRooms().at(monsterRoom)->getStartingX() + floor->getRooms().at(monsterRoom)->getWidth(); width++) {
+                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
+                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
                         if (floor->getCharacterAt(width, height) == null) {
                             monsterX = width;
                             monsterY = height;

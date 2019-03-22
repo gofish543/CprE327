@@ -12,6 +12,6 @@
 int file_save_1(Dungeon* dungeon);
 int file_load_1(Dungeon* dungeon);
 int file_save_floor_1(FILE* file, Floor* floor);
-int file_load_floor_1(FILE* file, Dungeon* dungeon, Floor* floor);
+int file_load_floor_1(FILE* file, Floor* floor);
 
 #endif

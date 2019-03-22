@@ -21,8 +21,8 @@ DEPEXT		= d
 OBJEXT		= o
 
 # Flags
-FLAGS	= -pipe -Wall -Wpedantic -g -ggdb3
-#FLAGS	= -pipe -Wall -Werror -Wpedantic -funroll-loops -O3
+#FLAGS	= -pipe -Wall -Wpedantic -g -ggdb3
+FLAGS	= -pipe -Wall -Werror -Wpedantic -funroll-loops -O3
 LIB		= -lm -lncurses -lpthread
 INC		= -I$(INCDIR) -I/usr/local/include
 INCDEP	= -I$(INCDIR)

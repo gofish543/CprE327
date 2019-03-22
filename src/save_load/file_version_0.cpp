@@ -88,10 +88,10 @@ int file_save_floor_0(FILE* file, Floor* floor) {
     // Write rooms
     for (index = 0; index < floor->getRoomCount(); index++) {
         // Write x position
-        x = floor->getRooms().at(index)->getStartingX();
-        y = floor->getRooms().at(index)->getStartingY();
-        height = floor->getRooms().at(index)->getHeight();
-        width = floor->getRooms().at(index)->getWidth();
+        x = floor->getRoom(u_short(index))->getStartingX();
+        y = floor->getRoom(u_short(index))->getStartingY();
+        height = floor->getRoom(u_short(index))->getHeight();
+        width = floor->getRoom(u_short(index))->getWidth();
 
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -117,8 +117,8 @@ int file_save_floor_0(FILE* file, Floor* floor) {
     }
     // Write location of upward staircases
     for (index = 0; index < 0; index++) {
-        x = floor->getUpStairs().at(index)->getX();
-        y = floor->getUpStairs().at(index)->getY();
+        x = floor->getUpStair(u_short(index))->getX();
+        y = floor->getUpStair(u_short(index))->getY();
         // Write x position
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -135,8 +135,8 @@ int file_save_floor_0(FILE* file, Floor* floor) {
     }
     // Write location of downward staircases
     for (index = 0; index < 0; index++) {
-        x = floor->getDownStairs().at(index)->getX();
-        y = floor->getDownStairs().at(index)->getY();
+        x = floor->getDownStair(u_short(index))->getX();
+        y = floor->getDownStair(u_short(index))->getY();
         // Write x position
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -202,19 +202,10 @@ int file_load_0(Dungeon* dungeon) {
     if (error_check_fread(&playerY, sizeof(playerY), 1, file)) {
         return 1;
     }
-    std::vector<Floor*> floors;
     auto floor = new Floor(dungeon);
-    floors.push_back(floor);
-    dungeon->setFloorCount(1);
+    dungeon->setFloorCount(1)->setFloor(floor)->setCurrentFloor(floor)->setPlayer(new Player(floor, playerX, playerY));
 
-    dungeon->getFloors().push_back(floor);
-    dungeon->setCurrentFloor(floor);
-
-    floor->setFloorNumber(0);
-
-    dungeon->setPlayer(new Player(floor, playerX, playerY));
-    dungeon->setFloors(floors);
-    floor->setCharacterAt(dungeon->getPlayer(), playerX, playerY);
+    floor->setFloorNumber(0)->setCharacterAt(dungeon->getPlayer(), playerX, playerY);
 
     if (file_load_floor_0(file, floor)) {
         return 1;
@@ -279,7 +270,7 @@ int file_load_floor_0(FILE* file, Floor* floor) {
             return 1;
         }
 
-        floor->rooms.push_back(new Room(floor, index, startX, startY, startX, startY, width, height));
+        floor->setRoom(new Room(floor, index, startX, startY, startX, startY, width, height));
 
         for (y = startY; y < startY + height; y++) {
             for (x = startX; x < startX + width; x++) {
@@ -306,7 +297,7 @@ int file_load_floor_0(FILE* file, Floor* floor) {
             return 1;
         }
 
-        floor->upStairs.push_back(new Staircase(floor, index, x, y, STAIRCASE_TYPE_UP));
+        floor->setUpStair(new Staircase(floor, index, x, y, STAIRCASE_TYPE_UP));
         delete (floor->getTerrainAt(x, y));
         floor->setTerrainAt(new Staircase(floor, index, x, y, STAIRCASE_TYPE_UP), x, y);
     }
@@ -328,7 +319,7 @@ int file_load_floor_0(FILE* file, Floor* floor) {
             return 1;
         }
 
-        floor->downStairs.push_back(new Staircase(floor, index, x, y, STAIRCASE_TYPE_DOWN));
+        floor->setDownStair(new Staircase(floor, index, x, y, STAIRCASE_TYPE_DOWN));
         delete (floor->getTerrainAt(x, y));
         floor->setTerrainAt(new Staircase(floor, index, x, y, STAIRCASE_TYPE_DOWN), x, y);
     }
