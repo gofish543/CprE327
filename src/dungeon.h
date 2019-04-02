@@ -18,7 +18,6 @@
 #include <climits>
 #include <string>
 #include <vector>
-#include <ncurses.h>
 
 namespace App {
     class Dungeon {
@@ -32,7 +31,6 @@ namespace App {
 
         /** GETTERS **/
         Floor* getFloor(u_char index);
-        std::vector<Floor*> getFloors();
         Floor* getCurrentFloor();
         Settings* getSettings();
         EventManager* getEventManager();
@@ -44,13 +42,13 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
-        Dungeon* setFloor(Floor* floor, u_char index = UCHAR_MAX);
         Dungeon* setCurrentFloor(Floor* floor);
         Dungeon* setSettings(Settings* settings);
         Dungeon* setEventManager(EventManager* eventManager);
         Dungeon* setPlayer(Player* player);
         Dungeon* setWindow(WINDOW* window);
         Dungeon* setFloorCount(u_char floorCount);
+        Dungeon* addFloor(Floor* floor, u_char index = UCHAR_MAX);
         /** SETTERS **/
     protected:
 

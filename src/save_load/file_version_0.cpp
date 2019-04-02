@@ -203,7 +203,7 @@ int file_load_0(Dungeon* dungeon) {
         return 1;
     }
     auto floor = new Floor(dungeon);
-    dungeon->setFloorCount(1)->setFloor(floor)->setCurrentFloor(floor)->setPlayer(new Player(floor, playerX, playerY));
+    dungeon->setFloorCount(1)->addFloor(floor)->setCurrentFloor(floor)->setPlayer(new Player(floor, playerX, playerY));
 
     floor->setFloorNumber(0)->setCharacterAt(dungeon->getPlayer(), playerX, playerY);
 

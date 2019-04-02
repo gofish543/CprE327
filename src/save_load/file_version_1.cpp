@@ -68,7 +68,7 @@ int file_save_1(Dungeon* dungeon) {
     u_char index;
     for (index = 0; index < dungeon->getFloorCount(); index++) {
         // Save each floor
-        if (file_save_floor_1(file, dungeon->getFloors().at(index))) {
+        if (file_save_floor_1(file, dungeon->getFloor(index))) {
             return 1;
         }
     }
@@ -317,7 +317,7 @@ int file_load_1(Dungeon* dungeon) {
             return 1;
         }
 
-        dungeon->setFloor(floor);
+        dungeon->addFloor(floor);
     }
 
     dungeon->setCurrentFloor(dungeon->getFloor(playerFloor));

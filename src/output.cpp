@@ -23,7 +23,7 @@ void output(Dungeon* dungeon, void (* targetOutputFunction)(Dungeon*)) {
 void output_print_all_floors(Dungeon* dungeon) {
     u_char index;
     for (index = 0; index < dungeon->getFloorCount(); index++) {
-        output_print_floor(dungeon->getFloors().at(index));
+        output_print_floor(dungeon->getFloor(index));
     }
 }
 

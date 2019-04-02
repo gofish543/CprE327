@@ -156,9 +156,7 @@ int Staircase::take() {
 }
 
 Floor* Staircase::getTargetFloor() {
-    return this->floor->getDungeon()->getFloors().at(
-            this->floor->getDungeon()->getCurrentFloor()->getFloorNumber() + this->type
-    );
+    return this->floor->getDungeon()->getFloor(this->floor->getDungeon()->getCurrentFloor()->getFloorNumber() + this->type);
 }
 
 bool Staircase::isUp() {
