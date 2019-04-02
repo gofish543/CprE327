@@ -10,6 +10,7 @@
 #define DUNGEON_FLOOR_HEIGHT 21
 
 #include "../include/forward_declarations.h"
+#include "./templates/MonsterTemplate.h"
 #include "events.h"
 #include "floor.h"
 #include "resource.h"
@@ -31,6 +32,7 @@ namespace App {
 
         /** GETTERS **/
         Floor* getFloor(u_char index);
+        std::vector<MonsterTemplate*> getMonsterTemplates();
         Floor* getCurrentFloor();
         Settings* getSettings();
         EventManager* getEventManager();
@@ -54,6 +56,7 @@ namespace App {
 
     private:
         std::vector<Floor*> floors;
+        std::vector<MonsterTemplate*> monsterTemplates;
         Floor* floor;
         Settings* settings;
         EventManager* eventManager;

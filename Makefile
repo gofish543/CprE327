@@ -1,7 +1,7 @@
 # Version we are currently on
 MAJOR		= 0
 MINOR		= 1
-PATCH		= 6
+PATCH		= 7
 
 # Compiler and Linker
 CC			= gcc
@@ -21,8 +21,8 @@ DEPEXT		= d
 OBJEXT		= o
 
 # Flags
-#FLAGS	= -pipe -Wall -Wpedantic -g -ggdb3
-FLAGS	= -pipe -Wall -Werror -Wpedantic -funroll-loops -O3
+FLAGS	= -pipe -g -ggdb3
+#FLAGS	= -pipe -Wall -Werror -Wpedantic -funroll-loops -O3
 LIB		= -lm -lncurses -lpthread
 INC		= -I$(INCDIR) -I/usr/local/include
 INCDEP	= -I$(INCDIR)

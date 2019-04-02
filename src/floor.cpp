@@ -658,19 +658,19 @@ Floor* Floor::generateMonsters() {
 
         // If Intelligent
         if (random_number_between(false, true)) {
-            classification |= MONSTER_INTELLIGENT_VALUE;
+            classification |= MONSTER_INTELLIGENT;
         }
         // If Telepathic
         if (random_number_between(false, true)) {
-            classification |= MONSTER_TELEPATHIC_VALUE;
+            classification |= MONSTER_TELEPATHIC;
         }
         // If Tunneler
         if (random_number_between(false, true)) {
-            classification |= MONSTER_TUNNELER_VALUE;
+            classification |= MONSTER_TUNNELER;
         }
         // If Erratic
         if (random_number_between(false, true)) {
-            classification |= MONSTER_ERRATIC_VALUE;
+            classification |= MONSTER_ERRATIC;
         }
 
         // Select random spots until they are only surrounded by room space

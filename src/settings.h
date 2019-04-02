@@ -5,6 +5,12 @@ namespace App {
     class Settings;
 }
 
+#define SETTINGS_RES_FOLDER "./res/"
+#define SETTINGS_HOME_FOLDER "/.rlg327/"
+
+#define SETTINGS_MONSTER_DESC "monster_desc.txt"
+#define SETTINGS_OBJECT_DESC "object_desc.txt"
+
 #define PATH_SEPARATOR '/'
 #define RESOURCE_PATH "./res"
 #define DATA_PATH "/.rlg327/"
@@ -13,6 +19,9 @@ namespace App {
 #include "../include/forward_declarations.h"
 #include "resource.h"
 #include <iostream>
+#include <istream>
+#include <ostream>
+#include <fstream>
 #include <cerrno>
 #include <cstdio>
 #include <filesystem>
@@ -40,6 +49,8 @@ namespace App {
         std::string getSavePath();
         std::string getLoadPath();
         u_short getNumberOfMonsters();
+        std::ifstream* getMonsterDesc();
+        std::ifstream* getObjectDesc();
         /** GETTERS **/
 
         /** SETTERS **/
@@ -53,10 +64,13 @@ namespace App {
         Settings* setSavePath(std::string savePath);
         Settings* setLoadPath(std::string loadPath);
         Settings* setNumberOfMonsters(u_short numberOfMonsters);
+        Settings* setMonsterDesc(std::string path);
+        Settings* setObjectDesc(std::string path);
         /** SETTERS **/
 
     protected:
         int loadArguments(int argc, char* argv[]);
+        void loadFiles();
         std::string getFileName(const std::string& string);
         bool fileExists(const std::string& fileString);
         int createFolder(const std::string& path);
@@ -74,6 +88,9 @@ namespace App {
         std::string loadPath;
 
         u_short numberOfMonsters;
+
+        std::ifstream* monsterDesc;
+        std::ifstream* objectDesc;
     };
 }
 

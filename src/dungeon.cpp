@@ -17,6 +17,11 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     this->eventManager = new EventManager(this);
     this->settings = new Settings(argc, argv);
 
+    this->monsterTemplates = MonsterTemplate::GenerateTemplates(settings->getMonsterDesc());
+
+    output_print_monster_templates(this);
+    debug_terminate();
+
     if (settings->doLoad()) {
         load_from_file(this);
     } else {
@@ -108,6 +113,10 @@ Floor* Dungeon::getFloor(u_char index) {
     }
 }
 
+std::vector<MonsterTemplate*> Dungeon::getMonsterTemplates() {
+    return this->monsterTemplates;
+}
+
 Floor* Dungeon::getCurrentFloor() {
     return this->floor;
 }
@@ -137,10 +146,9 @@ std::string* Dungeon::getTextLines() {
 }
 
 std::string Dungeon::getText(u_char index) {
-    if(index < DUNGEON_TEXT_LINES) {
+    if (index < DUNGEON_TEXT_LINES) {
         return this->textLines[index];
-    }
-    else {
+    } else {
         throw "Text index out of bounds exception";
     }
 }

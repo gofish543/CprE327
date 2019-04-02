@@ -278,6 +278,21 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
     }
 }
 
+void output_print_monster_templates(Dungeon* dungeon) {
+    for(auto const &monsterTemplate: dungeon->getMonsterTemplates()) {
+        printf("Parsed Monster %s\n", monsterTemplate->getName().c_str());
+        printf("\tDescription: %s\n", monsterTemplate->getDescription().c_str());
+        printf("\tColor: %d\n", monsterTemplate->getColor());
+        printf("\tSpeed: %d\n",monsterTemplate->getSpeed());
+        printf("\tAbilities: %d\n", monsterTemplate->getAbilities());
+        printf("\tHit Points: %d\n", monsterTemplate->getHitPoints());
+        printf("\tAttack Damage: %d\n", monsterTemplate->getAttackDamage());
+        printf("\tSymbol: %c\n", monsterTemplate->getSymbol());
+        printf("\tRarity: %d\n", monsterTemplate->getRarity());
+        printf("\n\n");
+    }
+}
+
 void output_print_endgame(Dungeon* dungeon) {
     bool ncurses = dungeon->getSettings()->doNCursesPrint();
 

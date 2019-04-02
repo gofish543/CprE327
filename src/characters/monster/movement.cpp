@@ -389,13 +389,13 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -467,13 +467,13 @@ void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -545,13 +545,13 @@ void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -623,13 +623,13 @@ void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -701,13 +701,13 @@ void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -779,13 +779,13 @@ void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -857,13 +857,13 @@ void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 
@@ -935,13 +935,13 @@ void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-        monster->setLevel(
-                u_char(
-                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-                        1));
+//        monster->setLevel(
+//                u_char(
+//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
+//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
+//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
+//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
+//                        1));
 
         floor->getDungeon()->prependText("A monster has evolved");
 

@@ -31,6 +31,10 @@ namespace App {
     class EventManager;
 
     class Event;
+
+    class Dice;
+
+    class MonsterTemplate;
 }
 
 using App::Dungeon;
@@ -49,5 +53,7 @@ using App::MonsterCost;
 using App::Player;
 using App::EventManager;
 using App::Event;
+using App::Dice;
+using App::MonsterTemplate;
 
 #endif

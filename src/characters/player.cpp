@@ -372,7 +372,7 @@ void Player::battleMonster(Monster* monster) {
         this->floor->setCharacterAt(null, monster->getX(), monster->getY());
 
         // Add level to the player
-        this->addLevel(monster->getLevel());
+//        this->addLevel(monster->getLevel());
         this->incrementMonstersSlain();
     }
 }

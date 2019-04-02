@@ -29,6 +29,8 @@ void output_print_floor_non_tunneler_view(Floor* floor);
 void output_print_floor_shortest_path(Floor* floor);
 void output_print_floor_monster_menu(Floor* floor, u_short startIndex);
 
+void output_print_monster_templates(Dungeon* dungeon);
+
 void output_print_endgame(Dungeon* dungeon);
 
 void print_error(WINDOW* window, bool ncurses, const char* format, ...);

@@ -4,13 +4,6 @@ Monster::Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char
         : Character(floor, x, y, convert_base10_to_char(classification), speed, false, true) {
     this->classification = classification;
 
-    this->level = u_char(
-            (this->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-            (this->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-            (this->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-            (this->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-            1);
-
     this->playerLastSpottedX = 0;
     this->playerLastSpottedY = 0;
 }
@@ -257,11 +250,11 @@ int Monster::moveTo(u_char toX, u_char toY) {
 
 void Monster::battleMonster(Monster* otherMonster) {
     // Stronger wins
-    if (this->getLevel() > otherMonster->getLevel()) {
-        otherMonster->killCharacter();
-    } else if (this->getLevel() < otherMonster->getLevel()) {
-        this->killCharacter();
-    } else if (random_number_between(false, true)) {
+//    if (this->getLevel() > otherMonster->getLevel()) {
+//        otherMonster->killCharacter();
+//    } else if (this->getLevel() < otherMonster->getLevel()) {
+//        this->killCharacter();
+    if (random_number_between(false, true)) {
         otherMonster->killCharacter();
     } else {
         this->killCharacter();
@@ -354,28 +347,48 @@ char* Monster::locationString(char location[19]) {
 }
 
 bool Monster::isIntelligent() {
-    return bool(this->classification & MONSTER_INTELLIGENT_VALUE);
+    return bool(this->classification & MONSTER_INTELLIGENT);
 }
 
 bool Monster::isTelepathic() {
-    return bool(this->classification & MONSTER_TELEPATHIC_VALUE);
+    return bool(this->classification & MONSTER_TELEPATHIC);
 }
 
 bool Monster::isTunneler() {
-    return bool(this->classification & MONSTER_TUNNELER_VALUE);
+    return bool(this->classification & MONSTER_TUNNELER);
 }
 
 bool Monster::isErratic() {
-    return bool(this->classification & MONSTER_ERRATIC_VALUE);
+    return bool(this->classification & MONSTER_ERRATIC);
 }
 
 /** GETTERS **/
+std::string Monster::getName() {
+    return this->name;
+}
+
+std::string Monster::getDescription() {
+    return this->description;
+}
+
+std::string Monster::getColor() {
+    return this->color;
+}
+
+u_int Monster::getHitPoints() {
+    return this->hitPoints;
+}
+
+u_int Monster::getAttackDamage() {
+    return this->attackDamage;
+}
+
 u_char Monster::getClassification() {
     return this->classification;
 }
 
-u_char Monster::getLevel() {
-    return this->level;
+u_char Monster::getRarity() {
+    return this->rarity;
 }
 
 u_char Monster::getPlayerLastSpottedX() {
@@ -388,14 +401,44 @@ u_char Monster::getPlayerLastSpottedY() {
 /** GETTERS **/
 
 /** SETTERS **/
+Monster* Monster::setName(std::string* name) {
+    this->name = *name;
+
+    return this;
+}
+
+Monster* Monster::setDescription(std::string* description) {
+    this->description = *description;
+
+    return this;
+}
+
+Monster* Monster::setColor(std::string* color) {
+    this->color = *color;
+
+    return this;
+}
+
+Monster* Monster::setHitPoints(u_int hitPoints) {
+    this->hitPoints = hitPoints;
+
+    return this;
+}
+
+Monster* Monster::setAttackDamage(u_int attackDamage) {
+    this->attackDamage = attackDamage;
+
+    return this;
+}
+
 Monster* Monster::setClassification(u_char classification) {
     this->classification = classification;
 
     return this;
 }
 
-Monster* Monster::setLevel(u_char level) {
-    this->level = level;
+Monster* Monster::setRarity(u_char rarity) {
+    this->rarity = rarity;
 
     return this;
 }

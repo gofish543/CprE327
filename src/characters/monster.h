@@ -6,10 +6,15 @@
 
 #define MONSTER_HARDNESS_PER_TURN 85
 
-#define MONSTER_INTELLIGENT_VALUE   0x0001
-#define MONSTER_TELEPATHIC_VALUE    0x0002
-#define MONSTER_TUNNELER_VALUE      0x0004
-#define MONSTER_ERRATIC_VALUE       0x0008
+#define MONSTER_INTELLIGENT     0b000000001u
+#define MONSTER_TELEPATHIC      0b000000010u
+#define MONSTER_TUNNELER        0b000000100u
+#define MONSTER_ERRATIC         0b000001000u
+#define MONSTER_PASS            0b000010000u
+#define MONSTER_PICKUP          0b000100000u
+#define MONSTER_DESTROY         0b001000000u
+#define MONSTER_UNIQ            0b010000000u
+#define MONSTER_BOSS            0b100000000u
 
 #define MONSTER_INTELLIGENT_LEVEL 8
 #define MONSTER_TELEPATHIC_LEVEL 4
@@ -31,6 +36,7 @@ namespace App {
     class Monster : public Character {
     public:
         Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char speed);
+        explicit Monster(std::string monster);
         ~Monster();
 
         static u_int AliveCount(Dungeon* dungeon);
@@ -51,17 +57,32 @@ namespace App {
         bool isTelepathic();
         bool isTunneler();
         bool isErratic();
+        bool isPass();
+        bool isPickUp();
+        bool isDestroy();
+        bool isUnique();
+        bool isBoss();
 
         /** GETTERS **/
+        std::string getName();
+        std::string getDescription();
+        std::string getColor();
+        u_int getHitPoints();
+        u_int getAttackDamage();
         u_char getClassification();
-        u_char getLevel();
+        u_char getRarity();
         u_char getPlayerLastSpottedX();
         u_char getPlayerLastSpottedY();
         /** GETTERS **/
 
         /** SETTERS **/
+        Monster* setName(std::string* name);
+        Monster* setDescription(std::string* description);
+        Monster* setColor(std::string* color);
+        Monster* setHitPoints(u_int hitPoints);
+        Monster* setAttackDamage(u_int attackDamage);
         Monster* setClassification(u_char classification);
-        Monster* setLevel(u_char level);
+        Monster* setRarity(u_char rarity);
         Monster* setPlayerLastSpottedX(u_char playerLastSpottedX);
         Monster* setPlayerLastSpottedY(u_char playerLastSpottedY);
         /** SETTERS **/
@@ -87,11 +108,18 @@ namespace App {
     protected:
 
     private:
-        u_char classification;
-        u_char level;
-
         u_char playerLastSpottedX;
         u_char playerLastSpottedY;
+
+        std::string name;
+        std::string description;
+        std::string color;
+
+        u_int hitPoints;
+        u_int attackDamage;
+
+        u_char classification;
+        u_char rarity;
     };
 
     class MonsterCost {

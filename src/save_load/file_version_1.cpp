@@ -192,7 +192,7 @@ int file_save_floor_1(FILE* file, Floor* floor) {
         y = floor->getMonster(u_short(index))->getY();
         classification = floor->getMonster(u_short(index))->getClassification();
         speed = floor->getMonster(u_short(index))->getSpeed();
-        level = floor->getMonster(u_short(index))->getLevel();
+//        level = floor->getMonster(u_short(index))->getLevel();
         lastSpottedX = floor->getMonster(u_short(index))->getPlayerLastSpottedX();
         lastSpottedY = floor->getMonster(u_short(index))->getPlayerLastSpottedY();
         // Write x Position
@@ -212,9 +212,9 @@ int file_save_floor_1(FILE* file, Floor* floor) {
             return 1;
         }
         // Write level
-        if (error_check_fwrite(&(level), sizeof(level), 1, file)) {
-            return 1;
-        }
+//        if (error_check_fwrite(&(level), sizeof(level), 1, file)) {
+//            return 1;
+//        }
         // Write last spotted playerX
         if (error_check_fwrite(&(lastSpottedX), sizeof(lastSpottedX), 1, file)) {
             return 1;
@@ -475,9 +475,9 @@ int file_load_floor_1(FILE* file, Floor* floor) {
        monster = new Monster(floor, tempX, tempY, tempType, tempSpeed);
 
         // Write level
-        if (error_check_fread(&(level), sizeof(level), 1, file)) {
-            return 1;
-        }
+//        if (error_check_fread(&(level), sizeof(level), 1, file)) {
+//            return 1;
+//        }
         // Write last spotted playerX
         if (error_check_fread(&(playerLastSpottedX), sizeof(playerLastSpottedX), 1, file)) {
             return 1;
@@ -487,7 +487,7 @@ int file_load_floor_1(FILE* file, Floor* floor) {
             return 1;
         }
         floor->setMonster(monster);
-        monster->setLevel(level)->setPlayerLastSpottedX(playerLastSpottedX)->setPlayerLastSpottedY(playerLastSpottedY);
+//        monster->setLevel(level)->setPlayerLastSpottedX(playerLastSpottedX)->setPlayerLastSpottedY(playerLastSpottedY);
 
         floor->setCharacterAt(monster, tempX, tempY);
     }

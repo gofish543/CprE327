@@ -3,10 +3,14 @@
 ## Unreleased
 
 ### Added
-
 ### Fixed
-
 ### Changed
+
+## [v0.1.7 (2019-04-02)](https://github.com/gofish543/CprE327/releases/tag/v0.1.7)
+
+### Added
+Added MonsterTemplate parsing
+Added Dice operations
 
 ## [v0.1.6 (2019-03-22)](https://github.com/gofish543/CprE327/releases/tag/v0.1.6)
 
