@@ -1,11 +1,14 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include "../include/forward_declarations.h"
-#include "characters/monster.h"
+#include "resource.h"
 #include "dungeon.h"
 #include "floor.h"
-#include "resource.h"
+#include "characters/monster.h"
+
+#include <forward_declarations.h>
+#include <colors.h>
+
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>

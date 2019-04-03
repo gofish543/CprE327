@@ -2,6 +2,7 @@
 #define ESCAPE_FROM_DARKNESS_H
 
 #include "../include/forward_declarations.h"
+#include "../include/colors.h"
 #include "characters/monster.h"
 #include "dungeon.h"
 #include "output.h"

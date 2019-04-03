@@ -265,9 +265,9 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
         print(window, ncurses, "| %7d | %11s | %10s | %8s | %7s | %18s |\n",
               index,
               (floor->getMonster(index)->isIntelligent()) ? "YES" : "NO",
-              (floor->getMonster(index)->isTelepathic())? "YES" : "NO",
+              (floor->getMonster(index)->isTelepathic()) ? "YES" : "NO",
               (floor->getMonster(index)->isTunneler()) ? "YES" : "NO",
-              (floor->getMonster(index)->isErratic())? "YES" : "NO",
+              (floor->getMonster(index)->isErratic()) ? "YES" : "NO",
               floor->getMonster(index)->locationString(location)
         );
     }
@@ -279,11 +279,11 @@ void output_print_floor_monster_menu(Floor* floor, u_short startIndex) {
 }
 
 void output_print_monster_templates(Dungeon* dungeon) {
-    for(auto const &monsterTemplate: dungeon->getMonsterTemplates()) {
+    for (auto const& monsterTemplate: dungeon->getMonsterTemplates()) {
         printf("Parsed Monster %s\n", monsterTemplate->getName().c_str());
         printf("\tDescription: %s\n", monsterTemplate->getDescription().c_str());
         printf("\tColor: %d\n", monsterTemplate->getColor());
-        printf("\tSpeed: %d\n",monsterTemplate->getSpeed());
+        printf("\tSpeed: %d\n", monsterTemplate->getSpeed());
         printf("\tAbilities: %d\n", monsterTemplate->getAbilities());
         printf("\tHit Points: %d\n", monsterTemplate->getHitPoints());
         printf("\tAttack Damage: %d\n", monsterTemplate->getAttackDamage());
@@ -333,18 +333,20 @@ void print_error(WINDOW* window, const bool ncurses, const char* format, ...) {
         clear();
     }
 
+    // Pull a list of args
     va_list args;
     va_start(args, format);
 
     if (ncurses) {
         vw_printw(window, format, args);
         vw_printw(window, "Press any key to continue...\n", null);
-
         refresh();
 
         getch();
     } else {
+        printf(SHELL_TEXT_RED);
         printf(format, args);
+        printf(SHELL_DEFAULT);
     }
 
     va_end(args);
