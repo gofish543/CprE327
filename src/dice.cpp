@@ -1,4 +1,3 @@
-#include <climits>
 #include "dice.h"
 
 Dice::Dice(int base, u_short rolls, u_short sides) {
@@ -18,13 +17,13 @@ Dice::Dice(std::string* diceString) {
     char indexOfD = diceString->find(secondDelimiter);
 
     if (indexOfPlus == std::string::npos || indexOfD == std::string::npos) {
-        throw "Unknown Dice string parsed";
+        throw Exception::DiceStringInvalidParse();
     }
 
     try {
         this->result = 0;
 
-        if (abs(std::stoi(diceString->substr(0, indexOfPlus))) > UINT_MAX / 2) {
+        if (abs(std::stoi(diceString->substr(0, indexOfPlus))) > U_INT_MAX / 2) {
             this->result = -1;
         }
         if (std::stoi(diceString->substr(indexOfPlus + 1, indexOfD)) > U_SHORT_MAX) {
@@ -37,6 +36,7 @@ Dice::Dice(std::string* diceString) {
         this->base = std::stoi(diceString->substr(0, indexOfPlus));
         this->rolls = std::stoi(diceString->substr(indexOfPlus + 1, indexOfD));
         this->sides = std::stoi(diceString->substr(indexOfD + 1));
+
     } catch (std::exception& exception) {
         this->result = -1;
     }
@@ -52,12 +52,12 @@ int Dice::RandomNumberBetween(int min, int max) {
     ::gettimeofday(&time, null);
     u_int defaultSeed;
     if (fd == 0) {
-        defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
+        defaultSeed = Dice::Hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
     } else {
         size_t buffer[1];
         lseek(fd, dice_random_offset, 0);
         if (read(fd, buffer, sizeof(size_t)) != sizeof(size_t)) {
-            defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
+            defaultSeed = Dice::Hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
         } else {
             defaultSeed = (u_int) buffer[0];
             dice_random_offset += 8;
@@ -74,6 +74,10 @@ int Dice::RandomNumberBetween(int min, int max) {
     randomEngine.seed(defaultSeed);
 
     return ((u_int) randomEngine()) % ((max + 1) - min) + min;
+}
+
+u_int Dice::Hash3(unsigned int h1, unsigned int h2, unsigned int h3) {
+    return (((h1 * 2654435789U) + h2) * 2654435789U) + h3;
 }
 
 int Dice::roll() {

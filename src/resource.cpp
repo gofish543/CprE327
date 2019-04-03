@@ -1,54 +1,6 @@
 #include <sstream>
 #include "resource.h"
 
-bool global_ncurses = false;
-unsigned short global_offset = 0;
-
-void set_global_ncurses(bool value) {
-    global_ncurses = value;
-}
-
-void debug_terminate() {
-    if (global_ncurses) {
-        endwin();
-    }
-    std::cout << "Stopping here" << std::endl;
-    exit(1);
-}
-int random_number_between(int min, int max) {
-    int fd = open("/dev/urandom", O_RDWR);
-    struct timeval time = {};
-    ::gettimeofday(&time, null);
-    u_int defaultSeed;
-    if (fd == 0) {
-        defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
-    } else {
-        size_t buffer[1];
-        lseek(fd, global_offset, 0);
-        if (read(fd, buffer, sizeof(size_t)) != sizeof(size_t)) {
-            defaultSeed = hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
-        } else {
-            defaultSeed = (u_int) buffer[0];
-            global_offset += 8;
-
-            if (global_offset > 2048) {
-                global_offset = 0;
-            }
-        }
-        close(fd);
-    }
-
-    std::random_device randomDevice;
-    std::default_random_engine randomEngine(randomDevice());
-    randomEngine.seed(defaultSeed);
-
-    return ((u_int) randomEngine()) % ((max + 1) - min) + min;
-}
-
-unsigned int hash3(unsigned int h1, unsigned int h2, unsigned int h3) {
-    return (((h1 * 2654435789U) + h2) * 2654435789U) + h3;
-}
-
 int error_check_fread(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream) {
     if (fread(ptr, size, nmemb, stream) != nmemb) {
         return 1;

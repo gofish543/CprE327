@@ -17,16 +17,16 @@ void Monster::Move0(Monster* monster, u_char* x, u_char* y) {
             *x = monster->getX();
             *y = monster->getY();
 
-            *x = (*x + u_char(random_number_between(-1, 1)));
-            *y = (*y + u_char(random_number_between(-1, 1)));
+            *x = (*x + u_char(Dice::RandomNumberBetween(-1, 1)));
+            *y = (*y + u_char(Dice::RandomNumberBetween(-1, 1)));
         } while (floor->getTerrainAt(*x, *y)->isImmutable());
     } else {
         do {
             *x = monster->getX();
             *y = monster->getY();
 
-            *x = (*x + u_char(random_number_between(-1, 1)));
-            *y = (*y + u_char(random_number_between(-1, 1)));
+            *x = (*x + u_char(Dice::RandomNumberBetween(-1, 1)));
+            *y = (*y + u_char(Dice::RandomNumberBetween(-1, 1)));
         } while (!floor->getTerrainAt(*x, *y)->isWalkable() || floor->getTerrainAt(*x, *y)->isImmutable());
     }
 }
@@ -89,11 +89,10 @@ void Monster::Move1(Monster* monster, u_char* x, u_char* y) {
     player->setY(playerY);
     Monster::RunDijkstra(floor, -1, floor->nonTunnelerView);
 
-    if(floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
+    if (floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
         *x = cheapestX;
         *y = cheapestY;
-    }
-    else {
+    } else {
         *x = monster->getX();
         *y = monster->getY();
     }
@@ -163,11 +162,10 @@ void Monster::Move3(Monster* monster, u_char* x, u_char* y) {
         }
     }
 
-    if(floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
+    if (floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
         *x = cheapestX;
         *y = cheapestY;
-    }
-    else {
+    } else {
         *x = monster->getX();
         *y = monster->getY();
     }
@@ -281,11 +279,10 @@ void Monster::Move5(Monster* monster, u_char* x, u_char* y) {
     player->setY(playerY);
     Monster::RunDijkstra(floor, 1, floor->tunnelerView);
 
-    if(floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
+    if (floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
         *x = monster->getX();
         *y = monster->getY();
-    }
-    else {
+    } else {
         *x = cheapestX;
         *y = cheapestY;
     }
@@ -357,11 +354,10 @@ void Monster::Move7(Monster* monster, u_char* x, u_char* y) {
         }
     }
 
-    if(floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
+    if (floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
         *x = monster->getX();
         *y = monster->getY();
-    }
-    else {
+    } else {
         *x = cheapestX;
         *y = cheapestY;
     }
@@ -382,10 +378,10 @@ void Monster::Move7(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -408,12 +404,12 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -460,10 +456,10 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -486,12 +482,12 @@ void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -538,10 +534,10 @@ void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -564,12 +560,12 @@ void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -616,10 +612,10 @@ void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -642,12 +638,12 @@ void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -694,10 +690,10 @@ void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -720,12 +716,12 @@ void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -772,10 +768,10 @@ void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -798,12 +794,12 @@ void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -850,10 +846,10 @@ void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -876,12 +872,12 @@ void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -928,10 +924,10 @@ void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
  */
 void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
-    auto random = u_char(random_number_between(0, 100));
+    auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
     if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(random_number_between(1, 4));
+        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
 
         monster->setClassification(monster->getClassification() | randomCharacteristic);
         monster->setCharacter(convert_base10_to_char(monster->getClassification()));
@@ -954,12 +950,12 @@ void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
         u_char width;
         u_char placementAttempts = 0;
         u_char roomIndex = 0;
-        auto monsterRoom = u_char(random_number_between(0, floor->getRoomCount() - u_char(1)));
+        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
 
         do {
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);

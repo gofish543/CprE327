@@ -37,8 +37,3 @@
 #define SHELL_BLINK                "\033[5m"
 #define SHELL_INVERSE              "\033[7m"
 #define SHELL_CONCEALED            "\033[8m"
-
-#include <ncurses.h>
-#include <cstdio>
-
-void output_print_color_pallet(WINDOW* window, bool ncurses);

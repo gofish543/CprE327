@@ -54,10 +54,10 @@ int Staircase::take() {
     else {
         u_char playerX;
         u_char playerY;
-        auto room = u_short(random_number_between(0, currentFloor->getRoomCount() - 1));
+        auto room = u_short(Dice::RandomNumberBetween(0, currentFloor->getRoomCount() - 1));
 
-        playerX = u_char(random_number_between(currentFloor->getRoom(room)->getStartingX(), currentFloor->getRoom(room)->getStartingX() + currentFloor->getRoom(room)->getWidth() - 1));
-        playerY = u_char(random_number_between(currentFloor->getRoom(room)->getStartingY(), currentFloor->getRoom(room)->getStartingY() + currentFloor->getRoom(room)->getHeight() - 1));
+        playerX = u_char(Dice::RandomNumberBetween(currentFloor->getRoom(room)->getStartingX(), currentFloor->getRoom(room)->getStartingX() + currentFloor->getRoom(room)->getWidth() - 1));
+        playerY = u_char(Dice::RandomNumberBetween(currentFloor->getRoom(room)->getStartingY(), currentFloor->getRoom(room)->getStartingY() + currentFloor->getRoom(room)->getHeight() - 1));
 
         if (currentFloor->getCharacterAt(playerX, playerY) != null) {
             currentFloor->getCharacterAt(playerX, playerY)->killCharacter();
@@ -85,12 +85,12 @@ int Staircase::take() {
                 // Select random spots until they are only surrounded by room space
                 do {
                     do {
-                        monsterRoom = currentFloor->getRoom(u_char(random_number_between(0, currentFloor->getRoomCount() - 1)));
+                        monsterRoom = currentFloor->getRoom(u_char(Dice::RandomNumberBetween(0, currentFloor->getRoomCount() - 1)));
                     } while (monsterRoom->getId() == playerRoom->getId());
 
                     // Select random spot inside the room
-                    monsterX = u_char(random_number_between(monsterRoom->getStartingX(), monsterRoom->getStartingX() + monsterRoom->getWidth() - 1));
-                    monsterY = u_char(random_number_between(monsterRoom->getStartingY(), monsterRoom->getStartingY() + monsterRoom->getHeight() - 1));
+                    monsterX = u_char(Dice::RandomNumberBetween(monsterRoom->getStartingX(), monsterRoom->getStartingX() + monsterRoom->getWidth() - 1));
+                    monsterY = u_char(Dice::RandomNumberBetween(monsterRoom->getStartingY(), monsterRoom->getStartingY() + monsterRoom->getHeight() - 1));
 
                     placementAttempts++;
                 } while (currentFloor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);

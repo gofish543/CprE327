@@ -2,7 +2,6 @@
 #define EVENTS_H
 
 #include "dungeon.h"
-#include "resource.h"
 #include "vendor/heap.h"
 
 enum EventType {
@@ -29,7 +28,6 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
-        EventManager* setDungeon(Dungeon* dungeon);
         EventManager* setTick(int tick);
         /** SETTERS **/
     protected:
@@ -54,7 +52,6 @@ namespace App {
 
         /** SETTERS **/
         Event* setTick(int tick);
-        Event* setType(enum EventType type);
         /** SETTERS **/
 
         Character* character;

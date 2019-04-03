@@ -3,8 +3,16 @@
 ## Unreleased
 
 ### Added
+Added shell colors for non ncurses game play
+Added weekly assignment pdfs for eight, nine, and ten
+Added global declarations to include folder
+Added custom exceptions
 ### Fixed
 ### Changed
+Moved character listings to include folder
+Changed output functions to a class
+Changed location of random number generation to dice class
+Altered dungeon output to use output function
 
 ## [v0.1.7 (2019-04-02)](https://github.com/gofish543/CprE327/releases/tag/v0.1.7)
 

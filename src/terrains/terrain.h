@@ -2,7 +2,7 @@
 #define TERRAIN_H
 
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
+#include "character_listings.h"
 #include "../resource.h"
 
 namespace App {

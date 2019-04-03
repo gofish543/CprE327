@@ -2,7 +2,7 @@
 #define SAVE_LOAD_V_0_H
 
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
+#include "character_listings.h"
 #include "../dungeon.h"
 #include "../floor.h"
 #include "../resource.h"

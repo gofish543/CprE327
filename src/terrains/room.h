@@ -8,7 +8,7 @@
 #define ROOM_MAX_HEIGHT 8
 
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
+#include "character_listings.h"
 #include "../floor.h"
 #include "terrain.h"
 

@@ -3,7 +3,7 @@
 
 #include "../../../include/forward_declarations.h"
 #include "../../vendor/heap.h"
-#include "../../character_listings.h"
+#include "character_listings.h"
 #include "../../resource.h"
 #include "../monster.h"
 #include <cmath>

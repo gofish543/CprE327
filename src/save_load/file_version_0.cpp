@@ -231,10 +231,9 @@ int file_load_floor_0(FILE* file, Floor* floor) {
             }
 
             if (floor->getTerrainAt(width, height) == null) {
-                if(hardness == CORRIDOR_HARDNESS) {
+                if (hardness == CORRIDOR_HARDNESS) {
                     floor->setTerrainAt(new Corridor(floor, 0, width, height), width, height);
-                }
-                else {
+                } else {
                     floor->setTerrainAt(new Rock(floor, 0, width, height, hardness), width, height);
                 }
             }
@@ -327,7 +326,7 @@ int file_load_floor_0(FILE* file, Floor* floor) {
     if (floor->getDungeon()->getSettings()->doNumberOfMonsters()) {
         floor->setMonsterCount(floor->getDungeon()->getSettings()->getNumberOfMonsters());
     } else {
-        floor->setMonsterCount(u_short(random_number_between(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX)));
+        floor->setMonsterCount(u_short(Dice::RandomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX)));
     }
 
     if (floor->generateMonsters()) {

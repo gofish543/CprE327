@@ -2,7 +2,7 @@
 #define ROCK_H
 
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
+#include "character_listings.h"
 #include "../floor.h"
 #include "terrain.h"
 

@@ -1,42 +1,62 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include "resource.h"
-#include "dungeon.h"
-#include "floor.h"
-#include "characters/monster.h"
+#define OUTPUT_DEBUG_HARDNESS           0b0000001u
+#define OUTPUT_DEBUG_TUNNELER           0b0000010u
+#define OUTPUT_DEBUG_NON_TUNNELER       0b0000100u
+#define OUTPUT_DEBUG_SHORTEST_PATH      0b0001000u
+#define OUTPUT_DEBUG_MONSTER_TEMPLATES  0b0010000u
+#define OUTPUT_DEBUG_COLOR_PALLET       0b0100000u
+#define OUTPUT_DEBUG_TERMINATE          0b1000000u
 
 #include <forward_declarations.h>
 #include <colors.h>
 
-#include <cstdio>
-#include <iostream>
-#include <cstdlib>
-#include <cstdarg>
 #include <ncurses.h>
+#include <cstdio>
 
-void output(Dungeon* dungeon, void (* targetOutputFunction)(Dungeon*));
+#include "dungeon.h"
+#include "characters/monster.h"
 
-void output_print_all_floors(Dungeon* dungeon);
-void output_print_current_floor(Dungeon* dungeon);
-void output_print_current_floor_hardness(Dungeon* dungeon);
-void output_print_current_floor_tunneler(Dungeon* dungeon);
-void output_print_current_floor_non_tunneler(Dungeon* dungeon);
-void output_print_current_floor_shortest_path(Dungeon* dungeon);
-void output_print_current_floor_monster_menu(Dungeon* dungeon, u_short startIndex);
+namespace App {
+    class Output {
+    public:
+        Output(Dungeon* dungeon);
+        ~Output();
 
-void output_print_floor(Floor* floor);
-void output_print_floor_hardness(Floor* floor);
-void output_print_floor_tunneler_view(Floor* floor);
-void output_print_floor_non_tunneler_view(Floor* floor);
-void output_print_floor_shortest_path(Floor* floor);
-void output_print_floor_monster_menu(Floor* floor, u_short startIndex);
+        Output* print();
+        Output* print(std::string* format, ...);
+        Output* print(const char* format, ...);
+        Output* print(u_int debugFunctions, Floor* floor = null);
+        Output* printEndgame();
+        Output* printMonsterMenu(u_short startIndex);
 
-void output_print_monster_templates(Dungeon* dungeon);
+        /** DEBUG PRINTS **/
+        Output* printHardness(Floor* floor);
+        Output* printTunneler(Floor* floor);
+        Output* printNonTunneler(Floor* floor);
+        Output* printShortestPath(Floor* floor);
+        Output* printMonsterTemplates();
+        Output* printColorPallet();
+        void printTerminate();
+        Output* printError(std::string* format, ...);
+        Output* printError(const char* format, ...);
+        /** DEBUG PRINTS **/
 
-void output_print_endgame(Dungeon* dungeon);
+        /** GETTERS **/
+        /** GETTERS **/
 
-void print_error(WINDOW* window, bool ncurses, const char* format, ...);
-void print(WINDOW* window, bool ncurses, const char* format, ...);
+        /** SETTERS **/
+        /** SETTERS **/
+    protected:
+
+    private:
+        Dungeon* dungeon;
+        bool doNCurses;
+        bool dontNCurses;
+        bool doExpanded;
+        WINDOW* window;
+    };
+}
 
 #endif

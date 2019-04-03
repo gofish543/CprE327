@@ -1,11 +1,11 @@
 #ifndef ESCAPE_FROM_DARKNESS_H
 #define ESCAPE_FROM_DARKNESS_H
 
-#include "../include/forward_declarations.h"
-#include "../include/colors.h"
-#include "characters/monster.h"
+#include <forward_declarations.h>
+#include <global.h>
+
 #include "dungeon.h"
-#include "output.h"
+#include "characters/monster.h"
 
 int game_tick(Dungeon* dungeon);
 

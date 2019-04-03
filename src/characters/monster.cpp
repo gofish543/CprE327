@@ -254,7 +254,7 @@ void Monster::battleMonster(Monster* otherMonster) {
 //        otherMonster->killCharacter();
 //    } else if (this->getLevel() < otherMonster->getLevel()) {
 //        this->killCharacter();
-    if (random_number_between(false, true)) {
+    if (Dice::RandomNumberBetween(false, true)) {
         otherMonster->killCharacter();
     } else {
         this->killCharacter();

@@ -5,7 +5,7 @@
 #define STAIRCASE_TYPE_DOWN -1
 
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
+#include "character_listings.h"
 #include "../floor.h"
 #include "terrain.h"
 #include <vector>

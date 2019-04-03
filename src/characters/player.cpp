@@ -19,7 +19,8 @@ Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER
     }
 }
 
-Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived) : Player(floor, x, y) {
+Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived)
+        : Player(floor, x, y) {
     this->takingStaircase = null;
 
     this->requestTerminate = false;
@@ -133,11 +134,11 @@ int Player::handleEventKeyTeleport() {
 
     this->getFloor()->setCharacterAt(null, this->x, this->y);
 
-    while(character != 27 && character != 't' && character != 'r') {
+    while (character != 27 && character != 't' && character != 'r') {
         character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
         this->getFloor()->setCharacterAt(null, this->getX(), this->getY());
 
-        switch(character) {
+        switch (character) {
             case KEY_UP:
                 this->y = u_char(std::max(1, this->y - 1));
                 break;
@@ -153,7 +154,7 @@ int Player::handleEventKeyTeleport() {
         }
 
         // Restore previous spot
-        if(save != null) {
+        if (save != null) {
             this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
         }
 
@@ -167,7 +168,7 @@ int Player::handleEventKeyTeleport() {
         output(this->getFloor()->getDungeon(), output_print_current_floor);
     }
 
-    switch(character) {
+    switch (character) {
         case 27: // Esc
             // Revert to original characters
             this->getFloor()->setCharacterAt(null, this->x, this->y);
@@ -178,12 +179,12 @@ int Player::handleEventKeyTeleport() {
         case 'r':
             this->getFloor()->setCharacterAt(null, this->x, this->y);
 
-            Room* randomRoom = this->getFloor()->getRoom(u_short(random_number_between(0, this->getFloor()->getRoomCount() - 1)));
-            this->setX(u_char(random_number_between(randomRoom->getStartingX(), randomRoom->getStartingX() + randomRoom->getWidth() - 1)));
-            this->setY(u_char(random_number_between(randomRoom->getStartingY(), randomRoom->getStartingY() + randomRoom->getHeight() - 1)));
+            Room* randomRoom = this->getFloor()->getRoom(u_short(Dice::RandomNumberBetween(0, this->getFloor()->getRoomCount() - 1)));
+            this->setX(u_char(Dice::RandomNumberBetween(randomRoom->getStartingX(), randomRoom->getStartingX() + randomRoom->getWidth() - 1)));
+            this->setY(u_char(Dice::RandomNumberBetween(randomRoom->getStartingY(), randomRoom->getStartingY() + randomRoom->getHeight() - 1)));
 
             // Restore previous location
-            if(save != null) {
+            if (save != null) {
                 this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
             }
 
@@ -191,12 +192,12 @@ int Player::handleEventKeyTeleport() {
             break;
     }
 
-    if(save != null && save->getIsMonster()) {
+    if (save != null && save->getIsMonster()) {
         // Fight monster
         this->battleMonster((Monster*) save);
 
         // If didn't survive, place back character
-        if(!this->getIsAlive()) {
+        if (!this->getIsAlive()) {
             this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
         }
     }

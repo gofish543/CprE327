@@ -9,16 +9,23 @@
 #define DUNGEON_FLOOR_WIDTH 80
 #define DUNGEON_FLOOR_HEIGHT 21
 
-#include "../include/forward_declarations.h"
-#include "./templates/MonsterTemplate.h"
-#include "events.h"
-#include "floor.h"
-#include "resource.h"
-#include "save_load.h"
-#include "settings.h"
-#include <climits>
+#include <forward_declarations.h>
+#include <exception.h>
+#include <global.h>
+
+#include <cstdio>
+#include <cstdarg>
 #include <string>
 #include <vector>
+#include <ncurses.h>
+
+#include "floor.h"
+#include "dice.h"
+#include "events.h"
+#include "settings.h"
+#include "save_load.h"
+#include "templates/MonsterTemplate.h"
+#include "templates/ObjectTemplate.h"
 
 namespace App {
     class Dungeon {
@@ -27,45 +34,47 @@ namespace App {
         Dungeon(int argc, char* argv[]);
         ~Dungeon();
 
-        std::string* prependText(std::string message, ...);
-        std::string* appendText(std::string message, ...);
+        std::string* prependText(const std::string* format, ...);
+        std::string* appendText(const std::string* format, ...);
 
         /** GETTERS **/
         Floor* getFloor(u_char index);
-        std::vector<MonsterTemplate*> getMonsterTemplates();
         Floor* getCurrentFloor();
+        u_char getFloorCount();
+        std::vector<MonsterTemplate*> getMonsterTemplates();
+        std::vector<ObjectTemplate*> getObjectTemplates();
         Settings* getSettings();
         EventManager* getEventManager();
         Player* getPlayer();
         WINDOW* getWindow();
-        u_char getFloorCount();
-        std::string* getTextLines();
-        std::string getText(u_char index);
+        Output* getOutput();
+        std::string* getText(u_char index);
         /** GETTERS **/
 
         /** SETTERS **/
+        Dungeon* addFloor(Floor* floor, u_char index = U_CHAR_MAX);
         Dungeon* setCurrentFloor(Floor* floor);
         Dungeon* setSettings(Settings* settings);
         Dungeon* setEventManager(EventManager* eventManager);
         Dungeon* setPlayer(Player* player);
         Dungeon* setWindow(WINDOW* window);
-        Dungeon* setFloorCount(u_char floorCount);
-        Dungeon* addFloor(Floor* floor, u_char index = UCHAR_MAX);
         /** SETTERS **/
     protected:
 
     private:
         std::vector<Floor*> floors;
         std::vector<MonsterTemplate*> monsterTemplates;
+        std::vector<ObjectTemplate*> objectTemplates;
+
         Floor* floor;
         Settings* settings;
         EventManager* eventManager;
         Player* player;
+        Output* output;
 
         WINDOW* window;
 
-        u_char floorCount;
-        std::string textLines[DUNGEON_TEXT_LINES];
+        std::string* textLines[DUNGEON_TEXT_LINES];
     };
 }
 

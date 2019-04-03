@@ -35,6 +35,10 @@ namespace App {
     class Dice;
 
     class MonsterTemplate;
+
+    class ObjectTemplate;
+
+    class Output;
 }
 
 using App::Dungeon;
@@ -55,5 +59,7 @@ using App::EventManager;
 using App::Event;
 using App::Dice;
 using App::MonsterTemplate;
+using App::ObjectTemplate;
+using App::Output;
 
 #endif

@@ -1,25 +1,18 @@
-#ifndef MONSTER_TEMPLATE_H
-#define MONSTER_TEMPLATE_H
+#ifndef OBJECT_TEMPLATE_H
+#define OBJECT_TEMPLATE_H
 
-#define MONSTER_TEMPLATE_HEADING "RLG327 MONSTER DESCRIPTION 1"
+#define OBJECT_TEMPLATE_HEADING "RLG327 OBJECT DESCRIPTION 1"
 
-#include "../../include/forward_declarations.h"
-#include "../characters/monster.h"
-#include "../dice.h"
-#include <string>
-#include <vector>
-#include <iostream>
-#include <fstream>
 
 namespace App {
-    class MonsterTemplate {
+    class ObjectTemplate {
     public:
-        explicit MonsterTemplate(std::string& templateString);
-        ~MonsterTemplate();
+        explicit ObjectTemplate(std::string& templateString);
+        ~ObjectTemplate();
 
-        static std::vector<MonsterTemplate*> GenerateTemplates(std::ifstream* inputFile);
+        static std::vector<ObjectTemplate*> GenerateTemplates(std::ifstream* inputFile);
 
-        Monster* generateMonster();
+//        Object* generateObjects();
 
         /** GETTERS **/
         bool isValid();
@@ -48,4 +41,5 @@ namespace App {
         u_char rarity;
     };
 }
+
 #endif

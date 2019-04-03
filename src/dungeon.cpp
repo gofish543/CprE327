@@ -1,42 +1,45 @@
 #include "dungeon.h"
 
 Dungeon::Dungeon(int argc, char* argv[]) {
-    this->floor = null;
-    this->settings = null;
-    this->eventManager = null;
-    this->player = null;
-    this->window = null;
-    this->floorCount = 0;
-
     u_char index;
 
-    for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
-        this->textLines[index] = "";
-    }
-
-    this->eventManager = new EventManager(this);
     this->settings = new Settings(argc, argv);
 
-    this->monsterTemplates = MonsterTemplate::GenerateTemplates(settings->getMonsterDesc());
+    if (this->settings->doNCursesPrint()) {
+        this->window = initscr();
+        raw();
+        keypad(stdscr, true);
+        noecho();
+    }
 
-    output_print_monster_templates(this);
-    debug_terminate();
+    this->output = new Output(this);
+    this->eventManager = new EventManager(this);
 
-    if (settings->doLoad()) {
+    this->monsterTemplates = MonsterTemplate::GenerateTemplates(this->settings->getMonsterDesc());
+    this->objectTemplates = ObjectTemplate::GenerateTemplates(this->settings->getObjectDesc());
+
+    this->floor = null;
+    this->player = null;
+    this->window = null;
+
+    for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
+        this->textLines[index] = new std::string();
+    }
+
+    if (this->settings->doLoad()) {
         load_from_file(this);
     } else {
-        this->floorCount = u_char(random_number_between(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX));
-        auto stairCount = u_short(random_number_between(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX));
+        auto stairCount = u_short(Dice::RandomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX));
 
-        for (index = 0; index < this->floorCount; index++) {
+        for (index = 0; index < u_char(Dice::RandomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX)); index++) {
             this->floors.push_back(
                     new Floor(
                             this,
                             index,
-                            u_short(random_number_between(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX)),
+                            u_short(Dice::RandomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX)),
                             stairCount,
                             stairCount,
-                            u_short(random_number_between(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX))
+                            u_short(Dice::RandomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX))
                     )
             );
         }
@@ -46,79 +49,109 @@ Dungeon::Dungeon(int argc, char* argv[]) {
 
     Monster::RunDijkstraOnFloor(this->floor);
 
-    if (this->settings->doNCursesPrint()) {
-        this->window = initscr();
-        raw();
-        keypad(stdscr, true);
-        noecho();
+    this->eventManager->addToQueue(new Event(0, event_type_player, this->player, Player::HandleEvent, Player::NextEventTick));
+    for (index = 0; index < this->floor->getMonsterCount(); index++) {
+        this->eventManager
+                ->addToQueue(new Event(1 + index, event_type_monster, this->floor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick));
     }
 
-    this->eventManager->addToQueue(new Event(0, event_type_player, this->getPlayer(), Player::HandleEvent, Player::NextEventTick));
-    for (index = 0; index < this->getCurrentFloor()->getMonsterCount(); index++) {
-        this->eventManager->addToQueue(new Event(1 + index, event_type_monster, this->getCurrentFloor()->getMonster(index), Monster::HandleEvent, Monster::NextEventTick));
-    }
-
-    this->getPlayer()->updateVisibility();
+    this->player->updateVisibility();
 }
 
 Dungeon::~Dungeon() {
     u_char index;
+
+    if (this->settings->doNCursesPrint()) {
+        endwin();
+    }
 
     if (this->getSettings()->doSave()) {
         // Save the game state
         save_to_file(this);
     }
 
-    for (index = 0; index < this->floorCount; index++) {
+    for (index = 0; index < this->floors.size(); index++) {
         delete (this->floors[index]);
     }
 
-    if (this->settings->doNCursesPrint()) {
-        endwin();
+    for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
+        delete (this->textLines[index]);
+    }
+
+    for (index = 0; index < this->objectTemplates.size(); index++) {
+        delete (this->objectTemplates[index]);
+    }
+
+    for (index = 0; index < this->monsterTemplates.size(); index++) {
+        delete (this->monsterTemplates[index]);
     }
 
     delete (this->eventManager);
+    delete (this->output);
     delete (this->settings);
 }
 
-std::string* Dungeon::prependText(std::string message, ...) {
+std::string* Dungeon::prependText(const std::string* format, ...) {
     u_char index;
-
-    for (index = 1; index < DUNGEON_TEXT_LINES; index++) {
-        this->textLines[index - 1] = std::move(this->textLines[index]);
-    }
-    this->textLines[0] = std::move(message);
-
-    return this->textLines;
-}
-
-std::string* Dungeon::appendText(std::string message, ...) {
-    u_char index;
+    char buffer[DUNGEON_FLOOR_WIDTH + 1];
+    va_list args;
+    va_start(args, format);
 
     for (index = 0; index < DUNGEON_TEXT_LINES - 1; index++) {
-        this->textLines[index] = std::move(this->textLines[index + 1]);
+        this->textLines[index + 1]->assign(*(this->textLines[index]));
     }
 
-    this->textLines[DUNGEON_TEXT_LINES - 1] = std::move(message);
+    vsnprintf(buffer, DUNGEON_FLOOR_WIDTH + 1, format->c_str(), args);
+    this->textLines[0]->assign(buffer, DUNGEON_FLOOR_WIDTH);
 
-    return this->textLines;
+    va_end(args);
+
+    return this->textLines[0];
+}
+
+std::string* Dungeon::appendText(const std::string* format, ...) {
+    u_char index;
+    char buffer[DUNGEON_FLOOR_WIDTH + 1];
+
+    for (index = 0; index < DUNGEON_TEXT_LINES - 1; index++) {
+        this->textLines[index]->assign(*(this->textLines[index]));
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    vsnprintf(buffer, DUNGEON_FLOOR_WIDTH, format->c_str(), args);
+
+    va_end(args);
+
+    this->textLines[DUNGEON_TEXT_LINES - 1]->assign(buffer, DUNGEON_FLOOR_WIDTH);
+
+    return this->textLines[DUNGEON_TEXT_LINES - 1];
 }
 
 /** GETTERS **/
 Floor* Dungeon::getFloor(u_char index) {
-    if (index < this->getFloorCount()) {
+    if (index < this->floors.size()) {
         return this->floors[index];
     } else {
-        throw "Floor index out of bounds exception";
+        throw Exception::FloorOutOfBounds();
     }
+}
+
+Floor* Dungeon::getCurrentFloor() {
+    return this->floor;
+}
+
+u_char Dungeon::getFloorCount() {
+    return this->floors.size();
 }
 
 std::vector<MonsterTemplate*> Dungeon::getMonsterTemplates() {
     return this->monsterTemplates;
 }
 
-Floor* Dungeon::getCurrentFloor() {
-    return this->floor;
+std::vector<ObjectTemplate*> Dungeon::getObjectTemplates() {
+    return this->objectTemplates;
 }
 
 Settings* Dungeon::getSettings() {
@@ -137,31 +170,35 @@ WINDOW* Dungeon::getWindow() {
     return this->window;
 }
 
-u_char Dungeon::getFloorCount() {
-    return this->floorCount;
+Output* Dungeon::getOutput() {
+    return this->output;
 }
 
-std::string* Dungeon::getTextLines() {
-    return this->textLines;
-}
-
-std::string Dungeon::getText(u_char index) {
+std::string* Dungeon::getText(u_char index) {
     if (index < DUNGEON_TEXT_LINES) {
         return this->textLines[index];
     } else {
-        throw "Text index out of bounds exception";
+        throw Exception::DungeonTextOutOfBounds();
     }
 }
 /** GETTERS **/
 
 /** SETTERS **/
 Dungeon* Dungeon::addFloor(Floor* floor, u_char index) {
-    if (index == UCHAR_MAX) {
+    if (index == U_CHAR_MAX) {
         this->floors.push_back(floor);
-    } else if (index < this->getFloorCount()) {
+    } else if (index < this->floors.size()) {
+        if (this->floors[index]) {
+            if (this->floors[index] == this->floor) {
+                throw Exception::DungeonDeletingCurrentFloor();
+            }
+
+            delete (this->floors[index]);
+        }
+
         this->floors[index] = floor;
     } else {
-        throw "Floor index out of bounds exception";
+        throw Exception::FloorOutOfBounds();
     }
 
     return this;
@@ -193,12 +230,6 @@ Dungeon* Dungeon::setPlayer(Player* player) {
 
 Dungeon* Dungeon::setWindow(WINDOW* window) {
     this->window = window;
-
-    return this;
-}
-
-Dungeon* Dungeon::setFloorCount(u_char floorCount) {
-    this->floorCount = floorCount;
 
     return this;
 }

@@ -1,10 +1,16 @@
 #ifndef DICE_H
 #define DICE_H
 
-#include "../include/forward_declarations.h"
-#include "resource.h"
+#include <forward_declarations.h>
+#include <exception.h>
+#include <global.h>
+
 #include <string>
 #include <fstream>
+#include <unistd.h>
+#include <fcntl.h>
+#include <random>
+#include <sys/time.h>
 
 namespace App {
     class Dice {
@@ -14,6 +20,7 @@ namespace App {
         ~Dice();
 
         static int RandomNumberBetween(int min, int max);
+        static u_int Hash3(unsigned int h1, unsigned int h2, unsigned int h3);
 
         int roll();
 

@@ -1,9 +1,10 @@
 #include "settings.h"
 
 Settings::Settings(int argc, char* argv[]) {
-    this->loadPath = "";
-    this->savePath = "";
+    this->loadPath = new std::string("");
+    this->savePath = new std::string("");
     this->fileVersion = 0;
+    this->numberOfMonsters = 0;
     this->load = false;
     this->save = false;
     this->expandedPrint = false;
@@ -11,31 +12,28 @@ Settings::Settings(int argc, char* argv[]) {
     this->nCursesPrint = true;
     this->fogOfWar = true;
 
-    this->monsterDesc = null;
-    this->objectDesc = null;
+    this->monsterDesc = new std::ifstream();
+    this->objectDesc = new std::ifstream();
 
-    if (this->loadArguments(argc, argv)) {
-        std::cout << "Failed to load settings... Terminating the application" << std::endl;
-        exit(1);
-    }
-
-    this->loadFiles();
+    this->loadFiles()->loadArguments(argc, argv);
 }
 
 Settings::~Settings() {
-    if (this->monsterDesc != null && this->monsterDesc->is_open()) {
+    if (this->monsterDesc->is_open()) {
         this->monsterDesc->close();
     }
 
-    if (this->objectDesc != null && this->monsterDesc->is_open()) {
+    if (this->monsterDesc->is_open()) {
         this->objectDesc->close();
     }
 
-    delete(this->monsterDesc);
-    delete(this->objectDesc);
+    delete (this->loadPath);
+    delete (this->savePath);
+    delete (this->monsterDesc);
+    delete (this->objectDesc);
 }
 
-int Settings::loadArguments(int argc, char* argv[]) {
+Settings* Settings::loadArguments(int argc, char* argv[]) {
     std::string homePathSave = getenv("HOME");
     std::string homePathLoad = getenv("HOME");
     std::string dotFolderSave = DATA_PATH;
@@ -48,8 +46,8 @@ int Settings::loadArguments(int argc, char* argv[]) {
         if (strcmp(argv[index], "--save") == 0 || strcmp(argv[index], "-s") == 0) {
             // Make sure there is a save path specified
             if (index + 1 == argc || strstarts(argv[index + 1], "-")) {
-                printf("Using --save (-s) requires a file as the target to save to\n");
-                return 1;
+                print_error(null, false, "Using --save (-s-) requires a file as the target to save to \n");
+                exit(1);
             }
 
             // The file path we will be using
@@ -136,9 +134,8 @@ int Settings::loadArguments(int argc, char* argv[]) {
     return 0;
 }
 
-void Settings::loadFiles() {
-    this->monsterDesc = new std::ifstream;
-this->objectDesc = new std::ifstream;
+Settings* Settings::loadFiles() {
+    struct stat buffer = {};
 
     std::string resPath;
     std::string homePath;
@@ -147,35 +144,29 @@ this->objectDesc = new std::ifstream;
     resPath = std::string(SETTINGS_RES_FOLDER) + std::string(SETTINGS_MONSTER_DESC);
     homePath = std::string(getenv("HOME")) + std::string(SETTINGS_HOME_FOLDER) + std::string(SETTINGS_MONSTER_DESC);
 
-    // First try res path
-    this->monsterDesc->open(resPath);
-
-    // If it fails, try home path
-    if (!this->monsterDesc->is_open()) {
+    if (stat(resPath.c_str(), &buffer) == 0) {
+        this->monsterDesc->open(resPath);
+    } else if (stat(homePath.c_str(), &buffer) == 0) {
         this->monsterDesc->open(homePath);
-    }
-
-    // If home path fails, throw error
-    if (!this->monsterDesc->is_open()) {
-        throw "Failed to open " + resPath + " or " + homePath;
+    } else {
+        print_error(null, false, "Failed to open %s and %s\n", resPath.c_str(), homePath.c_str());
+        exit(1);
     }
 
     // Attempt to load in object descriptions
     resPath = std::string(SETTINGS_RES_FOLDER) + std::string(SETTINGS_OBJECT_DESC);
     homePath = std::string(getenv("HOME")) + std::string(SETTINGS_HOME_FOLDER) + std::string(SETTINGS_OBJECT_DESC);
 
-    // First try res path
-    this->objectDesc->open(resPath);
-
-    // If it fails, try home path
-    if (!this->objectDesc->is_open()) {
-        this->objectDesc->open(homePath);
+    if (stat(resPath.c_str(), &buffer) == 0) {
+        this->monsterDesc->open(resPath);
+    } else if (stat(homePath.c_str(), &buffer) == 0) {
+        this->monsterDesc->open(homePath);
+    } else {
+        print_error(null, false, "Failed to open %s and %s\n", resPath.c_str(), homePath.c_str());
+        exit(1);
     }
 
-    // If home path fails, throw error
-    if (!this->objectDesc->is_open()) {
-        throw "Failed to open " + resPath + " or " + homePath;
-    }
+    return this;
 }
 
 std::string Settings::getFileName(const std::string& string) {
@@ -238,11 +229,11 @@ u_char Settings::getFileVersion() {
     return this->fileVersion;
 }
 
-std::string Settings::getSavePath() {
+std::string* Settings::getSavePath() {
     return this->savePath;
 }
 
-std::string Settings::getLoadPath() {
+std::string* Settings::getLoadPath() {
     return this->loadPath;
 }
 
@@ -302,14 +293,14 @@ Settings* Settings::setFileVersion(u_char fileVersion) {
     return this;
 }
 
-Settings* Settings::setSavePath(std::string savePath) {
-    this->savePath = std::move(savePath);
+Settings* Settings::setSavePath(std::string &savePath) {
+    this->savePath->assign(savePath);
 
     return this;
 }
 
-Settings* Settings::setLoadPath(std::string loadPath) {
-    this->loadPath = std::move(loadPath);
+Settings* Settings::setLoadPath(std::string& loadPath) {
+    this->loadPath->assign(loadPath);
 
     return this;
 }
@@ -320,19 +311,19 @@ Settings* Settings::setNumberOfMonsters(u_short numberOfMonsters) {
     return this;
 }
 
-Settings* Settings::setMonsterDesc(std::string path) {
+Settings* Settings::setMonsterDesc(std::string &path) {
     // Close previous stream
     this->monsterDesc->close();
 
     this->monsterDesc->open(path);
-    if(!this->monsterDesc->is_open()) {
+    if (!this->monsterDesc->is_open()) {
         throw "Failed to open " + path;
     }
 
     return this;
 }
 
-Settings* Settings::setObjectDesc(std::string path) {
+Settings* Settings::setObjectDesc(std::string &path) {
     // Close previous stream
     this->objectDesc->close();
 

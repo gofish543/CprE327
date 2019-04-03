@@ -6,7 +6,7 @@
 #define PLAYER_SPEED 10
 
 #include "../../include/forward_declarations.h"
-#include "../character_listings.h"
+#include "character_listings.h"
 #include "../resource.h"
 #include "../output.h"
 #include "../input.h"

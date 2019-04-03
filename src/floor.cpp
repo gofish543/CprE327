@@ -391,7 +391,7 @@ Floor* Floor::generateRock() {
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (this->terrains[height][width] == null) {
-                this->terrains[height][width] = new Rock(this, 0, width, height, u_char(random_number_between(ROCK_HARDNESS_MIN, ROCK_HARDNESS_MAX)));
+                this->terrains[height][width] = new Rock(this, 0, width, height, u_char(Dice::RandomNumberBetween(ROCK_HARDNESS_MIN, ROCK_HARDNESS_MAX)));
             }
         }
     }
@@ -447,11 +447,11 @@ Floor* Floor::generateRooms() {
 
     // Determine the rooms for each of the staircases
     for (roomIndex = 0; roomIndex < this->stairUpCount; roomIndex++) {
-        upStairRooms.push_back(u_short(random_number_between(0, this->roomCount - 1)));
+        upStairRooms.push_back(u_short(Dice::RandomNumberBetween(0, this->roomCount - 1)));
     }
 
     for (roomIndex = 0; roomIndex < this->stairDownCount; roomIndex++) {
-        downStairRooms.push_back(u_short(random_number_between(0, this->roomCount - 1)));
+        downStairRooms.push_back(u_short(Dice::RandomNumberBetween(0, this->roomCount - 1)));
     }
 
     // Place each room
@@ -460,12 +460,12 @@ Floor* Floor::generateRooms() {
             collision = false;
 
             // Find something inside the game play box
-            roomStartX = u_char(random_number_between(1, DUNGEON_FLOOR_WIDTH - 2));
-            roomStartY = u_char(random_number_between(1, DUNGEON_FLOOR_HEIGHT - 2));
+            roomStartX = u_char(Dice::RandomNumberBetween(1, DUNGEON_FLOOR_WIDTH - 2));
+            roomStartY = u_char(Dice::RandomNumberBetween(1, DUNGEON_FLOOR_HEIGHT - 2));
 
             // Select a random height and width
-            roomWidth = u_char(random_number_between(ROOM_MIN_WIDTH, ROOM_MAX_WIDTH));
-            roomHeight = u_char(random_number_between(ROOM_MIN_HEIGHT, ROOM_MAX_HEIGHT));
+            roomWidth = u_char(Dice::RandomNumberBetween(ROOM_MIN_WIDTH, ROOM_MAX_WIDTH));
+            roomHeight = u_char(Dice::RandomNumberBetween(ROOM_MIN_HEIGHT, ROOM_MAX_HEIGHT));
 
             // Need to check boundaries one off to make sure they are open spaces
             for (height = roomStartY - u_char(1); height < (roomStartY + roomHeight + 1); height++) {
@@ -489,8 +489,8 @@ Floor* Floor::generateRooms() {
             if (upStairRooms.at(roomIndex) == index) {
                 // Place the up staircase
                 do {
-                    stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
-                    stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
+                    stairX = u_char(Dice::RandomNumberBetween(roomStartX + 1, roomStartX + roomWidth - 2));
+                    stairY = u_char(Dice::RandomNumberBetween(roomStartY + 1, roomStartY + roomHeight - 2));
                 } while (this->terrains[stairY][stairX] != null);
                 this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_UP);
                 this->upStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_UP));
@@ -501,8 +501,8 @@ Floor* Floor::generateRooms() {
             if (downStairRooms.at(roomIndex) == index) {
                 // Place the down staircase
                 do {
-                    stairX = u_char(random_number_between(roomStartX + 1, roomStartX + roomWidth - 2));
-                    stairY = u_char(random_number_between(roomStartY + 1, roomStartY + roomHeight - 2));
+                    stairX = u_char(Dice::RandomNumberBetween(roomStartX + 1, roomStartX + roomWidth - 2));
+                    stairY = u_char(Dice::RandomNumberBetween(roomStartY + 1, roomStartY + roomHeight - 2));
                 } while (this->terrains[stairY][stairX] != null);
                 this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_DOWN);
                 this->downStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_DOWN));
@@ -541,8 +541,8 @@ Floor* Floor::generateCorridors() {
     for (index = 0; index < this->roomCount - 1; index++) {
         // First we want to select a random spot within the room, but it needs to be on the border
         do {
-            firstRoomX = u_char(random_number_between(this->rooms[index]->getStartingX(), this->rooms[index]->getStartingX() + this->rooms[index]->getWidth() - 1));
-            firstRoomY = u_char(random_number_between(this->rooms[index]->getStartingY(), this->rooms[index]->getStartingY() + this->rooms[index]->getHeight() - 1));
+            firstRoomX = u_char(Dice::RandomNumberBetween(this->rooms[index]->getStartingX(), this->rooms[index]->getStartingX() + this->rooms[index]->getWidth() - 1));
+            firstRoomY = u_char(Dice::RandomNumberBetween(this->rooms[index]->getStartingY(), this->rooms[index]->getStartingY() + this->rooms[index]->getHeight() - 1));
 
             upValid = this->terrains[firstRoomY - 1][firstRoomX] == null;
             downValid = this->terrains[firstRoomY + 1][firstRoomX] == null;
@@ -552,8 +552,8 @@ Floor* Floor::generateCorridors() {
 
         // Second we want to select a random spot within the next room, but it needs to be on the border
         do {
-            secondRoomX = u_char(random_number_between(this->rooms[index + 1]->getStartingX(), this->rooms[index + 1]->getStartingX() + this->rooms[index + 1]->getWidth() - 1));
-            secondRoomY = u_char(random_number_between(this->rooms[index + 1]->getStartingY(), this->rooms[index + 1]->getStartingY() + this->rooms[index + 1]->getHeight() - 1));
+            secondRoomX = u_char(Dice::RandomNumberBetween(this->rooms[index + 1]->getStartingX(), this->rooms[index + 1]->getStartingX() + this->rooms[index + 1]->getWidth() - 1));
+            secondRoomY = u_char(Dice::RandomNumberBetween(this->rooms[index + 1]->getStartingY(), this->rooms[index + 1]->getStartingY() + this->rooms[index + 1]->getHeight() - 1));
 
             upValid = this->terrains[secondRoomY - 1][secondRoomX] == null;
             downValid = this->terrains[secondRoomY + 1][secondRoomX] == null;
@@ -604,10 +604,10 @@ Floor* Floor::generatePlayer() {
         // Select random room and random coords and place character there
         u_char playerX;
         u_char playerY;
-        auto room = u_short(random_number_between(0, this->roomCount - 1));
+        auto room = u_short(Dice::RandomNumberBetween(0, this->roomCount - 1));
         do {
-            playerX = u_char(random_number_between(this->rooms.at(room)->getStartingX(), this->rooms.at(room)->getStartingX() + this->rooms.at(room)->getWidth() - 1));
-            playerY = u_char(random_number_between(this->rooms.at(room)->getStartingY(), this->rooms.at(room)->getStartingY() + this->rooms.at(room)->getHeight() - 1));
+            playerX = u_char(Dice::RandomNumberBetween(this->rooms.at(room)->getStartingX(), this->rooms.at(room)->getStartingX() + this->rooms.at(room)->getWidth() - 1));
+            playerY = u_char(Dice::RandomNumberBetween(this->rooms.at(room)->getStartingY(), this->rooms.at(room)->getStartingY() + this->rooms.at(room)->getHeight() - 1));
         } while (this->getTerrainAt(playerX, playerY)->getCharacter() == STAIRCASE_UP_CHARACTER && this->getTerrainAt(playerX, playerY)->getCharacter() == STAIRCASE_DOWN_CHARACTER);
 
         dungeon->setPlayer(new Player(this, playerX, playerY));
@@ -653,35 +653,35 @@ Floor* Floor::generateMonsters() {
     for (index = 0; index < this->monsterCount; index++) {
         placementAttempts = 0;
 
-        speed = u_char(random_number_between(MONSTER_MIN_SPEED, MONSTER_MAX_SPEED));
+        speed = u_char(Dice::RandomNumberBetween(MONSTER_MIN_SPEED, MONSTER_MAX_SPEED));
         classification = 0;
 
         // If Intelligent
-        if (random_number_between(false, true)) {
+        if (Dice::RandomNumberBetween(false, true)) {
             classification |= MONSTER_INTELLIGENT;
         }
         // If Telepathic
-        if (random_number_between(false, true)) {
+        if (Dice::RandomNumberBetween(false, true)) {
             classification |= MONSTER_TELEPATHIC;
         }
         // If Tunneler
-        if (random_number_between(false, true)) {
+        if (Dice::RandomNumberBetween(false, true)) {
             classification |= MONSTER_TUNNELER;
         }
         // If Erratic
-        if (random_number_between(false, true)) {
+        if (Dice::RandomNumberBetween(false, true)) {
             classification |= MONSTER_ERRATIC;
         }
 
         // Select random spots until they are only surrounded by room space
         do {
             do {
-                monsterRoom = u_char(random_number_between(0, this->roomCount - 1));
+                monsterRoom = u_char(Dice::RandomNumberBetween(0, this->roomCount - 1));
             } while (this->rooms.at(monsterRoom)->getId() == playerRoom->getId() && this->rooms.at(monsterRoom)->getFloor() == dungeon->getPlayer()->getFloor());
 
             // Select random spot inside the room
-            monsterX = u_char(random_number_between(this->rooms.at(monsterRoom)->getStartingX(), this->rooms.at(monsterRoom)->getStartingX() + this->rooms.at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(random_number_between(this->rooms.at(monsterRoom)->getStartingY(), this->rooms.at(monsterRoom)->getStartingY() + this->rooms.at(monsterRoom)->getHeight() - 1));
+            monsterX = u_char(Dice::RandomNumberBetween(this->rooms.at(monsterRoom)->getStartingX(), this->rooms.at(monsterRoom)->getStartingX() + this->rooms.at(monsterRoom)->getWidth() - 1));
+            monsterY = u_char(Dice::RandomNumberBetween(this->rooms.at(monsterRoom)->getStartingY(), this->rooms.at(monsterRoom)->getStartingY() + this->rooms.at(monsterRoom)->getHeight() - 1));
 
             placementAttempts++;
         } while (this->characters[monsterY][monsterX] != null && placementAttempts < 25);

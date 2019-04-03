@@ -73,12 +73,6 @@ heap_t* EventManager::getQueue() {
 /** GETTERS **/
 
 /** SETTERS **/
-EventManager* EventManager::setDungeon(Dungeon* dungeon) {
-    this->dungeon = dungeon;
-
-    return this;
-}
-
 EventManager* EventManager::setTick(int tick) {
     this->tick = tick;
 
@@ -120,12 +114,6 @@ enum EventType Event::getType() {
 /** SETTERS **/
 Event* Event::setTick(int tick) {
     this->tick = tick;
-
-    return this;
-}
-
-Event* Event::setType(enum EventType type) {
-    this->type = type;
 
     return this;
 }

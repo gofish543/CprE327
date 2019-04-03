@@ -313,7 +313,7 @@ int file_load_1(Dungeon* dungeon) {
         auto floor = new Floor(dungeon);
         floor->setFloorNumber(index);
 
-        if(file_load_floor_1(file, floor)) {
+        if (file_load_floor_1(file, floor)) {
             return 1;
         }
 
@@ -345,10 +345,9 @@ int file_load_floor_1(FILE* file, Floor* floor) {
             }
 
             if (floor->getTerrainAt(width, height) == null) {
-                if(hardness == CORRIDOR_HARDNESS) {
+                if (hardness == CORRIDOR_HARDNESS) {
                     floor->setTerrainAt(new Corridor(floor, 0, width, height), width, height);
-                }
-                else {
+                } else {
                     floor->setTerrainAt(new Rock(floor, 0, width, height, hardness), width, height);
                 }
             }
@@ -472,7 +471,7 @@ int file_load_floor_1(FILE* file, Floor* floor) {
             return 1;
         }
 
-       monster = new Monster(floor, tempX, tempY, tempType, tempSpeed);
+        monster = new Monster(floor, tempX, tempY, tempType, tempSpeed);
 
         // Write level
 //        if (error_check_fread(&(level), sizeof(level), 1, file)) {
