@@ -7,13 +7,35 @@ Room::Room(Floor* floor, u_short id, u_char x, u_char y, u_char startingX, u_cha
     this->startingX = startingX;
     this->startingY = startingY;
 
-    this->walkable = true;
-    this->rock = false;
-    this->immutable = false;
-
     this->hardness = ROOM_HARDNESS;
     this->character = ROOM_CHARACTER;
+    this->type = TERRAIN_ROOM;
 }
+
+u_char Room::randomXInside() {
+    return u_char(Dice::RandomNumberBetween(this->getStartX(), this->getEndX()));
+}
+
+u_char Room::randomYInside() {
+    return u_char(Dice::RandomNumberBetween(this->getStartY(), this->getEndY()));
+}
+
+u_char Room::getStartX() {
+    return this->startingX;
+}
+
+u_char Room::getStartY() {
+    return this->startingY;
+}
+
+u_char Room::getEndX() {
+    return this->startingX + this->width - 1;
+}
+
+u_char Room::getEndY() {
+    return this->startingY + this->height - 1;
+}
+
 /** GETTERS **/
 u_char Room::getWidth() {
     return this->width;
@@ -33,27 +55,4 @@ u_char Room::getStartingY() {
 /** GETTERS **/
 
 /** SETTERS **/
-Room* Room::setWidth(u_char width) {
-    this->width = width;
-
-    return this;
-}
-
-Room* Room::setHeight(u_char height) {
-    this->height = height;
-
-    return this;
-}
-
-Room* Room::setStartingX(u_char startingX) {
-    this->startingX = startingX;
-
-    return this;
-}
-
-Room* Room::setStartingY(u_char startingY) {
-    this->startingY = startingY;
-
-    return this;
-}
 /** SETTERS */

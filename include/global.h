@@ -1,6 +1,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#define FILE_HEADING "RLG327-S2019"
+
 #define U_CHAR_MIN 0
 #define U_CHAR_MAX 255
 

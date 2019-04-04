@@ -1,9 +1,10 @@
 #ifndef BORDER_H
 #define BORDER_H
 
-#include "../../include/forward_declarations.h"
-#include "character_listings.h"
-#include "../floor.h"
+#include <forward_declarations.h>
+#include <character_listings.h>
+
+#include "floor.h"
 #include "terrain.h"
 
 namespace App {
@@ -20,6 +21,7 @@ namespace App {
     protected:
 
     private:
+
     };
 }
 

@@ -7,22 +7,15 @@
 #define SETTINGS_MONSTER_DESC "monster_desc.txt"
 #define SETTINGS_OBJECT_DESC "object_desc.txt"
 
-#include "resource.h"
-#include "output.h"
 #include <forward_declarations.h>
+#include <global.h>
+#include <colors.h>
+#include <exception.h>
 
-#include <iostream>
-#include <istream>
-#include <ostream>
 #include <fstream>
-#include <cerrno>
-#include <cstdio>
-#include <filesystem>
 #include <cstring>
-#include <dirent.h>
-#include <libgen.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+
+#include "resource.h"
 
 namespace App {
     class Settings {

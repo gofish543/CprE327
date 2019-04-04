@@ -1,9 +1,10 @@
 #ifndef ROCK_H
 #define ROCK_H
 
-#include "../../include/forward_declarations.h"
-#include "character_listings.h"
-#include "../floor.h"
+#include<forward_declarations.h>
+#include <character_listings.h>
+
+#include "floor.h"
 #include "terrain.h"
 
 namespace App {
@@ -21,6 +22,7 @@ namespace App {
     protected:
 
     private:
+
     };
 }
 

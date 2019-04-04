@@ -66,6 +66,8 @@ Output* Output::print(std::string* format, ...) {
     }
 
     va_end(args);
+
+    return this;
 }
 
 Output* Output::print(const char* format, ...) {
@@ -79,6 +81,8 @@ Output* Output::print(const char* format, ...) {
     }
 
     va_end(args);
+
+    return this;
 }
 
 Output* Output::print(u_int debugFunctions, Floor* floor) {
@@ -121,6 +125,8 @@ Output* Output::print(u_int debugFunctions, Floor* floor) {
     if (this->doNCurses) {
         refresh();
     }
+
+    return this;
 }
 
 Output* Output::printEndgame() {
@@ -154,6 +160,8 @@ Output* Output::printEndgame() {
         print("Press any key to continue...\n");
         getch();
     }
+
+    return this;
 }
 
 Output* Output::printMonsterMenu(u_short startIndex) {
@@ -183,6 +191,8 @@ Output* Output::printMonsterMenu(u_short startIndex) {
     if (this->doNCurses) {
         refresh();
     }
+
+    return this;
 }
 
 Output* Output::printHardness(Floor* floor) {
@@ -680,6 +690,8 @@ Output* Output::printColorPallet() {
 
         printf(SHELL_DEFAULT "\n");
     }
+
+    return this;
 }
 
 void Output::printTerminate() {

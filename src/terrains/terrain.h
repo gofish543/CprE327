@@ -1,15 +1,30 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "../../include/forward_declarations.h"
-#include "character_listings.h"
-#include "../resource.h"
+#define TERRAIN_BORDER      0b00000001u
+#define TERRAIN_CORRIDOR    0b00000010u
+#define TERRAIN_ROCK        0b00000100u
+#define TERRAIN_ROOM        0b00001000u
+#define TERRAIN_STAIRCASE   0b00010000u
+
+#include <forward_declarations.h>
+#include <character_listings.h>
+#include <global.h>
+
+#include "floor.h"
 
 namespace App {
     class Terrain {
     public:
         Terrain(Floor* floor, u_short id, u_char x, u_char y);
         ~Terrain();
+
+        bool isBorder();
+        bool isCorridor();
+        bool isRock();
+        bool isRoom();
+        bool isStaircase();
+
         /** GETTERS **/
         Floor* getFloor();
         u_short getId();
@@ -17,21 +32,12 @@ namespace App {
         u_char getY();
         u_char getCharacter();
         u_char getHardness();
-        bool isWalkable();
-        bool isImmutable();
-        bool isRock();
+        u_char getType();
         /** GETTERS **/
 
         /** SETTERS **/
-        Terrain* setFloor(Floor* floor);
-        Terrain* setId(u_short id);
-        Terrain* setX(u_char x);
-        Terrain* setY(u_char y);
         Terrain* setCharacter(u_char character);
         Terrain* setHardness(u_char hardness);
-        Terrain* setWalkable(bool walkable);
-        Terrain* setImmutable(bool immutable);
-        Terrain* setRock(bool rock);
         /** SETTERS **/
     protected:
         Floor* floor;
@@ -44,10 +50,7 @@ namespace App {
         u_char character;
         u_char hardness;
 
-        bool walkable;
-        bool immutable;
-        bool rock;
-
+        u_char type;
     private:
 
     };

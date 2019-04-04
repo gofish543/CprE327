@@ -9,12 +9,31 @@ Terrain::Terrain(Floor* floor, u_short id, u_char x, u_char y) {
     this->character = UNKNOWN_CHARACTER;
     this->hardness = 0;
 
-    this->immutable = false;
-    this->rock = false;
-    this->walkable = false;
+    this->type = 0;
 }
 
 Terrain::~Terrain() = default;
+
+bool Terrain::isBorder() {
+    return this->type & TERRAIN_BORDER;
+}
+
+bool Terrain::isCorridor() {
+    return this->type & TERRAIN_CORRIDOR;
+}
+
+bool Terrain::isRock() {
+    return this->type & TERRAIN_ROCK;
+
+}
+
+bool Terrain::isRoom() {
+    return this->type & TERRAIN_ROOM;
+}
+
+bool Terrain::isStaircase() {
+    return this->type & TERRAIN_STAIRCASE;
+}
 
 /** GETTERS **/
 Floor* Terrain::getFloor() {
@@ -41,43 +60,12 @@ u_char Terrain::getHardness() {
     return this->hardness;
 }
 
-bool Terrain::isWalkable() {
-    return this->walkable;
-}
-
-bool Terrain::isImmutable() {
-    return this->immutable;
-}
-
-bool Terrain::isRock() {
-    return this->rock;
+u_char Terrain::getType() {
+    return this->type;
 }
 /** GETTERS **/
 
 /** SETTERS **/
-Terrain* Terrain::setFloor(Floor* floor) {
-    this->floor = floor;
-
-    return this;
-}
-
-Terrain* Terrain::setId(u_short id) {
-    this->id = id;
-
-    return this;
-}
-Terrain* Terrain::setX(u_char x) {
-    this->x = x;
-
-    return this;
-}
-
-Terrain* Terrain::setY(u_char y) {
-    this->y = y;
-
-    return this;
-}
-
 Terrain* Terrain::setCharacter(u_char character) {
     this->character = character;
 
@@ -86,24 +74,6 @@ Terrain* Terrain::setCharacter(u_char character) {
 
 Terrain* Terrain::setHardness(u_char hardness) {
     this->hardness = hardness;
-
-    return this;
-}
-
-Terrain* Terrain::setWalkable(bool walkable) {
-    this->walkable = walkable;
-
-    return this;
-}
-
-Terrain* Terrain::setImmutable(bool immutable) {
-    this->immutable = immutable;
-
-    return this;
-}
-
-Terrain* Terrain::setRock(bool rock) {
-    this->rock = rock;
 
     return this;
 }

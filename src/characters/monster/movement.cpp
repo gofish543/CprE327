@@ -393,7 +393,8 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
 
         *x = monster->getX();
         *y = monster->getY();
@@ -471,8 +472,8 @@ void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
-
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
         *x = monster->getX();
         *y = monster->getY();
     } else if (random < TELEPORT_CHANCE) {
@@ -549,8 +550,8 @@ void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
-
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
         *x = monster->getX();
         *y = monster->getY();
     } else if (random < TELEPORT_CHANCE) {
@@ -627,7 +628,8 @@ void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
 
         *x = monster->getX();
         *y = monster->getY();
@@ -705,7 +707,8 @@ void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
 
         *x = monster->getX();
         *y = monster->getY();
@@ -783,7 +786,8 @@ void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
 
         *x = monster->getX();
         *y = monster->getY();
@@ -861,7 +865,8 @@ void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
 
         *x = monster->getX();
         *y = monster->getY();
@@ -939,7 +944,8 @@ void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
 //                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
 //                        1));
 
-        floor->getDungeon()->prependText("A monster has evolved");
+        std::string evolveFormat = "%s has evolved";
+        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
 
         *x = monster->getX();
         *y = monster->getY();

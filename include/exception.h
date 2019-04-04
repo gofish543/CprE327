@@ -22,9 +22,39 @@ namespace Exception {
         }
     };
 
+    class MonsterOutOfBounds : public std::exception {
+        const char* what() const noexcept override {
+            return "Monster index out of bounds exception";
+        }
+    };
+
+    class StaircaseOutOfBounds : public std::exception {
+        const char* what() const noexcept override {
+            return "Staircase index out of bounds exception";
+        }
+    };
+
+    class RoomOutOfBounds : public std::exception {
+        const char* what() const noexcept override {
+            return "Room index out of bounds exception";
+        }
+    };
+
+    class RoomEmptySpaceInvalid : public std::exception {
+        const char* what() const noexcept override {
+            return "Cannot accurately place rooms with the given settings, more than 60% of the dungeon would be rooms";
+        }
+    };
+
     class DiceStringInvalidParse : public std::exception {
         const char* what() const noexcept override {
             return "Unknown Dice string parsed";
+        }
+    };
+
+    class FileFailedToOpen : public std::exception {
+        const char* what() const noexcept override {
+            return "Failed to open file";
         }
     };
 }

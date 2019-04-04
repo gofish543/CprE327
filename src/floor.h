@@ -1,7 +1,7 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
-#define FLOOR_ROOMS_MIN 8
+#define FLOOR_ROOMS_MIN 4
 #define FLOOR_ROOMS_MAX 8
 
 #define FLOOR_STAIRS_MIN 2
@@ -10,10 +10,15 @@
 #define FLOOR_MONSTERS_MIN 5
 #define FLOOR_MONSTERS_MAX 10
 
-#include "../include/forward_declarations.h"
+#include <forward_declarations.h>
+#include <character_listings.h>
+#include <exception.h>
+#include <global.h>
+
+#include <vector>
+
 #include "dungeon.h"
-#include "resource.h"
-#include "character_listings.h"
+#include "dice.h"
 #include "terrains/terrain.h"
 #include "terrains/border.h"
 #include "terrains/corridor.h"
@@ -23,11 +28,6 @@
 #include "characters/character.h"
 #include "characters/monster.h"
 #include "characters/player.h"
-#include <cstdio>
-#include <climits>
-#include <iostream>
-#include <cstdlib>
-#include <vector>
 
 namespace App {
     class Floor {
@@ -41,7 +41,7 @@ namespace App {
         Floor* resetNonTunnelerView();
         Floor* resetCheapestPathToPlayer();
 
-        u_char getPrintCharacterAt(u_char width, u_char height);
+        u_char getOutputCharacterAt(u_char x, u_char y);
 
         u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
@@ -69,7 +69,6 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
-        Floor* setDungeon(Dungeon* dungeon);
         Floor* setFloorNumber(u_char floorNumber);
         Floor* setRoomCount(u_short roomCount);
         Floor* setStairUpCount(u_short stairUpCount);
@@ -80,10 +79,10 @@ namespace App {
         Floor* setTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setNonTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setCheapestPathToPlayer(u_char value, u_char width, u_char height);
-        Floor* setMonster(Monster* monster, u_short index = USHRT_MAX);
-        Floor* setUpStair(Staircase* staircase, u_short index = USHRT_MAX);
-        Floor* setDownStair(Staircase* staircase, u_short index = USHRT_MAX);
-        Floor* setRoom(Room* room, u_short index = USHRT_MAX);
+        Floor* setMonster(Monster* monster, u_short index = U_SHORT_MAX);
+        Floor* setUpStair(Staircase* staircase, u_short index = U_SHORT_MAX);
+        Floor* setDownStair(Staircase* staircase, u_short index = U_SHORT_MAX);
+        Floor* setRoom(Room* room, u_short index = U_SHORT_MAX);
         /** SETTERS **/
 
         // Initialize the class to empty values

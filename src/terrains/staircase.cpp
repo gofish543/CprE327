@@ -1,16 +1,13 @@
 #include "staircase.h"
 
-Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char type) : Terrain(floor, id, x, y) {
-    this->walkable = true;
-    this->rock = false;
-    this->immutable = false;
-
+Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char direction) : Terrain(floor, id, x, y) {
     this->hardness = STAIRCASE_HARDNESS;
-    this->type = type;
+    this->direction = direction;
+    this->type = TERRAIN_STAIRCASE;
 
-    if (this->type == STAIRCASE_TYPE_DOWN) {
+    if (this->direction == STAIRCASE_DIRECTION_DOWN) {
         this->character = STAIRCASE_DOWN_CHARACTER;
-    } else if (this->type == STAIRCASE_TYPE_UP) {
+    } else if (this->direction == STAIRCASE_DIRECTION_UP) {
         this->character = STAIRCASE_UP_CHARACTER;
     } else {
         this->character = UNKNOWN_CHARACTER;
@@ -22,33 +19,33 @@ Staircase::~Staircase() = default;
 int Staircase::take() {
     u_char height;
     u_char width;
-    Dungeon* dungeon = this->getFloor()->getDungeon();
+    u_short index;
+    Dungeon* dungeon = this->floor->getDungeon();
     Player* player = dungeon->getPlayer();
     Floor* currentFloor = dungeon->getCurrentFloor();
-    // Wipe the current queue of events
-    delete (dungeon->getEventManager());
 
-    // Create a new event manager for the floor upcoming floor
+    // Wipe the current queue of events and create a new one
+    delete (dungeon->getEventManager());
     dungeon->setEventManager(new EventManager(dungeon));
 
-    // Update character map
+    // Remove the current player from the character map
     currentFloor->setCharacterAt(null, player->getX(), player->getY());
 
     // Set dungeon floor and player floor pointers
     dungeon->setCurrentFloor(this->getTargetFloor());
-    player->setFloor(dungeon->getCurrentFloor());
+    player->setFloor(this->getTargetFloor());
+
+    // Update current floor
     currentFloor = dungeon->getCurrentFloor();
 
     // Place the character on the upper floor's staircase
     // If up staircase and there is a down staircase to step on
     if (this->isUp() && this->getId() < currentFloor->getStairDownCount()) {
-        player->setX(currentFloor->getDownStair(this->getId())->getX());
-        player->setY(currentFloor->getDownStair(this->getId())->getY());
+        player->setX(currentFloor->getDownStair(this->getId())->getX())->setY(currentFloor->getDownStair(this->getId())->getY());
     }
         // If down staircase and there is an up staircase to step on
     else if (this->isDown() && this->getId() < currentFloor->getStairUpCount()) {
-        player->setX(currentFloor->getUpStair(this->getId())->getX());
-        player->setY(currentFloor->getUpStair(this->getId())->getY());
+        player->setX(currentFloor->getUpStair(this->getId())->getX())->setY(currentFloor->getUpStair(this->getId())->getY());
     }
         // Else random location
     else {
@@ -56,15 +53,14 @@ int Staircase::take() {
         u_char playerY;
         auto room = u_short(Dice::RandomNumberBetween(0, currentFloor->getRoomCount() - 1));
 
-        playerX = u_char(Dice::RandomNumberBetween(currentFloor->getRoom(room)->getStartingX(), currentFloor->getRoom(room)->getStartingX() + currentFloor->getRoom(room)->getWidth() - 1));
-        playerY = u_char(Dice::RandomNumberBetween(currentFloor->getRoom(room)->getStartingY(), currentFloor->getRoom(room)->getStartingY() + currentFloor->getRoom(room)->getHeight() - 1));
+        playerX = currentFloor->getRoom(room)->randomXInside();
+        playerY = currentFloor->getRoom(room)->randomYInside();
 
         if (currentFloor->getCharacterAt(playerX, playerY) != null) {
             currentFloor->getCharacterAt(playerX, playerY)->killCharacter();
         }
 
-        player->setX(playerX);
-        player->setY(playerY);
+        player->setX(playerX)->setY(playerY);
     }
 
     currentFloor->setCharacterAt(dungeon->getPlayer(), player->getX(), player->getY());
@@ -89,8 +85,8 @@ int Staircase::take() {
                     } while (monsterRoom->getId() == playerRoom->getId());
 
                     // Select random spot inside the room
-                    monsterX = u_char(Dice::RandomNumberBetween(monsterRoom->getStartingX(), monsterRoom->getStartingX() + monsterRoom->getWidth() - 1));
-                    monsterY = u_char(Dice::RandomNumberBetween(monsterRoom->getStartingY(), monsterRoom->getStartingY() + monsterRoom->getHeight() - 1));
+                    monsterX = monsterRoom->randomXInside();
+                    monsterY = monsterRoom->randomYInside();
 
                     placementAttempts++;
                 } while (currentFloor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
@@ -102,8 +98,8 @@ int Staircase::take() {
                             continue;
                         }
                         // Start looping and find the next open spot
-                        for (height = currentFloor->getRoom(roomIndex)->getStartingY(); height < currentFloor->getRoom(roomIndex)->getStartingY() + currentFloor->getRoom(roomIndex)->getHeight(); height++) {
-                            for (width = currentFloor->getRoom(roomIndex)->getStartingX(); width < currentFloor->getRoom(roomIndex)->getStartingX() + currentFloor->getRoom(roomIndex)->getWidth(); width++) {
+                        for (height = currentFloor->getRoom(roomIndex)->getStartY(); height < currentFloor->getRoom(roomIndex)->getEndY(); height++) {
+                            for (width = currentFloor->getRoom(roomIndex)->getStartX(); width < currentFloor->getRoom(roomIndex)->getEndX(); width++) {
                                 if (currentFloor->getCharacterAt(width, height) == null) {
                                     monsterX = width;
                                     monsterY = height;
@@ -135,7 +131,6 @@ int Staircase::take() {
     // Add player to the new queue
     dungeon->getEventManager()->addToQueue(new Event(0, event_type_player, player, Player::HandleEvent, Player::NextEventTick));
 
-    u_short index = 0;
     // Add monsters to the new queue
     for (index = 0; index < currentFloor->getMonsterCount(); index++) {
         if (currentFloor->getMonster(index)->getIsAlive()) {
@@ -156,27 +151,22 @@ int Staircase::take() {
 }
 
 Floor* Staircase::getTargetFloor() {
-    return this->floor->getDungeon()->getFloor(this->floor->getDungeon()->getCurrentFloor()->getFloorNumber() + this->type);
+    return this->floor->getDungeon()->getFloor(this->floor->getDungeon()->getCurrentFloor()->getFloorNumber() + this->direction);
 }
 
 bool Staircase::isUp() {
-    return this->type == STAIRCASE_TYPE_UP;
+    return this->direction == STAIRCASE_DIRECTION_UP;
 }
 
 bool Staircase::isDown() {
-    return this->type == STAIRCASE_TYPE_DOWN;
+    return this->direction == STAIRCASE_DIRECTION_DOWN;
 }
 
 /** GETTERS **/
-char Staircase::getType() {
-    return this->type;
+char Staircase::getDirection() {
+    return this->direction;
 }
 /** GETTERS **/
 
 /** SETTERS **/
-Staircase* Staircase::setType(char type) {
-    this->type = type;
-
-    return this;
-}
 /** SETTERS **/
