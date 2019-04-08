@@ -3,7 +3,7 @@
 int main(int argc, char* argv[]) {
     auto dungeon = new Dungeon(argc, argv);
 
-    while (dungeon->getPlayer()->getIsAlive() && Monster::AliveCount(dungeon) && !dungeon->getPlayer()->getRequestTerminate() && dungeon->getEventManager()->getQueue()->size > 0) {
+    while (dungeon->getPlayer()->isAlive() && Monster::AliveCount(dungeon) && !dungeon->getPlayer()->getRequestTerminate() && dungeon->getEventManager()->getQueue()->size > 0) {
         if (game_tick(dungeon)) {
             dungeon->getOutput()->printError("Game tick error encountered, exiting while loop\n");
             break;

@@ -1,10 +1,10 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#define CHARACTER_SPEED_NUMERATOR  1000
+#define CHARACTER_SPEED_NUMERATOR 1000
 
-#include "../../include/forward_declarations.h"
-#include "../resource.h"
+#include <forward_declarations.h>
+#include <global.h>
 
 namespace App {
     class Character {
@@ -20,21 +20,18 @@ namespace App {
         u_char getY();
         u_char getCharacter();
         u_char getSpeed();
-        bool getIsAlive();
-        bool getIsPlayer();
-        bool getIsMonster();
+        bool isAlive();
+        bool isPlayer();
+        bool isMonster();
         /** GETTERS **/
 
         /** SETTERS **/
-        Character* setFloor(Floor* floor);
         Character* setX(u_char x);
         Character* setY(u_char y);
         Character* setCharacter(u_char character);
         Character* setSpeed(u_char speed);
-        Character* setIsAlive(bool isAlive);
-        Character* setIsPlayer(bool isPlayer);
-        Character* setIsMonster(bool isMonster);
         /** SETTERS **/
+
     protected:
         Floor* floor;
 
@@ -43,12 +40,13 @@ namespace App {
         u_char character;
 
         u_char speed;
-        bool isAlive;
+        bool alive;
 
-        bool isPlayer;
-        bool isMonster;
+        bool player;
+        bool monster;
 
     private:
+
     };
 }
 

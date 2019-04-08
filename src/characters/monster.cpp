@@ -1,8 +1,15 @@
 #include "monster.h"
 
-Monster::Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char speed)
-        : Character(floor, x, y, convert_base10_to_char(classification), speed, false, true) {
-    this->classification = classification;
+Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_char color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity)
+: Character(floor, x, y, symbol, speed, false, true)
+{
+    this->name.assign(*name);
+    this->description.assign(*description);
+    this->color = color;
+    this->abilities = abilities;
+    this->hitPoints = hitPoints;
+    this->attackDamage = attackDamage;
+    this->rarity = rarity;
 
     this->playerLastSpottedX = 0;
     this->playerLastSpottedY = 0;
@@ -12,7 +19,7 @@ Monster::~Monster() = default;
 
 int Monster::NextEventTick(Event* event) {
     auto monster = (Monster*) event->character;
-    if (monster->getIsAlive()) {
+    if (monster->isAlive()) {
         return monster->getFloor()->getDungeon()->getEventManager()->getTick() + (CHARACTER_SPEED_NUMERATOR / monster->getSpeed());
     } else {
         return -1;
@@ -22,7 +29,7 @@ int Monster::NextEventTick(Event* event) {
 int Monster::HandleEvent(Event* event) {
     auto monster = (Monster*) event->character;
 
-    if (monster->getIsAlive()) {
+    if (monster->isAlive()) {
         Floor* floor = monster->getFloor();
 
         void (* monsterMovement[])(Monster*, u_char*, u_char*) = {
@@ -30,16 +37,13 @@ int Monster::HandleEvent(Event* event) {
                 Monster::Move2, Monster::Move3,
                 Monster::Move4, Monster::Move5,
                 Monster::Move6, Monster::Move7,
-                Monster::Move8, Monster::Move9,
-                Monster::Move10, Monster::Move11,
-                Monster::Move12, Monster::Move13,
-                Monster::Move14, Monster::Move15
+                Monster::Move8
         };
 
         u_char x = monster->getX();
         u_char y = monster->getY();
 
-        monsterMovement[monster->getClassification()](monster, &x, &y);
+        monsterMovement[std::min(u_char(monster->getClassification()), u_char(8))](monster, &x, &y);
 
         // Now a few things could happen
         // 0) The monster just moved on themselves
@@ -49,12 +53,12 @@ int Monster::HandleEvent(Event* event) {
         if (x == monster->getX() && y == monster->getY()) { // 0) The monster just moved onto themselves
             return 0;
         } else if (floor->getCharacterAt(x, y) != null) {// 1-2) The monster moved onto someone else
-            if (floor->getCharacterAt(x, y)->getIsPlayer()) { // 1) The monster fell on a player
+            if (floor->getCharacterAt(x, y)->isPlayer()) { // 1) The monster fell on a player
                 auto player = (Player*) floor->getCharacterAt(x, y);
 
                 monster->battlePlayer(player);
 
-                if (!monster->getIsAlive()) { // The player survived the battle
+                if (!monster->isAlive()) { // The player survived the battle
                     // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
                     if (monster->isTunneler() && floor->getTerrainAt(monster->getX(), monster->getY())->isRock()) {
                         delete (floor->getTerrainAt(monster->getX(), monster->getY()));
@@ -62,19 +66,15 @@ int Monster::HandleEvent(Event* event) {
                     }
                     return 0;
                 }
-            } else if (floor->getCharacterAt(x, y)->getIsMonster()) { // The monster fell on another monster
+            } else if (floor->getCharacterAt(x, y)->isMonster()) { // The monster fell on another monster
                 auto otherMonster = (Monster*) floor->getCharacterAt(x, y);
                 Monster* deadMonster;
 
                 monster->battleMonster(otherMonster);
+                deadMonster = monster->isAlive() ? otherMonster : monster;
 
-                if (monster->getIsAlive()) {
-                    // Our monster lived
-                    deadMonster = otherMonster;
-                } else {
-                    // Other monster lived
-                    deadMonster = monster;
-                }
+                // Remove this monster's corpse
+                floor->setCharacterAt(null, deadMonster->getX(), deadMonster->getY());
 
                 // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
                 if (deadMonster->isTunneler() && floor->getTerrainAt(deadMonster->getX(), deadMonster->getY())->isRock()) {
@@ -82,10 +82,7 @@ int Monster::HandleEvent(Event* event) {
                     floor->setTerrainAt(new Corridor(floor, 0, deadMonster->getX(), deadMonster->getY()), deadMonster->getX(), deadMonster->getY());
                 }
 
-                // Remove this monster's corpse
-                floor->setCharacterAt(null, deadMonster->getX(), deadMonster->getY());
-
-                if (!monster->getIsAlive()) { // The other monster won
+                if (deadMonster == monster) { // The other monster won
                     // Stop running this monster
                     return 0;
                 }
@@ -108,7 +105,7 @@ u_int Monster::AliveCount(Dungeon* dungeon) {
     u_int monstersAlive = 0;
     for (index = 0; index < dungeon->getFloorCount(); index++) {
         for (monsterIndex = 0; monsterIndex < dungeon->getFloor(index)->getMonsterCount(); monsterIndex++) {
-            if (dungeon->getFloor(index)->getMonster(monsterIndex)->getIsAlive()) {
+            if (dungeon->getFloor(index)->getMonster(monsterIndex)->isAlive()) {
                 monstersAlive++;
             }
         }
@@ -137,7 +134,7 @@ int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR
         case MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH:
             break;
         default:
-            throw "Invalid Dijkstra option presented";
+            throw Exception::DijkstraKeyInvalid();
     }
 
     MonsterCost* monsterCost[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
@@ -171,22 +168,25 @@ int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR
         if (!floor->getTerrainAt(item->getX(), item->getY())->isImmutable()) {
             switch (type) {
                 case MONSTER_DIJKSTRA_TYPE_TUNNELER: // Type == 1
-                    for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
-                        for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
+                    for (height = item->getY() - 1; height <= item->getY() + 1; height++) {
+                        for (width = item->getX() - 1; width <= item->getX() + 1; width++) {
                             if (height != item->getY() || width != item->getX()) {
-                                if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost() && !floor->getTerrainAt(width, height)->isImmutable()) {
-                                    monsterCost[height][width]->addCost(item->getCost());
-                                    costChart[height][width] = monsterCost[height][width]->getCost();
+                                if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
+                                    if (!floor->getTerrainAt(width, height)->isBorder()) {
+                                        monsterCost[height][width]->addCost(item->getCost());
+                                        costChart[height][width] = monsterCost[height][width]->getCost();
 
-                                    heap_insert(&heap, monsterCost[height][width]);
+                                        heap_insert(&heap, monsterCost[height][width]);
+                                    }
                                 }
                             }
                         }
                     }
                     break;
+                default:
                 case MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH: // Type == 0
-                    for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
-                        for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
+                    for (height = item->getY() - 1; height <= item->getY() + 1; height++) {
+                        for (width = item->getX() - 1; width <= item->getX() + 1; width++) {
                             if (height != item->getY() || width != item->getX()) {
                                 if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
                                     monsterCost[height][width]->addCost(item->getCost());
@@ -200,8 +200,8 @@ int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR
                     break;
                 case MONSTER_DIJKSTRA_TYPE_NON_TUNNELER: // Type == -1
                     if (floor->getTerrainAt(item->getX(), item->getY())->isWalkable()) {
-                        for (height = u_char(item->getY() - 1); height <= item->getY() + 1; height++) {
-                            for (width = u_char(item->getX() - 1); width <= item->getX() + 1; width++) {
+                        for (height = item->getY() - 1; height <= item->getY() + 1; height++) {
+                            for (width = item->getX() - 1; width <= item->getX() + 1; width++) {
                                 if (height != item->getY() || width != item->getX()) {
                                     if (costChart[height][width] >= item->getCost() + monsterCost[height][width]->getCost()) {
                                         if (floor->getTerrainAt(width, height)->isWalkable()) {
@@ -250,11 +250,11 @@ int Monster::moveTo(u_char toX, u_char toY) {
 
 void Monster::battleMonster(Monster* otherMonster) {
     // Stronger wins
-//    if (this->getLevel() > otherMonster->getLevel()) {
-//        otherMonster->killCharacter();
-//    } else if (this->getLevel() < otherMonster->getLevel()) {
-//        this->killCharacter();
-    if (Dice::RandomNumberBetween(false, true)) {
+    if (this->getRarity() > otherMonster->getRarity()) {
+        otherMonster->killCharacter();
+    } else if (this->getRarity() < otherMonster->getRarity()) {
+        this->killCharacter();
+    } if (Dice::RandomNumberBetween(false, true)) {
         otherMonster->killCharacter();
     } else {
         this->killCharacter();
@@ -286,7 +286,7 @@ bool Monster::hasLineOfSightTo(Player* player) {
         // Horizontal line case
         x = x0;
         for (y = y0; y != y1; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
                 return false;
             }
         }
@@ -294,7 +294,7 @@ bool Monster::hasLineOfSightTo(Player* player) {
         slope = abs(int(double(deltaY) / double(deltaX)));
         y = y0;
         for (x = x0; abs(x1 - x) != 0; x += get_sign(deltaX)) {
-            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
                 return false;
             }
 
@@ -306,7 +306,7 @@ bool Monster::hasLineOfSightTo(Player* player) {
         }
         // Finish out vertical line case
         for (; abs(y1 - y) != 0; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
                 return false;
             }
         }
@@ -347,19 +347,39 @@ char* Monster::locationString(char location[19]) {
 }
 
 bool Monster::isIntelligent() {
-    return bool(this->classification & MONSTER_INTELLIGENT);
+    return bool(this->abilities & MONSTER_INTELLIGENT);
 }
 
 bool Monster::isTelepathic() {
-    return bool(this->classification & MONSTER_TELEPATHIC);
+    return bool(this->abilities & MONSTER_TELEPATHIC);
 }
 
 bool Monster::isTunneler() {
-    return bool(this->classification & MONSTER_TUNNELER);
+    return bool(this->abilities & MONSTER_TUNNELER);
 }
 
 bool Monster::isErratic() {
-    return bool(this->classification & MONSTER_ERRATIC);
+    return bool(this->abilities & MONSTER_ERRATIC);
+}
+
+bool Monster::isPass() {
+    return bool(this->abilities & MONSTER_PASS);
+}
+
+bool Monster::isPickUp() {
+    return bool(this->abilities & MONSTER_PICKUP);
+}
+
+bool Monster::isDestroy() {
+    return bool(this->abilities & MONSTER_DESTROY);
+}
+
+bool Monster::isUnique() {
+    return bool(this->abilities & MONSTER_UNIQ);
+}
+
+bool Monster::isBoss() {
+    return bool(this->abilities & MONSTER_BOSS);
 }
 
 /** GETTERS **/
@@ -384,7 +404,7 @@ u_int Monster::getAttackDamage() {
 }
 
 u_char Monster::getClassification() {
-    return this->classification;
+    return this->abilities;
 }
 
 u_char Monster::getRarity() {
@@ -431,8 +451,8 @@ Monster* Monster::setAttackDamage(u_int attackDamage) {
     return this;
 }
 
-Monster* Monster::setClassification(u_char classification) {
-    this->classification = classification;
+Monster* Monster::setAbilities(u_char abilities) {
+    this->abilities = abilities;
 
     return this;
 }
@@ -501,12 +521,6 @@ u_char MonsterCost::getCost() {
 /** GETTERS **/
 
 /** SETTERS **/
-MonsterCost* MonsterCost::setFloor(Floor* floor) {
-    this->floor = floor;
-
-    return this;
-}
-
 MonsterCost* MonsterCost::setX(u_char x) {
     this->x = x;
 

@@ -27,7 +27,7 @@ void Monster::Move0(Monster* monster, u_char* x, u_char* y) {
 
             *x = (*x + u_char(Dice::RandomNumberBetween(-1, 1)));
             *y = (*y + u_char(Dice::RandomNumberBetween(-1, 1)));
-        } while (!floor->getTerrainAt(*x, *y)->isWalkable() || floor->getTerrainAt(*x, *y)->isImmutable());
+        } while (!floor->getTerrainAt(*x, *y)->isWalkable());
     }
 }
 
@@ -41,10 +41,25 @@ void Monster::Move0(Monster* monster, u_char* x, u_char* y) {
  * This monster is intelligent and will move towards the player if it has line of sight
  */
 void Monster::Move1(Monster* monster, u_char* x, u_char* y) {
+    Floor* floor = monster->getFloor();
+    Player* player = floor->getDungeon()->getPlayer();
+
+    u_char playerX = player->getX();
+    u_char playerY = player->getY();
+
+    // Default stay right where they are
+    u_char cheapestX = monster->getX();
+    u_char cheapestY = monster->getY();
+    // Position values
+    u_char tempX;
+    u_char tempY;
+
+    // Record cheapest cost
+    u_char cheapestCost = U_CHAR_MAX;
+
     // If the monster has line of sight, store previous location
-    if (monster->hasLineOfSightTo(monster->getFloor()->getDungeon()->getPlayer())) {
-        monster->setPlayerLastSpottedX(monster->getFloor()->getDungeon()->getPlayer()->getX());
-        monster->setPlayerLastSpottedY(monster->getFloor()->getDungeon()->getPlayer()->getY());
+    if (monster->hasLineOfSightTo(player)) {
+        monster->setPlayerLastSpottedX(playerX)->setPlayerLastSpottedY(playerY);
     } else if ((monster->getPlayerLastSpottedY() == 0 && monster->getPlayerLastSpottedX() == 0) ||
                (monster->getX() == monster->getPlayerLastSpottedX() && monster->getY() == monster->getPlayerLastSpottedY())) {
         // No previous location found, just stay here
@@ -54,48 +69,26 @@ void Monster::Move1(Monster* monster, u_char* x, u_char* y) {
         return;
     }
 
-    Floor* floor = monster->getFloor();
-    Player* player = floor->getDungeon()->getPlayer();
+    // "Move" the player to where the monster thought they were and rerun dijkstra
+    player->setX(monster->getPlayerLastSpottedX())->setY(monster->getPlayerLastSpottedY());
+    Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_NON_TUNNELER, floor->nonTunnelerView);
 
-    u_char playerX = player->getX();
-    u_char playerY = player->getY();
-
-    // "Move" the player
-    player->setX(monster->getPlayerLastSpottedX());
-    player->setY(monster->getPlayerLastSpottedY());
-    // Run dijstra for just the non tunneler view
-    Monster::RunDijkstra(floor, -1, floor->nonTunnelerView);
-
-    // Default stay right where they are
-    u_char cheapestX = monster->getX();
-    u_char cheapestY = monster->getY();
-    // Position values
-    u_char tempX;
-    u_char tempY;
-    // Record cheapest cost
-    u_char cheapestCost = U_CHAR_MAX;
-    for (tempY = monster->getY() - u_char(1); tempY <= monster->getY() + 1; tempY++) {
-        for (tempX = monster->getX() - u_char(1); tempX <= monster->getX() + 1; tempX++) {
-            if (floor->nonTunnelerView[tempY][tempX] <= cheapestCost) {
+    for (tempY = monster->getY() - 1; tempY <= monster->getY() + 1; tempY++) {
+        for (tempX = monster->getX() - 1; tempX <= monster->getX() + 1; tempX++) {
+            if (floor->getNonTunnelerViewAt(tempX, tempY) < cheapestCost && floor->getTerrainAt(tempX, tempY)->isWalkable()) {
                 cheapestX = tempX;
                 cheapestY = tempY;
-                cheapestCost = floor->nonTunnelerView[tempY][tempX];
+                cheapestCost = floor->getNonTunnelerViewAt(tempX, tempY);
             }
         }
     }
 
     // "Move" player back and rerun dijkstra
-    player->setX(playerX);
-    player->setY(playerY);
-    Monster::RunDijkstra(floor, -1, floor->nonTunnelerView);
+    player->setX(playerX)->setY(playerY);
+    Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_NON_TUNNELER, floor->nonTunnelerView);
 
-    if (floor->getTerrainAt(cheapestX, cheapestY)->isWalkable()) {
-        *x = cheapestX;
-        *y = cheapestY;
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
+    *x = cheapestX;
+    *y = cheapestY;
 }
 
 /*
@@ -115,17 +108,17 @@ void Monster::Move2(Monster* monster, u_char* x, u_char* y) {
     char deltaY = floor->getDungeon()->getPlayer()->getY() - monster->getY();
 
     if (abs(deltaX) > abs(deltaY)) { // Move in the x direction?
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY());
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY();
     } else if (abs(deltaX) < abs(deltaY)) { // Move in the y direction?
-        *x = u_char(monster->getX());
-        *y = u_char(monster->getY() + get_sign(deltaY));
+        *x = monster->getX();
+        *y = monster->getY() + get_sign(deltaY);
     } else { // Move in a diagonal?
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY() + get_sign(deltaY));
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY() + get_sign(deltaY);
     }
 
-    // Cant tunnel
+    // Cant tunnel, revert movement back
     if (floor->getTerrainAt(*x, *y)->isRock() || floor->getTerrainAt(*x, *y)->isImmutable()) {
         *x = monster->getX();
         *y = monster->getY();
@@ -147,17 +140,20 @@ void Monster::Move3(Monster* monster, u_char* x, u_char* y) {
     // Default stay right where they are
     u_char cheapestX = monster->getX();
     u_char cheapestY = monster->getY();
+
+    // Record cheapest cost
+    u_char cheapestCost = U_CHAR_MAX;
+
     // Position values
     u_char tempX;
     u_char tempY;
-    // Record cheapest cost
-    u_char cheapestCost = U_CHAR_MAX;
-    for (tempY = monster->getY() - u_char(1); tempY <= monster->getY() + 1; tempY++) {
-        for (tempX = monster->getX() - u_char(1); tempX <= monster->getX() + 1; tempX++) {
-            if (floor->nonTunnelerView[tempY][tempX] <= cheapestCost) {
+
+    for (tempY = monster->getY() - 1; tempY <= monster->getY() + 1; tempY++) {
+        for (tempX = monster->getX() - 1; tempX <= monster->getX() + 1; tempX++) {
+            if (floor->getNonTunnelerViewAt(tempX, tempY) < cheapestCost) {
                 cheapestX = tempX;
                 cheapestY = tempY;
-                cheapestCost = floor->nonTunnelerView[tempY][tempX];
+                cheapestCost = floor->getNonTunnelerViewAt(tempX, tempY);
             }
         }
     }
@@ -182,10 +178,14 @@ void Monster::Move3(Monster* monster, u_char* x, u_char* y) {
  * As a result the monster will move in a direct line towards line of sight or last spotted
  */
 void Monster::Move4(Monster* monster, u_char* x, u_char* y) {
+    Floor* floor = monster->getFloor();
+    Player* player = floor->getDungeon()->getPlayer();
+    char deltaX;
+    char deltaY;
+
     // If the monster has line of sight, store previous location
-    if (monster->hasLineOfSightTo(monster->getFloor()->getDungeon()->getPlayer())) {
-        monster->setPlayerLastSpottedX(monster->getFloor()->getDungeon()->getPlayer()->getX());
-        monster->setPlayerLastSpottedY(monster->getFloor()->getDungeon()->getPlayer()->getY());
+    if (monster->hasLineOfSightTo(player)) {
+        monster->setPlayerLastSpottedX(player->getX())->setPlayerLastSpottedY(player->getY());
     } else if ((monster->getPlayerLastSpottedY() == 0 && monster->getPlayerLastSpottedX() == 0) ||
                (monster->getX() == monster->getPlayerLastSpottedX() && monster->getY() == monster->getPlayerLastSpottedY())) {
         // No previous location found, just stay here
@@ -195,23 +195,21 @@ void Monster::Move4(Monster* monster, u_char* x, u_char* y) {
         return;
     }
 
-    Floor* floor = monster->getFloor();
-
-    char deltaX = monster->getPlayerLastSpottedX() - monster->getX();
-    char deltaY = monster->getPlayerLastSpottedY() - monster->getY();
+    deltaX = monster->getPlayerLastSpottedX() - monster->getX();
+    deltaY = monster->getPlayerLastSpottedY() - monster->getY();
 
     if (deltaY == 0) { // Move in the x direction
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY());
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY();
     } else if (abs(deltaX) / double(abs(deltaY)) > 1.25) { // Move in the x direction?
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY());
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY();
     } else if (abs(deltaX) / double(abs(deltaY)) < 0.75) { // Move in the y direction?
-        *x = u_char(monster->getX());
-        *y = u_char(monster->getY() + get_sign(deltaY));
+        *x = monster->getX();
+        *y = monster->getY() + get_sign(deltaY);
     } else { // Move in a diagonal?
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY() + get_sign(deltaY));
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY() + get_sign(deltaY);
     }
 
     // Cant tunnel through immutable rock
@@ -231,10 +229,27 @@ void Monster::Move4(Monster* monster, u_char* x, u_char* y) {
  * This monster is intelligent with tunneling and will move towards the player if it has line of sight or last spotted
  */
 void Monster::Move5(Monster* monster, u_char* x, u_char* y) {
+    Floor* floor = monster->getFloor();
+    Player* player = floor->getDungeon()->getPlayer();
+
+    u_char playerX = player->getX();
+    u_char playerY = player->getY();
+
+    // Default stay right where they are
+    u_char cheapestX = monster->getX();
+    u_char cheapestY = monster->getY();
+
+    // Position values
+    u_char tempX;
+    u_char tempY;
+
+    // Record cheapest cost
+    u_char cheapestCost = U_CHAR_MAX;
+
     // If the monster has line of sight, store previous location
-    if (monster->hasLineOfSightTo(monster->getFloor()->getDungeon()->getPlayer())) {
-        monster->setPlayerLastSpottedX(monster->getFloor()->getDungeon()->getPlayer()->getX());
-        monster->setPlayerLastSpottedY(monster->getFloor()->getDungeon()->getPlayer()->getY());
+    if (monster->hasLineOfSightTo(player)) {
+        monster->setPlayerLastSpottedX(player->getX());
+        monster->setPlayerLastSpottedY(player->getY());
     } else if ((monster->getPlayerLastSpottedY() == 0 && monster->getPlayerLastSpottedX() == 0) ||
                (monster->getX() == monster->getPlayerLastSpottedX() && monster->getY() == monster->getPlayerLastSpottedY())) {
         // No previous location found, just stay here
@@ -244,40 +259,24 @@ void Monster::Move5(Monster* monster, u_char* x, u_char* y) {
         return;
     }
 
-    Floor* floor = monster->getFloor();
-    Player* player = floor->getDungeon()->getPlayer();
 
-    u_char playerX = player->getX();
-    u_char playerY = player->getY();
+    // "Move" the player and run dijkstra for just the non tunneler view
+    player->setX(monster->getPlayerLastSpottedX())->setY(monster->getPlayerLastSpottedY());
+    Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_TUNNELER, floor->tunnelerView);
 
-    // "Move" the player
-    player->setX(monster->getPlayerLastSpottedX());
-    player->setY(monster->getPlayerLastSpottedY());
-    // Run dijstra for just the non tunneler view
-    Monster::RunDijkstra(floor, 1, floor->tunnelerView);
-
-    // Default stay right where they are
-    u_char cheapestX = monster->getX();
-    u_char cheapestY = monster->getY();
-    // Position values
-    u_char tempX;
-    u_char tempY;
-    // Record cheapest cost
-    u_char cheapestCost = U_CHAR_MAX;
-    for (tempY = monster->getY() - u_char(1); tempY <= monster->getY() + 1; tempY++) {
-        for (tempX = monster->getX() - u_char(1); tempX <= monster->getX() + 1; tempX++) {
-            if (floor->tunnelerView[tempY][tempX] <= cheapestCost) {
+    for (tempY = monster->getY() - 1; tempY <= monster->getY() + 1; tempY++) {
+        for (tempX = monster->getX() - 1; tempX <= monster->getX() + 1; tempX++) {
+            if (floor->getTunnelerViewAt(tempX, tempY) < cheapestCost) {
                 cheapestX = tempX;
                 cheapestY = tempY;
-                cheapestCost = floor->tunnelerView[tempY][tempX];
+                cheapestCost = floor->getTunnelerViewAt(tempX, tempY);
             }
         }
     }
 
     // "Move" player back and rerun dijkstra
-    player->setX(playerX);
-    player->setY(playerY);
-    Monster::RunDijkstra(floor, 1, floor->tunnelerView);
+    player->setX(playerX)->setY(playerY);
+    Monster::RunDijkstra(floor, MONSTER_DIJKSTRA_TYPE_TUNNELER, floor->tunnelerView);
 
     if (floor->getTerrainAt(cheapestX, cheapestY)->isImmutable()) {
         *x = monster->getX();
@@ -304,17 +303,17 @@ void Monster::Move6(Monster* monster, u_char* x, u_char* y) {
     char deltaY = floor->getDungeon()->getPlayer()->getY() - monster->getY();
 
     if (deltaY == 0) { // Move in the x direction
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY());
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY();
     } else if (abs(deltaX) / double(abs(deltaY)) > 1.25) { // Move in the x direction?
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY());
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY();
     } else if (abs(deltaX) / double(abs(deltaY)) < 0.75) { // Move in the y direction?
-        *x = u_char(monster->getX());
-        *y = u_char(monster->getY() + get_sign(deltaY));
+        *x = monster->getX();
+        *y = monster->getY() + get_sign(deltaY);
     } else { // Move in a diagonal?
-        *x = u_char(monster->getX() + get_sign(deltaX));
-        *y = u_char(monster->getY() + get_sign(deltaY));
+        *x = monster->getX() + get_sign(deltaX);
+        *y = monster->getY() + get_sign(deltaY);
     }
 
     // Cant tunnel
@@ -344,12 +343,13 @@ void Monster::Move7(Monster* monster, u_char* x, u_char* y) {
     u_char tempY;
     // Record cheapest cost
     u_char cheapestCost = U_CHAR_MAX;
-    for (tempY = monster->getY() - u_char(1); tempY <= monster->getY() + 1; tempY++) {
-        for (tempX = monster->getX() - u_char(1); tempX <= monster->getX() + 1; tempX++) {
-            if (floor->tunnelerView[tempY][tempX] <= cheapestCost) {
+
+    for (tempY = monster->getY() - 1; tempY <= monster->getY() + 1; tempY++) {
+        for (tempX = monster->getX() - 1; tempX <= monster->getX() + 1; tempX++) {
+            if (floor->getTunnelerViewAt(tempX, tempY) <= cheapestCost) {
                 cheapestX = tempX;
                 cheapestY = tempY;
-                cheapestCost = floor->tunnelerView[tempY][tempX];
+                cheapestCost = floor->getTunnelerViewAt(tempX, tempY);
             }
         }
     }
@@ -373,620 +373,27 @@ void Monster::Move7(Monster* monster, u_char* x, u_char* y) {
  * This monster is erratic. There will be probability involved here
  * 50% To move via other characteristics
  * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
+ * 5% Chance to teleport to a random location
  */
 void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
     Floor* floor = monster->getFloor();
     auto random = u_char(Dice::RandomNumberBetween(0, 100));
 
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
+    if (random < TELEPORT_CHANCE) {
+        Room* room = floor->getRoom(Dice::RandomNumberBetween(0, floor->getRoomCount() - 1));
 
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
+        *x = room->randomXInside();
+        *y = room->randomYInside();
     } else if (random < RANDOM_MOVE_CHANCE) {
         Monster::Move0(monster, x, y);
     } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 9
- *      INTELLIGENT     = 1
- *      TELEPATHIC      = 0
- *      TUNNELER        = 0
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move9(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move1(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 10
- *      INTELLIGENT     = 0
- *      TELEPATHIC      = 1
- *      TUNNELER        = 0
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move10(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move2(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 11
- *      INTELLIGENT     = 1
- *      TELEPATHIC      = 1
- *      TUNNELER        = 0
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move11(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move3(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 12
- *      INTELLIGENT     = 0
- *      TELEPATHIC      = 0
- *      TUNNELER        = 1
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move12(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move4(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 13
- *      INTELLIGENT     = 1
- *      TELEPATHIC      = 0
- *      TUNNELER        = 1
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move13(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move5(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 14
- *      INTELLIGENT     = 0
- *      TELEPATHIC      = 1
- *      TUNNELER        = 1
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move14(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move6(monster, x, y);
-    } else {
-        *x = monster->getX();
-        *y = monster->getY();
-    }
-}
-
-/*
- * MONSTER 15
- *      INTELLIGENT     = 1
- *      TELEPATHIC      = 1
- *      TUNNELER        = 1
- *      ERRATIC         = 1
- *
- * This monster is erratic. There will be probability involved here
- * 50% To move via other characteristics
- * 45% Chance to move to a neighboring cell
- * 3% Chance to teleport to a random location
- * 2% Chance evolve another characteristic, but not move
- */
-void Monster::Move15(Monster* monster, u_char* x, u_char* y) {
-    Floor* floor = monster->getFloor();
-    auto random = u_char(Dice::RandomNumberBetween(0, 100));
-
-    if (random < EVOLVE_CHANCE) {
-        auto randomCharacteristic = u_char(Dice::RandomNumberBetween(1, 4));
-
-        monster->setClassification(monster->getClassification() | randomCharacteristic);
-        monster->setCharacter(convert_base10_to_char(monster->getClassification()));
-//        monster->setLevel(
-//                u_char(
-//                        (monster->isIntelligent() ? MONSTER_INTELLIGENT_LEVEL : 0) +
-//                        (monster->isTelepathic() ? MONSTER_TELEPATHIC_LEVEL : 0) +
-//                        (monster->isTunneler() ? MONSTER_TUNNELER_LEVEL : 0) +
-//                        (monster->isErratic() ? MONSTER_ERRATIC_LEVEL : 0) +
-//                        1));
-
-        std::string evolveFormat = "%s has evolved";
-        floor->getDungeon()->prependText(&evolveFormat, monster->getName().c_str());
-
-        *x = monster->getX();
-        *y = monster->getY();
-    } else if (random < TELEPORT_CHANCE) {
-        u_char monsterX;
-        u_char monsterY;
-        u_char height;
-        u_char width;
-        u_char placementAttempts = 0;
-        u_char roomIndex = 0;
-        auto monsterRoom = u_char(Dice::RandomNumberBetween(0, floor->getRoomCount() - u_char(1)));
-
-        do {
-            // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingX(), floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(floor->getRoom(monsterRoom)->getStartingY(), floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight() - 1));
-
-            placementAttempts++;
-        } while (floor->getCharacterAt(monsterX, monsterY) != null && placementAttempts < 25);
-
-        // If failed to find, just man handle it through
-        if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < floor->getRoomCount(); roomIndex++) {
-                // Start looping and find the next open spot
-                for (height = floor->getRoom(monsterRoom)->getStartingY(); height < floor->getRoom(monsterRoom)->getStartingY() + floor->getRoom(monsterRoom)->getHeight(); height++) {
-                    for (width = floor->getRoom(monsterRoom)->getStartingX(); width < floor->getRoom(monsterRoom)->getStartingX() + floor->getRoom(monsterRoom)->getWidth(); width++) {
-                        if (floor->getCharacterAt(width, height) == null) {
-                            monsterX = width;
-                            monsterY = height;
-                        }
-                    }
-                }
-            }
-        }
-
-        *x = monsterX;
-        *y = monsterY;
-    } else if (random < RANDOM_MOVE_CHANCE) {
-        Monster::Move0(monster, x, y);
-    } else if (random < OTHER_CHARACTERISTIC_CHANCE) {
-        Monster::Move7(monster, x, y);
+        void (* monsterMovement[])(Monster*, u_char*, u_char*) = {
+                Monster::Move0, Monster::Move1,
+                Monster::Move2, Monster::Move3,
+                Monster::Move4, Monster::Move5,
+                Monster::Move6, Monster::Move7,
+        };
+        monsterMovement[std::min(u_char(monster->getClassification()), u_char(7))](monster, x, y);
     } else {
         *x = monster->getX();
         *y = monster->getY();

@@ -16,27 +16,26 @@
 #define MONSTER_UNIQ            0b010000000u
 #define MONSTER_BOSS            0b100000000u
 
-#define MONSTER_INTELLIGENT_LEVEL 8
-#define MONSTER_TELEPATHIC_LEVEL 4
-#define MONSTER_TUNNELER_LEVEL 2
-#define MONSTER_ERRATIC_LEVEL 1
-
 #define MONSTER_DIJKSTRA_TYPE_TUNNELER 1
 #define MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH 0
 #define MONSTER_DIJKSTRA_TYPE_NON_TUNNELER -1
 
-#include "../../include/forward_declarations.h"
-#include "../vendor/heap.h"
-#include "../floor.h"
+#include <algorithm>
+#include <string>
+
+#include <forward_declarations.h>
+#include <exception.h>
+#include <global.h>
+
+#include "../dungeon.h"
 #include "../resource.h"
+#include "../vendor/heap.h"
 #include "character.h"
-#include <climits>
 
 namespace App {
     class Monster : public Character {
     public:
-        Monster(Floor* floor, u_char x, u_char y, u_char classification, u_char speed);
-        explicit Monster(std::string monster);
+        explicit Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_char color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity);
         ~Monster();
 
         static u_int AliveCount(Dungeon* dungeon);
@@ -81,7 +80,7 @@ namespace App {
         Monster* setColor(std::string* color);
         Monster* setHitPoints(u_int hitPoints);
         Monster* setAttackDamage(u_int attackDamage);
-        Monster* setClassification(u_char classification);
+        Monster* setAbilities(u_char abilities);
         Monster* setRarity(u_char rarity);
         Monster* setPlayerLastSpottedX(u_char playerLastSpottedX);
         Monster* setPlayerLastSpottedY(u_char playerLastSpottedY);
@@ -97,13 +96,6 @@ namespace App {
         static void Move6(Monster* monster, u_char* x, u_char* y);
         static void Move7(Monster* monster, u_char* x, u_char* y);
         static void Move8(Monster* monster, u_char* x, u_char* y);
-        static void Move9(Monster* monster, u_char* x, u_char* y);
-        static void Move10(Monster* monster, u_char* x, u_char* y);
-        static void Move11(Monster* monster, u_char* x, u_char* y);
-        static void Move12(Monster* monster, u_char* x, u_char* y);
-        static void Move13(Monster* monster, u_char* x, u_char* y);
-        static void Move14(Monster* monster, u_char* x, u_char* y);
-        static void Move15(Monster* monster, u_char* x, u_char* y);
         /** MOVEMENT PATTERNS **/
     protected:
 
@@ -118,7 +110,7 @@ namespace App {
         u_int hitPoints;
         u_int attackDamage;
 
-        u_char classification;
+        u_int abilities;
         u_char rarity;
     };
 
@@ -138,7 +130,6 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
-        MonsterCost* setFloor(Floor* floor);
         MonsterCost* setX(u_char x);
         MonsterCost* setY(u_char y);
         MonsterCost* setCost(u_char cost);

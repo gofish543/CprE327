@@ -89,40 +89,42 @@ Settings* Settings::loadArguments(int argc, char* argv[]) {
     return this;
 }
 
-//Settings* Settings::loadFiles() {
-//    struct stat buffer = {};
-//
-//    std::string resPath;
-//    std::string homePath;
-//
-//    // Attempt to load in monster descriptions
-//    resPath = std::string(SETTINGS_RES_FOLDER) + std::string(SETTINGS_MONSTER_DESC);
-//    homePath = std::string(getenv("HOME")) + std::string(SETTINGS_HOME_FOLDER) + std::string(SETTINGS_MONSTER_DESC);
-//
-//    if (stat(resPath.c_str(), &buffer) == 0) {
-//        this->monsterDesc->open(resPath);
-//    } else if (stat(homePath.c_str(), &buffer) == 0) {
-//        this->monsterDesc->open(homePath);
-//    } else {
-//        print_error(null, false, "Failed to open %s and %s\n", resPath.c_str(), homePath.c_str());
-//        exit(1);
-//    }
-//
-//    // Attempt to load in object descriptions
-//    resPath = std::string(SETTINGS_RES_FOLDER) + std::string(SETTINGS_OBJECT_DESC);
-//    homePath = std::string(getenv("HOME")) + std::string(SETTINGS_HOME_FOLDER) + std::string(SETTINGS_OBJECT_DESC);
-//
-//    if (stat(resPath.c_str(), &buffer) == 0) {
-//        this->monsterDesc->open(resPath);
-//    } else if (stat(homePath.c_str(), &buffer) == 0) {
-//        this->monsterDesc->open(homePath);
-//    } else {
-//        print_error(null, false, "Failed to open %s and %s\n", resPath.c_str(), homePath.c_str());
-//        exit(1);
-//    }
-//
-//    return this;
-//}
+Settings* Settings::loadFiles() {
+    struct stat buffer = {};
+
+    std::string resPath;
+    std::string homePath;
+
+    // Attempt to load in monster descriptions
+    resPath = std::string(SETTINGS_RES_FOLDER) + std::string(SETTINGS_MONSTER_DESC);
+    homePath = std::string(getenv("HOME")) + std::string(SETTINGS_HOME_FOLDER) + std::string(SETTINGS_MONSTER_DESC);
+
+    if (stat(resPath.c_str(), &buffer) == 0) {
+        this->monsterDesc->open(resPath);
+    } else if (stat(homePath.c_str(), &buffer) == 0) {
+        this->monsterDesc->open(homePath);
+    } else {
+        printf(SHELL_TEXT_RED "Failed to open %s and %s\n", resPath.c_str(), homePath.c_str());
+        printf(SHELL_DEFAULT "\n");
+        exit(1);
+    }
+
+    // Attempt to load in object descriptions
+    resPath = std::string(SETTINGS_RES_FOLDER) + std::string(SETTINGS_OBJECT_DESC);
+    homePath = std::string(getenv("HOME")) + std::string(SETTINGS_HOME_FOLDER) + std::string(SETTINGS_OBJECT_DESC);
+
+    if (stat(resPath.c_str(), &buffer) == 0) {
+        this->objectDesc->open(resPath);
+    } else if (stat(homePath.c_str(), &buffer) == 0) {
+        this->objectDesc->open(homePath);
+    } else {
+        printf(SHELL_TEXT_RED "Failed to open %s and %s\n", resPath.c_str(), homePath.c_str());
+        printf(SHELL_DEFAULT "\n");
+        exit(1);
+    }
+
+    return this;
+}
 //
 //std::string Settings::getFileName(const std::string& string) {
 //    // Find the last slash location
@@ -248,7 +250,7 @@ Settings* Settings::setFileVersion(u_char fileVersion) {
     return this;
 }
 
-Settings* Settings::setSavePath(std::string &savePath) {
+Settings* Settings::setSavePath(std::string& savePath) {
     this->savePath->assign(savePath);
 
     return this;
@@ -266,7 +268,7 @@ Settings* Settings::setNumberOfMonsters(u_short numberOfMonsters) {
     return this;
 }
 
-Settings* Settings::setMonsterDesc(std::string &path) {
+Settings* Settings::setMonsterDesc(std::string& path) {
     // Close previous stream
     this->monsterDesc->close();
 
@@ -278,7 +280,7 @@ Settings* Settings::setMonsterDesc(std::string &path) {
     return this;
 }
 
-Settings* Settings::setObjectDesc(std::string &path) {
+Settings* Settings::setObjectDesc(std::string& path) {
     // Close previous stream
     this->objectDesc->close();
 

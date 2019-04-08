@@ -35,7 +35,7 @@ Player::~Player() = default;
 int Player::NextEventTick(Event* event) {
     auto player = (Player*) event->character;
 
-    if (player->getIsAlive()) {
+    if (player->isAlive()) {
         return player->getFloor()->getDungeon()->getEventManager()->getTick() + (CHARACTER_SPEED_NUMERATOR / player->getSpeed());
     } else {
         return -1;
@@ -82,9 +82,9 @@ int Player::handleEventKeyMonsterMenu() {
     int character = 0;
 
     while (character != 27) {
-        output_print_current_floor_monster_menu(dungeon, startIndex);
+        dungeon->getOutput()->printMonsterMenu(startIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
 
-        print(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint(), "Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
         character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
 
         switch (character) {
@@ -98,10 +98,12 @@ int Player::handleEventKeyMonsterMenu() {
                     startIndex--;
                 }
                 break;
+            default:
+                break;
         }
     }
 
-    output(dungeon, output_print_current_floor);
+    dungeon->getOutput()->print();
 
     return 0;
 }
@@ -111,7 +113,7 @@ int Player::handleEventKeyToggleFog() {
             !this->getFloor()->getDungeon()->getSettings()->doFogOfWar()
     );
 
-    output(this->getFloor()->getDungeon(), output_print_current_floor);
+    this->getFloor()->getDungeon()->getOutput()->print();
 
     return 0;
 }
@@ -130,7 +132,7 @@ int Player::handleEventKeyTeleport() {
     this->setCharacter(PLAYER_TELEPORT_CHARACTER);
     dungeon->getSettings()->setFogOfWar(false);
 
-    output(this->getFloor()->getDungeon(), output_print_current_floor);
+    this->getFloor()->getDungeon()->getOutput()->print();
 
     this->getFloor()->setCharacterAt(null, this->x, this->y);
 
@@ -151,6 +153,8 @@ int Player::handleEventKeyTeleport() {
             case KEY_LEFT:
                 this->x = u_char(std::max(1, this->x - 1));
                 break;
+            default:
+                break;
         }
 
         // Restore previous spot
@@ -165,10 +169,11 @@ int Player::handleEventKeyTeleport() {
         this->getFloor()->setCharacterAt(this, this->x, this->y);
 
         // Print
-        output(this->getFloor()->getDungeon(), output_print_current_floor);
+        this->getFloor()->getDungeon()->getOutput()->print();
     }
 
     switch (character) {
+        default:
         case 27: // Esc
             // Revert to original characters
             this->getFloor()->setCharacterAt(null, this->x, this->y);
@@ -192,12 +197,12 @@ int Player::handleEventKeyTeleport() {
             break;
     }
 
-    if (save != null && save->getIsMonster()) {
+    if (save != null && save->isMonster()) {
         // Fight monster
         this->battleMonster((Monster*) save);
 
         // If didn't survive, place back character
-        if (!this->getIsAlive()) {
+        if (!this->isAlive()) {
             this->getFloor()->setCharacterAt(save, save->getX(), save->getY());
         }
     }
@@ -212,7 +217,7 @@ int Player::handleEventKeyTeleport() {
     // Update visibility
     this->updateVisibility();
 
-    output(this->getFloor()->getDungeon(), output_print_current_floor);
+    this->getFloor()->getDungeon()->getOutput()->print();
 
     return 0;
 }
@@ -221,6 +226,8 @@ int Player::handleEventKeyStaircase(int command) {
     Dungeon* dungeon = this->getFloor()->getDungeon();
     Floor* floor = this->getFloor();
     Terrain* onTerrain = floor->getTerrainAt(this->x, this->y);
+    std::string movingFormat = "Moving %s a staircase";
+
     // We are standing on a staircase
     if (onTerrain->getCharacter() == STAIRCASE_DOWN_CHARACTER || onTerrain->getCharacter() == STAIRCASE_UP_CHARACTER) {
         if ((command == STAIRCASE_DOWN_CHARACTER && onTerrain->getCharacter() == STAIRCASE_DOWN_CHARACTER) ||
@@ -228,14 +235,14 @@ int Player::handleEventKeyStaircase(int command) {
             // Trying to take a down staircase, and standing on a down staircase
             // Trying to take an up staircase and standing on an up staircase
             this->takingStaircase = (Staircase*) onTerrain;
-            dungeon->prependText("Moving %s a staircase", (this->takingStaircase->isUp() ? "Up" : "Down"));
+
+            dungeon->prependText(&movingFormat, (this->takingStaircase->isUp() ? "Up" : "Down"));
             return 0;
         }
     }
 
     dungeon->prependText("Not standing on a valid staircase");
-    output(dungeon, output_print_current_floor);
-
+    dungeon->getOutput()->print();
     // Not on staircase, cant take a staircase
     // Or not on a staircase facing the right direction
     return 1;
@@ -309,13 +316,13 @@ int Player::handleEventKeyMovement(int command) {
             break;
         default:
             dungeon->prependText("Invalid key entered");
-            output(dungeon, output_print_current_floor);
+            dungeon->getOutput()->print();
             return 1;
     }
 
     if (!dungeon->getCurrentFloor()->getTerrainAt(x, y)->isWalkable()) {
         dungeon->prependText("Terrain is not walkable, invalid key entered");
-        output(dungeon, output_print_current_floor);
+        dungeon->getOutput()->print();
         return 1;
     }
 
@@ -336,7 +343,7 @@ int Player::moveTo(u_char toX, u_char toY) {
     if (floor->getCharacterAt(toX, toY) != null) {
         this->battleMonster((Monster*) floor->getCharacterAt(toX, toY));
 
-        if (!this->isAlive) {
+        if (!this->isAlive()) {
             // Player died, don't move to spot
             return 0;
         }
@@ -373,7 +380,7 @@ void Player::battleMonster(Monster* monster) {
         this->floor->setCharacterAt(null, monster->getX(), monster->getY());
 
         // Add level to the player
-//        this->addLevel(monster->getLevel());
+        this->addLevel(1);
         this->incrementMonstersSlain();
     }
 }
@@ -397,10 +404,10 @@ Player* Player::removeLevel(int amount) {
 Player* Player::updateVisibility() {
     u_char height;
     u_char width;
-    u_char minHeight = u_char(std::max(1, this->getY() - PLAYER_DEFAULT_LIGHT_RADIUS));
-    u_char maxHeight = u_char(std::min(DUNGEON_FLOOR_HEIGHT - 1, this->getY() + PLAYER_DEFAULT_LIGHT_RADIUS));
-    u_char minWidth = u_char(std::max(1, this->getX() - PLAYER_DEFAULT_LIGHT_RADIUS));
-    u_char maxWidth = u_char(std::min(DUNGEON_FLOOR_WIDTH - 1, this->getX() + PLAYER_DEFAULT_LIGHT_RADIUS));
+    u_char minHeight = std::max(1, this->getY() - PLAYER_DEFAULT_LIGHT_RADIUS);
+    u_char maxHeight = std::min(DUNGEON_FLOOR_HEIGHT - 1, this->getY() + PLAYER_DEFAULT_LIGHT_RADIUS);
+    u_char minWidth = std::max(1, this->getX() - PLAYER_DEFAULT_LIGHT_RADIUS);
+    u_char maxWidth = std::min(DUNGEON_FLOOR_WIDTH - 1, this->getX() + PLAYER_DEFAULT_LIGHT_RADIUS);
 
     for (height = minHeight; height < maxHeight; height++) {
         for (width = minWidth; width < maxWidth; width++) {
@@ -434,7 +441,7 @@ bool Player::hasLineOfSightTo(u_char width, u_char height) {
         // Horizontal line case
         x = x0;
         for (y = y0; y != y1; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
                 return false;
             }
         }
@@ -442,7 +449,7 @@ bool Player::hasLineOfSightTo(u_char width, u_char height) {
         slope = abs(int(double(deltaY) / double(deltaX)));
         y = y0;
         for (x = x0; abs(x1 - x) != 0; x += get_sign(deltaX)) {
-            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
                 return false;
             }
 
@@ -454,7 +461,7 @@ bool Player::hasLineOfSightTo(u_char width, u_char height) {
         }
         // Finish out vertical line case
         for (; abs(y1 - y) != 0; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(u_char(x), u_char(y))->isRock() || floor->getTerrainAt(u_char(x), u_char(y))->isImmutable()) {
+            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
                 return false;
             }
         }
@@ -497,6 +504,11 @@ u_int Player::getDaysSurvived() {
 /** GETTERS **/
 
 /** SETTERS **/
+Player* Player::setFloor(Floor* floor) {
+    this->floor = floor;
+
+    return this;
+}
 Player* Player::setTakingStaircase(Staircase* takingStaircase) {
     this->takingStaircase = takingStaircase;
 

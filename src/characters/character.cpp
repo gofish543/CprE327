@@ -6,16 +6,18 @@ Character::Character(Floor* floor, u_char x, u_char y, u_char character, u_char 
     this->y = y;
     this->character = character;
     this->speed = speed;
-    this->isAlive = true;
+    this->alive = true;
 
-    this->isPlayer = isPlayer;
-    this->isMonster = isMonster;
+    this->player = isPlayer;
+    this->monster = isMonster;
 }
 
 Character::~Character() = default;
 
 Character* Character::killCharacter() {
-    return this->setIsAlive(false);
+    this->alive = false;
+
+    return this;
 }
 
 /** GETTERS **/
@@ -39,26 +41,20 @@ u_char Character::getSpeed() {
     return this->speed;
 }
 
-bool Character::getIsAlive() {
-    return this->isAlive;
+bool Character::isAlive() {
+    return this->alive;
 }
 
-bool Character::getIsPlayer() {
-    return this->isPlayer;
+bool Character::isPlayer() {
+    return this->player;
 }
 
-bool Character::getIsMonster() {
-    return this->isMonster;
+bool Character::isMonster() {
+    return this->monster;
 }
 /** GETTERS **/
 
 /** SETTERS **/
-Character* Character::setFloor(Floor* floor) {
-    this->floor = floor;
-
-    return this;
-}
-
 Character* Character::setX(u_char x) {
     this->x = x;
 
@@ -79,24 +75,6 @@ Character* Character::setCharacter(u_char character) {
 
 Character* Character::setSpeed(u_char speed) {
     this->speed = speed;
-
-    return this;
-}
-
-Character* Character::setIsAlive(bool isAlive) {
-    this->isAlive = isAlive;
-
-    return this;
-}
-
-Character* Character::setIsPlayer(bool isPlayer) {
-    this->isPlayer = isPlayer;
-
-    return this;
-}
-
-Character* Character::setIsMonster(bool isMonster) {
-    this->isMonster = isMonster;
 
     return this;
 }

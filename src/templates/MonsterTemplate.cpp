@@ -1,4 +1,3 @@
-#include <sstream>
 #include "MonsterTemplate.h"
 
 MonsterTemplate::MonsterTemplate(std::string& templateString) {
@@ -52,21 +51,21 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                     std::vector<std::string> colors = split(trim(buffer), ' ');
                     for (auto const& color: colors) {
                         if (color == "RED") {
-                            this->color |= COLOR_RED;
+                            this->color |= NCURSES_TEXT_RED;
                         } else if (color == "GREEN") {
-                            this->color |= COLOR_GREEN;
+                            this->color |= NCURSES_TEXT_GREEN;
                         } else if (color == "BLUE") {
-                            this->color |= COLOR_BLUE;
+                            this->color |= NCURSES_TEXT_BLUE;
                         } else if (color == "CYAN") {
-                            this->color |= COLOR_CYAN;
+                            this->color |= NCURSES_TEXT_CYAN;
                         } else if (color == "YELLOW") {
-                            this->color |= COLOR_YELLOW;
+                            this->color |= NCURSES_TEXT_YELLOW;
                         } else if (color == "MAGENTA") {
-                            this->color |= COLOR_MAGENTA;
+                            this->color |= NCURSES_TEXT_MAGENTA;
                         } else if (color == "WHITE") {
-                            this->color |= COLOR_MAGENTA;
+                            this->color |= NCURSES_TEXT_WHITE;
                         } else if (color == "BLACK") {
-                            this->color |= COLOR_BLACK;
+                            this->color |= NCURSES_TEXT_BLACK;
                         }
                     }
 
@@ -162,12 +161,26 @@ MonsterTemplate::~MonsterTemplate() {
     }
 }
 
+Monster* MonsterTemplate::generateMonster(Floor* floor, u_char x, u_char y) {
+    return new Monster(floor, x, y, &(this->name), &(this->description), this->color, this->speed->roll(), this->abilities, this->hitPoints->roll(), this->attackDamage->roll(), this->symbol, this->rarity);
+}
+
 std::vector<MonsterTemplate*> MonsterTemplate::GenerateTemplates(std::ifstream* inputFile) {
     std::vector<MonsterTemplate*> monsterTemplates;
 
     // Pull heading
     std::string heading;
-    std::getline(*inputFile, heading, '\n');
+
+    do {
+        std::getline(*inputFile, heading, '\n');
+        std::cout << heading << std::endl;
+
+        printf("Getting line %s\n", heading.c_str());
+
+        if (!trim(heading).empty()) {
+            break;
+        }
+    } while (true);
 
     if (trim(heading) != MONSTER_TEMPLATE_HEADING) {
         printf("Invalid heading %s\n", heading.c_str());
@@ -197,10 +210,6 @@ std::vector<MonsterTemplate*> MonsterTemplate::GenerateTemplates(std::ifstream* 
 
     return monsterTemplates;
 }
-
-//Monster* MonsterTemplate::generateMonster() {
-//
-//}
 
 /** GETTERS **/
 bool MonsterTemplate::isValid() {

@@ -7,7 +7,7 @@ int getChar(WINDOW* window, const bool ncurses) {
         userInput = getch();
     } else {
         int character = 0;
-        print(window, ncurses, "Please enter your command, then click enter\n");
+        printf("Please enter your command, then click enter\n");
         while ((character = getchar()) != '\n' && character != EOF) {
             userInput += character;
         }

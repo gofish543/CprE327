@@ -46,6 +46,12 @@ namespace Exception {
         }
     };
 
+    class DijkstraKeyInvalid : public std::exception {
+        const char* what() const noexcept override {
+            return "Invalid dijkstra key passed";
+        }
+    };
+
     class DiceStringInvalidParse : public std::exception {
         const char* what() const noexcept override {
             return "Unknown Dice string parsed";

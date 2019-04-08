@@ -10,12 +10,12 @@
 #define FLOOR_MONSTERS_MIN 5
 #define FLOOR_MONSTERS_MAX 10
 
+#include <vector>
+
 #include <forward_declarations.h>
 #include <character_listings.h>
 #include <exception.h>
 #include <global.h>
-
-#include <vector>
 
 #include "dungeon.h"
 #include "dice.h"

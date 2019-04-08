@@ -11,8 +11,6 @@
 #include <character_listings.h>
 #include <global.h>
 
-#include "floor.h"
-
 namespace App {
     class Terrain {
     public:
@@ -24,6 +22,9 @@ namespace App {
         bool isRock();
         bool isRoom();
         bool isStaircase();
+
+        bool isImmutable();
+        bool isWalkable();
 
         /** GETTERS **/
         Floor* getFloor();

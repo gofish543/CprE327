@@ -26,13 +26,20 @@ bool Terrain::isRock() {
     return this->type & TERRAIN_ROCK;
 
 }
-
 bool Terrain::isRoom() {
     return this->type & TERRAIN_ROOM;
 }
 
 bool Terrain::isStaircase() {
     return this->type & TERRAIN_STAIRCASE;
+}
+
+bool Terrain::isImmutable() {
+    return this->isBorder();
+}
+
+bool Terrain::isWalkable() {
+    return this->isStaircase() || this->isRoom() || this->isCorridor();
 }
 
 /** GETTERS **/

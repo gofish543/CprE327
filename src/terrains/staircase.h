@@ -9,9 +9,8 @@
 #include <forward_declarations.h>
 #include <character_listings.h>
 
-#include "dungeon.h"
-#include "floor.h"
-#include "player.h"
+#include "../dungeon.h"
+
 #include "terrain.h"
 
 namespace App {

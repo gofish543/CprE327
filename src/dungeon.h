@@ -6,18 +6,15 @@
 #define DUNGEON_FLOORS_MIN 3
 #define DUNGEON_FLOORS_MAX 5
 
-#define DUNGEON_FLOOR_WIDTH 80
-#define DUNGEON_FLOOR_HEIGHT 21
-
-#include <forward_declarations.h>
-#include <exception.h>
-#include <global.h>
-
 #include <cstdio>
 #include <cstdarg>
 #include <string>
 #include <vector>
 #include <ncurses.h>
+
+#include <forward_declarations.h>
+#include <exception.h>
+#include <global.h>
 
 #include "floor.h"
 #include "dice.h"
@@ -25,7 +22,6 @@
 #include "settings.h"
 #include "save_load.h"
 #include "templates/MonsterTemplate.h"
-#include "templates/ObjectTemplate.h"
 
 namespace App {
     class Dungeon {
@@ -34,8 +30,12 @@ namespace App {
         Dungeon(int argc, char* argv[]);
         ~Dungeon();
 
+        std::string* prependText(const std::string &text);
+        std::string* appendText(const std::string &text);
         std::string* prependText(const std::string* format, ...);
         std::string* appendText(const std::string* format, ...);
+
+        MonsterTemplate* randomMonsterTemplate();
 
         /** GETTERS **/
         Floor* getFloor(u_char index);

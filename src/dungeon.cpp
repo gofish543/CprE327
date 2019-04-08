@@ -16,7 +16,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     this->eventManager = new EventManager(this);
 
     this->monsterTemplates = MonsterTemplate::GenerateTemplates(this->settings->getMonsterDesc());
-    this->objectTemplates = ObjectTemplate::GenerateTemplates(this->settings->getObjectDesc());
+//    this->objectTemplates = ObjectTemplate::GenerateTemplates(this->settings->getObjectDesc());
 
     this->player = new Player(null, 0, 0);
 
@@ -79,9 +79,9 @@ Dungeon::~Dungeon() {
         delete (this->textLines[index]);
     }
 
-    for (index = 0; index < this->objectTemplates.size(); index++) {
-        delete (this->objectTemplates[index]);
-    }
+//    for (index = 0; index < this->objectTemplates.size(); index++) {
+//        delete (this->objectTemplates[index]);
+//    }
 
     for (index = 0; index < this->monsterTemplates.size(); index++) {
         delete (this->monsterTemplates[index]);
@@ -93,14 +93,36 @@ Dungeon::~Dungeon() {
     delete (this->settings);
 }
 
+std::string* Dungeon::prependText(const std::string& text) {
+    u_char index;
+    for (index = DUNGEON_TEXT_LINES - 1; index > 0; index--) {
+        this->textLines[index]->assign(*(this->textLines[index - 1]));
+    }
+
+    this->textLines[0]->assign(text);
+
+    return this->textLines[0];
+}
+
+std::string* Dungeon::appendText(const std::string& text) {
+    u_char index;
+    for (index = DUNGEON_TEXT_LINES - 1; index > 0; index--) {
+        this->textLines[index - 1]->assign(*(this->textLines[index]));
+    }
+
+    this->textLines[DUNGEON_TEXT_LINES - 1]->assign(text);
+
+    return this->textLines[DUNGEON_TEXT_LINES - 1];
+}
+
 std::string* Dungeon::prependText(const std::string* format, ...) {
     u_char index;
     char buffer[DUNGEON_FLOOR_WIDTH + 1];
     va_list args;
     va_start(args, format);
 
-    for (index = 0; index < DUNGEON_TEXT_LINES - 1; index++) {
-        this->textLines[index + 1]->assign(*(this->textLines[index]));
+    for (index = DUNGEON_TEXT_LINES - 1; index > 0; index--) {
+        this->textLines[index]->assign(*(this->textLines[index - 1]));
     }
 
     vsnprintf(buffer, DUNGEON_FLOOR_WIDTH + 1, format->c_str(), args);
@@ -115,8 +137,8 @@ std::string* Dungeon::appendText(const std::string* format, ...) {
     u_char index;
     char buffer[DUNGEON_FLOOR_WIDTH + 1];
 
-    for (index = 0; index < DUNGEON_TEXT_LINES - 1; index++) {
-        this->textLines[index]->assign(*(this->textLines[index]));
+    for (index = DUNGEON_TEXT_LINES - 1; index > 0; index--) {
+        this->textLines[index - 1]->assign(*(this->textLines[index]));
     }
 
     va_list args;
@@ -129,6 +151,10 @@ std::string* Dungeon::appendText(const std::string* format, ...) {
     this->textLines[DUNGEON_TEXT_LINES - 1]->assign(buffer, DUNGEON_FLOOR_WIDTH);
 
     return this->textLines[DUNGEON_TEXT_LINES - 1];
+}
+
+MonsterTemplate* Dungeon::randomMonsterTemplate() {
+    return this->monsterTemplates[Dice::RandomNumberBetween(0, this->monsterTemplates.size() - 1)];
 }
 
 /** GETTERS **/

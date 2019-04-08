@@ -71,7 +71,7 @@ int Staircase::take() {
 
     for (height = playerRoom->getStartingY(); height < playerRoom->getStartingY() + playerRoom->getHeight(); height++) {
         for (width = playerRoom->getStartingX(); width < playerRoom->getStartingX() + playerRoom->getWidth(); width++) {
-            if (currentFloor->getCharacterAt(width, height) != null && currentFloor->getCharacterAt(width, height)->getIsMonster()) {
+            if (currentFloor->getCharacterAt(width, height) != null && currentFloor->getCharacterAt(width, height)->isMonster()) {
                 u_char placementAttempts = 0;
                 Room* monsterRoom;
                 u_char monsterX;
@@ -133,7 +133,7 @@ int Staircase::take() {
 
     // Add monsters to the new queue
     for (index = 0; index < currentFloor->getMonsterCount(); index++) {
-        if (currentFloor->getMonster(index)->getIsAlive()) {
+        if (currentFloor->getMonster(index)->isAlive()) {
             dungeon->getEventManager()->addToQueue(new Event(1 + index, event_type_monster, currentFloor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick));
         }
     }

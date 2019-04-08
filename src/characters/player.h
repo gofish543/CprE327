@@ -5,14 +5,16 @@
 
 #define PLAYER_SPEED 10
 
-#include "../../include/forward_declarations.h"
-#include "character_listings.h"
-#include "../resource.h"
-#include "../output.h"
-#include "../input.h"
-#include "../floor.h"
-#include "character.h"
 #include <algorithm>
+
+#include <forward_declarations.h>
+#include <character_listings.h>
+#include <global.h>
+
+#include "../dungeon.h"
+#include "../input.h"
+#include "../resource.h"
+#include "character.h"
 
 namespace App {
     class Player : public Character {
@@ -51,6 +53,7 @@ namespace App {
         /** GETTERS **/
 
         /** SETTERS **/
+        Player* setFloor(Floor* floor);
         Player* setTakingStaircase(Staircase* takingStaircase);
         Player* setRequestTerminate(bool requestTerminate);
         Player* setLevel(u_int level);
@@ -60,6 +63,7 @@ namespace App {
 
         Terrain* visibility[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
     protected:
+
     private:
         Staircase* takingStaircase;
 

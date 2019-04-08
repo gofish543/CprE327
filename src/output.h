@@ -9,14 +9,13 @@
 #define OUTPUT_DEBUG_COLOR_PALLET       0b0100000u
 #define OUTPUT_DEBUG_TERMINATE          0b1000000u
 
-#include <forward_declarations.h>
-#include <colors.h>
-
 #include <ncurses.h>
 #include <cstdio>
 
+#include <forward_declarations.h>
+#include <colors.h>
+
 #include "dungeon.h"
-#include "characters/monster.h"
 
 namespace App {
     class Output {

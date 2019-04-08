@@ -3,13 +3,16 @@
 
 #define MONSTER_TEMPLATE_HEADING "RLG327 MONSTER DESCRIPTION 1"
 
-#include "../../include/forward_declarations.h"
-#include "../characters/monster.h"
-#include "../dice.h"
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
+#include <forward_declarations.h>
+
+#include "../characters/monster.h"
+#include "../dice.h"
 
 namespace App {
     class MonsterTemplate {
@@ -19,7 +22,7 @@ namespace App {
 
         static std::vector<MonsterTemplate*> GenerateTemplates(std::ifstream* inputFile);
 
-        Monster* generateMonster();
+        Monster* generateMonster(Floor* floor, u_char x, u_char y);
 
         /** GETTERS **/
         bool isValid();

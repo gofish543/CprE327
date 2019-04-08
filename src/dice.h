@@ -1,16 +1,16 @@
 #ifndef DICE_H
 #define DICE_H
 
-#include <forward_declarations.h>
-#include <exception.h>
-#include <global.h>
-
 #include <string>
 #include <fstream>
 #include <unistd.h>
 #include <fcntl.h>
 #include <random>
 #include <sys/time.h>
+
+#include <forward_declarations.h>
+#include <exception.h>
+#include <global.h>
 
 namespace App {
     class Dice {

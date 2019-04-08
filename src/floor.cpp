@@ -491,8 +491,8 @@ Floor* Floor::generateRooms() {
                     stairX = u_char(Dice::RandomNumberBetween(roomStartX + 1, roomStartX + roomWidth - 2));
                     stairY = u_char(Dice::RandomNumberBetween(roomStartY + 1, roomStartY + roomHeight - 2));
                 } while (this->terrains[stairY][stairX] != null);
-                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_UP);
-                this->upStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_UP));
+                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_UP);
+                this->upStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_UP));
             }
         }
 
@@ -503,8 +503,8 @@ Floor* Floor::generateRooms() {
                     stairX = u_char(Dice::RandomNumberBetween(roomStartX + 1, roomStartX + roomWidth - 2));
                     stairY = u_char(Dice::RandomNumberBetween(roomStartY + 1, roomStartY + roomHeight - 2));
                 } while (this->terrains[stairY][stairX] != null);
-                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_DOWN);
-                this->downStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_TYPE_DOWN));
+                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_DOWN);
+                this->downStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_DOWN));
             }
         }
 
@@ -627,9 +627,6 @@ Floor* Floor::generateMonsters() {
     u_char monsterY;
     u_short monsterRoom;
 
-    u_char classification;
-    u_char speed;
-
     auto playerRoom = (Room*) this->getTerrainAt(this->dungeon->getPlayer()->getX(), this->dungeon->getPlayer()->getY());
 
     u_int placementAttempts = 0;
@@ -652,26 +649,6 @@ Floor* Floor::generateMonsters() {
 
     for (index = 0; index < this->monsterCount; index++) {
         placementAttempts = 0;
-
-        speed = u_char(Dice::RandomNumberBetween(MONSTER_MIN_SPEED, MONSTER_MAX_SPEED));
-        classification = 0;
-
-        // If Intelligent
-        if (Dice::RandomNumberBetween(false, true)) {
-            classification |= MONSTER_INTELLIGENT;
-        }
-        // If Telepathic
-        if (Dice::RandomNumberBetween(false, true)) {
-            classification |= MONSTER_TELEPATHIC;
-        }
-        // If Tunneler
-        if (Dice::RandomNumberBetween(false, true)) {
-            classification |= MONSTER_TUNNELER;
-        }
-        // If Erratic
-        if (Dice::RandomNumberBetween(false, true)) {
-            classification |= MONSTER_ERRATIC;
-        }
 
         // Select random spots until they are only surrounded by room space
         do {
@@ -704,7 +681,7 @@ Floor* Floor::generateMonsters() {
             }
         }
 
-        this->monsters.push_back(new Monster(this, monsterX, monsterY, classification, speed));
+        this->monsters.push_back(this->dungeon->randomMonsterTemplate()->generateMonster(this, monsterX, monsterY));
         this->characters[monsterY][monsterX] = this->monsters.at(index);
     }
 

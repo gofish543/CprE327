@@ -45,6 +45,7 @@ Output* Output::print() {
 
     for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
         this->print(this->dungeon->getText(index));
+        this->print("\n");
     }
 
     // Ncurses refresh
@@ -61,6 +62,7 @@ Output* Output::print(std::string* format, ...) {
 
     if (this->doNCurses) {
         vw_printw(window, format->c_str(), args);
+        refresh();
     } else {
         vprintf(format->c_str(), args);
     }
@@ -76,6 +78,7 @@ Output* Output::print(const char* format, ...) {
 
     if (this->doNCurses) {
         vw_printw(window, format, args);
+        refresh();
     } else {
         vprintf(format, args);
     }
@@ -114,7 +117,7 @@ Output* Output::print(u_int debugFunctions, Floor* floor) {
         this->printMonsterTemplates();
     }
 
-    if (debugFunctions * OUTPUT_DEBUG_COLOR_PALLET) {
+    if (debugFunctions & OUTPUT_DEBUG_COLOR_PALLET) {
         this->printColorPallet();
     }
 
@@ -136,7 +139,7 @@ Output* Output::printEndgame() {
 
     if (this->dungeon->getPlayer()->getRequestTerminate()) {
         this->print("Thank you for playing, safely exiting\n");
-    } else if (dungeon->getPlayer()->getIsAlive() && Monster::AliveCount(dungeon) > 0) {
+    } else if (dungeon->getPlayer()->isAlive() && Monster::AliveCount(dungeon) > 0) {
         this->print("Queue completely empty, terminating the program safely\n");
     } else {
         u_char y;
@@ -151,7 +154,7 @@ Output* Output::printEndgame() {
         print("| Player Level   | %5d |                                                    |\n", this->dungeon->getPlayer()->getLevel());
         print("| Days Survived  | %5d |                                                    |\n", this->dungeon->getPlayer()->getDaysSurvived());
         print("| Monsters Slain | %5d |                                                    |\n", this->dungeon->getPlayer()->getMonstersSlain());
-        print("| Alive          | %5d |                                                    |\n", this->dungeon->getPlayer()->getIsAlive());
+        print("| Alive          | %5d |                                                    |\n", this->dungeon->getPlayer()->isAlive());
         print("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
     }
 
@@ -216,7 +219,7 @@ Output* Output::printHardness(Floor* floor) {
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             terrain = floor->getTerrainAt(x, y);
 
-            if (terrain->isImmutable()) {
+            if (terrain->isBorder()) {
                 if (this->doExpanded) {
                     this->print(" %c ", terrain->getCharacter());
                 } else {
@@ -258,7 +261,7 @@ Output* Output::printTunneler(Floor* floor) {
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             terrain = floor->getTerrainAt(x, y);
 
-            if (terrain->isImmutable()) {
+            if (terrain->isBorder()) {
                 if (this->doExpanded) {
                     this->print(" %c ", terrain->getCharacter());
                 } else {
@@ -300,7 +303,7 @@ Output* Output::printNonTunneler(Floor* floor) {
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             terrain = floor->getTerrainAt(x, y);
 
-            if (terrain->isImmutable()) {
+            if (terrain->isBorder()) {
                 if (this->doExpanded) {
                     this->print(" %c ", terrain->getCharacter());
                 } else {
@@ -342,7 +345,7 @@ Output* Output::printShortestPath(Floor* floor) {
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             terrain = floor->getTerrainAt(x, y);
 
-            if (terrain->isImmutable()) {
+            if (terrain->isBorder()) {
                 if (this->doExpanded) {
                     this->print(" %c ", terrain->getCharacter());
                 } else {

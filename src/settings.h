@@ -7,13 +7,16 @@
 #define SETTINGS_MONSTER_DESC "monster_desc.txt"
 #define SETTINGS_OBJECT_DESC "object_desc.txt"
 
+#include <fstream>
+#include <cstring>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <forward_declarations.h>
 #include <global.h>
 #include <colors.h>
 #include <exception.h>
-
-#include <fstream>
-#include <cstring>
 
 #include "resource.h"
 

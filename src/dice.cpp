@@ -13,8 +13,8 @@ Dice::Dice(std::string* diceString) {
     std::string firstDelimiter = "+";
     std::string secondDelimiter = "d";
 
-    char indexOfPlus = diceString->find(firstDelimiter);
-    char indexOfD = diceString->find(secondDelimiter);
+    long unsigned int indexOfPlus = diceString->find(firstDelimiter);
+    long unsigned int indexOfD = diceString->find(secondDelimiter);
 
     if (indexOfPlus == std::string::npos || indexOfD == std::string::npos) {
         throw Exception::DiceStringInvalidParse();
