@@ -20,28 +20,28 @@ namespace App {
         ~Dice();
 
         static int RandomNumberBetween(int min, int max);
-        static u_int Hash3(unsigned int h1, unsigned int h2, unsigned int h3);
+        static u_int Hash3(u_int h1, u_int h2, u_int h3);
 
-        int roll();
+        u_int roll();
 
         /** GETTERS **/
-        int getBase();
+        u_int getBase();
         u_short getRolls();
         u_short getSides();
-        int getResult();
+        u_int getResult();
         /** GETTERS **/
 
         /** SETTERS **/
         Dice* setBase(int base);
         Dice* setRolls(u_short rolls);
         Dice* setSides(u_short sides);
-        Dice* setResult(int result);
+        Dice* setResult(u_int result);
         /** SETTERS **/
 
     protected:
 
     private:
-        int base;
+        u_int base;
         u_short rolls;
         u_short sides;
 

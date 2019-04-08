@@ -16,6 +16,9 @@
 #define MONSTER_UNIQ            0b010000000u
 #define MONSTER_BOSS            0b100000000u
 
+#define MONSTER_MOVEMENT_MASK               0b1111u
+#define MONSTER_NON_ERRATIC_MOVEMENT_MASK   0b0111u
+
 #define MONSTER_DIJKSTRA_TYPE_TUNNELER 1
 #define MONSTER_DIJKSTRA_TYPE_CHEAPEST_PATH 0
 #define MONSTER_DIJKSTRA_TYPE_NON_TUNNELER -1
@@ -62,13 +65,16 @@ namespace App {
         bool isUnique();
         bool isBoss();
 
+        u_char getMovementValue();
+        u_char getNonErraticMovementValue();
+
         /** GETTERS **/
         std::string getName();
         std::string getDescription();
         std::string getColor();
         u_int getHitPoints();
         u_int getAttackDamage();
-        u_char getClassification();
+        u_int getAbility();
         u_char getRarity();
         u_char getPlayerLastSpottedX();
         u_char getPlayerLastSpottedY();

@@ -1,6 +1,6 @@
 #include "input.h"
 
-int getChar(WINDOW* window, const bool ncurses) {
+int getChar(const bool ncurses) {
     int userInput = 0;
 
     if (ncurses) {
@@ -24,6 +24,8 @@ int getChar(WINDOW* window, const bool ncurses) {
                 break;
             case 186:
                 userInput = KEY_LEFT;
+                break;
+            default:
                 break;
         }
     }

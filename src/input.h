@@ -11,6 +11,6 @@
 #include "floor.h"
 #include "output.h"
 
-int getChar(WINDOW* window, const bool ncurses);
+int getChar(const bool ncurses);
 
 #endif

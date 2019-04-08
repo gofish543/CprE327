@@ -115,7 +115,7 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
     if (this->dungeon->getSettings()->doFogOfWar()) {
         if (this->dungeon->getPlayer()->visibility[y][x] == null) {
             return ROCK_CHARACTER;
-        } else if (this->characters[y][x] != null && this->dungeon->getPlayer()->hasLineOfSightTo(y, x)) {
+        } else if (this->characters[y][x] != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
             return this->characters[y][x]->getCharacter();
         } else {
             return this->dungeon->getPlayer()->visibility[y][x]->getCharacter();
@@ -125,6 +125,10 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
     } else {
         return this->characters[y][x]->getCharacter();
     }
+}
+
+std::string Floor::getOutputColorAt(u_char x, u_char y) {
+    return "";
 }
 
 /** GETTERS **/
@@ -606,7 +610,7 @@ Floor* Floor::generatePlayer() {
         auto room = u_short(Dice::RandomNumberBetween(0, this->roomCount - 1));
         do {
             playerX = this->rooms.at(room)->randomXInside();
-            playerY =this->rooms.at(room)->randomYInside();
+            playerY = this->rooms.at(room)->randomYInside();
         } while (this->terrains[playerY][playerX]->getCharacter() == STAIRCASE_UP_CHARACTER &&
                  this->terrains[playerY][playerX]->getCharacter() == STAIRCASE_DOWN_CHARACTER);
 

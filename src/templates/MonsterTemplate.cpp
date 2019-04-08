@@ -1,8 +1,6 @@
 #include "MonsterTemplate.h"
 
 MonsterTemplate::MonsterTemplate(std::string& templateString) {
-    u_short isValid = 0;
-
     this->name = "";
     this->description = "";
     this->color = 0;
@@ -13,26 +11,22 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
     this->symbol = 0;
     this->rarity = 0;
 
+    u_short isValid = 0;
+
     if (!templateString.empty()) {
         std::stringstream templateStream(templateString);
         std::string buffer;
         std::string untrimmedBuffer;
+
         while (std::getline(templateStream, buffer, '\n')) {
-            buffer = trim(buffer);
-            if (!buffer.empty()) {
+            if (!trim(buffer).empty()) {
                 if (strstarts(buffer, "NAME")) {
-                    buffer = buffer.substr(4);
-                    buffer = trim(buffer);
 
-                    this->name = buffer;
-                    isValid |= 0b1u;
+                    buffer = buffer.substr(4);
+                    this->name = trim(buffer);
+                    isValid += MONSTER_TEMPLATE_NAME_VALID;
+
                 } else if (strstarts(buffer, "DESC")) {
-                    buffer = buffer.substr(4);
-                    buffer = trim(buffer);
-
-                    if (!buffer.empty()) {
-                        this->description += buffer;
-                    }
 
                     while (std::getline(templateStream, buffer, '\n')) {
                         untrimmedBuffer = buffer;
@@ -40,16 +34,14 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                         if (buffer == ".") {
                             break;
                         }
-
-                        this->description += untrimmedBuffer + "\n";
+                        this->description += untrimmedBuffer;
                     }
+                    isValid += MONSTER_TEMPLATE_DESC_VALID;
 
-                    isValid |= 0b10u;
                 } else if (strstarts(buffer, "COLOR")) {
-                    buffer = buffer.substr(5);
 
-                    std::vector<std::string> colors = split(trim(buffer), ' ');
-                    for (auto const& color: colors) {
+                    buffer = buffer.substr(5);
+                    for (auto const& color: split(trim(buffer), ' ')) {
                         if (color == "RED") {
                             this->color |= NCURSES_TEXT_RED;
                         } else if (color == "GREEN") {
@@ -68,23 +60,23 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                             this->color |= NCURSES_TEXT_BLACK;
                         }
                     }
+                    isValid += MONSTER_TEMPLATE_COLOR_VALID;
 
-                    isValid |= 0b100u;
                 } else if (strstarts(buffer, "SPEED")) {
-                    buffer = buffer.substr(5);
-                    buffer = trim(buffer);
-                    this->speed = new Dice(&buffer);
 
-                    if (this->speed->getResult() == 0) {
-                        isValid |= 0b1000u;
+                    try {
+                        buffer = buffer.substr(5);
+                        this->speed = new Dice(&trim(buffer));
+                        isValid += MONSTER_TEMPLATE_SPEED_VALID;
+                    } catch(Exception::DiceStringInvalidParse &exception) {
+                        this->validTemplate = false;
+                        return;
                     }
+
                 } else if (strstarts(buffer, "ABIL")) {
+
                     buffer = buffer.substr(4);
-                    buffer = trim(buffer);
-
-                    std::vector<std::string> abilities = split(buffer, ' ');
-
-                    for (auto const& ability: abilities) {
+                    for (auto const& ability: split(trim(buffer), ' ')) {
                         if (ability == "SMART") {
                             this->abilities |= MONSTER_INTELLIGENT;
                         } else if (ability == "TELE") {
@@ -105,48 +97,52 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                             this->abilities |= MONSTER_BOSS;
                         }
                     }
+                    isValid += MONSTER_TEMPLATE_ABILITIES_VALID;
 
-                    isValid |= 0b10000u;
                 } else if (strstarts(buffer, "HP")) {
-                    buffer = buffer.substr(2);
-                    buffer = trim(buffer);
-
-                    this->hitPoints = new Dice(&buffer);
-
-                    if (this->hitPoints->getResult() == 0) {
-                        isValid |= 0b100000u;
-                    }
-                } else if (strstarts(buffer, "DAM")) {
-                    buffer = buffer.substr(3);
-                    buffer = trim(buffer);
-
-                    this->attackDamage = new Dice(&buffer);
-
-                    if (this->attackDamage->getResult() == 0) {
-                        isValid |= 0b1000000u;
-                    }
-                } else if (strstarts(buffer, "SYMB")) {
-                    buffer = buffer.substr(4);
-                    buffer = trim(buffer);
-
-                    this->symbol = buffer.at(0);
-                    isValid |= 0b10000000u;
-                } else if (strstarts(buffer, "RRTY")) {
-                    buffer = buffer.substr(4);
-                    buffer = trim(buffer);
 
                     try {
-                        this->rarity = std::stoi(buffer);
-                        isValid |= 0b10000000u;
-                    } catch (std::exception& exception) {
+                        buffer = buffer.substr(2);
+                        this->hitPoints = new Dice(&trim(buffer));
+                        isValid += MONSTER_TEMPLATE_HIT_POINTS_VALID;
+                    } catch(Exception::DiceStringInvalidParse &exception) {
+                        this->validTemplate = false;
+                        return;
+                    }
 
+                } else if (strstarts(buffer, "DAM")) {
+
+                    try {
+                        buffer = buffer.substr(3);
+                        this->attackDamage = new Dice(&trim(buffer));
+                        isValid += MONSTER_TEMPLATE_ATTACK_DAMAGE_VALID;
+                    } catch(Exception::DiceStringInvalidParse &exception) {
+                        this->validTemplate = false;
+                        return;
+                    }
+
+                } else if (strstarts(buffer, "SYMB")) {
+
+                    buffer = buffer.substr(4);
+                    this->symbol = trim(buffer).at(0);
+                    isValid += MONSTER_TEMPLATE_SYMBOL_VALID;
+
+                } else if (strstarts(buffer, "RRTY")) {
+
+                    try {
+                        buffer = buffer.substr(4);
+                        this->rarity = std::stoi(trim(buffer));
+                        isValid += MONSTER_TEMPLATE_RARITY_VALID;
+                    } catch (std::exception& exception) {
+                        this->validTemplate = false;
+                        return;
                     }
                 }
             }
         }
     }
 
-    this->validTemplate = isValid & 0b111111111u;
+    this->validTemplate = isValid == MONSTER_TEMPLATE_IS_VALID;
 }
 
 MonsterTemplate::~MonsterTemplate() {
@@ -170,27 +166,21 @@ std::vector<MonsterTemplate*> MonsterTemplate::GenerateTemplates(std::ifstream* 
 
     // Pull heading
     std::string heading;
-
-    do {
-        std::getline(*inputFile, heading, '\n');
-        std::cout << heading << std::endl;
-
-        printf("Getting line %s\n", heading.c_str());
-
-        if (!trim(heading).empty()) {
-            break;
-        }
-    } while (true);
-
-    if (trim(heading) != MONSTER_TEMPLATE_HEADING) {
-        printf("Invalid heading %s\n", heading.c_str());
-        exit(1);
-    }
+    std::getline(*inputFile, heading, '\n');
 
     std::string buffer;
     std::string unTrimmedBuffer;
     std::string templateBuffer;
+
     MonsterTemplate* monsterTemplate;
+
+    if (trim(heading) != MONSTER_TEMPLATE_HEADING) {
+        printf(SHELL_TEXT_RED);
+        printf("Invalid heading %s\n", heading.c_str());
+        printf(SHELL_DEFAULT "\n");
+        exit(1);
+    }
+
     while (std::getline(*inputFile, buffer, '\n')) {
         unTrimmedBuffer = buffer;
         trim(buffer);
@@ -229,7 +219,7 @@ u_char MonsterTemplate::getColor() {
 }
 
 u_int MonsterTemplate::getSpeed() {
-    return this->attackDamage->roll();
+    return this->speed->roll();
 }
 
 u_short MonsterTemplate::getAbilities() {
@@ -237,7 +227,7 @@ u_short MonsterTemplate::getAbilities() {
 }
 
 u_int MonsterTemplate::getHitPoints() {
-    return this->attackDamage->roll();
+    return this->hitPoints->roll();
 }
 
 u_int MonsterTemplate::getAttackDamage() {

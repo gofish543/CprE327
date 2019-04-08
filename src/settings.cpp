@@ -9,7 +9,7 @@ Settings::Settings(int argc, char* argv[]) {
     this->save = false;
     this->expandedPrint = false;
     this->canNumberOfMonsters = false;
-    this->nCursesPrint = true;
+    this->nCursesPrint = false;
     this->fogOfWar = true;
 
     this->monsterDesc = new std::ifstream();

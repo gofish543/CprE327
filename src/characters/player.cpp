@@ -47,7 +47,7 @@ int Player::HandleEvent(Event* event) {
     auto player = (Player*) event->character;
     Dungeon* dungeon = player->getFloor()->getDungeon();
 
-    move = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
+    move = getChar(dungeon->getSettings()->doNCursesPrint());
 
     switch (move) {
         case 'm':
@@ -85,7 +85,7 @@ int Player::handleEventKeyMonsterMenu() {
         dungeon->getOutput()->printMonsterMenu(startIndex);
         dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
 
-        character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
 
         switch (character) {
             case KEY_DOWN:
@@ -137,7 +137,7 @@ int Player::handleEventKeyTeleport() {
     this->getFloor()->setCharacterAt(null, this->x, this->y);
 
     while (character != 27 && character != 't' && character != 'r') {
-        character = getChar(dungeon->getWindow(), dungeon->getSettings()->doNCursesPrint());
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
         this->getFloor()->setCharacterAt(null, this->getX(), this->getY());
 
         switch (character) {
@@ -254,56 +254,58 @@ int Player::handleEventKeyMovement(int command) {
     u_char x = dungeon->getPlayer()->getX();
     u_char y = dungeon->getPlayer()->getY();
 
+    std::string movementString;
+
     switch (command) {
         // Upper Left
         case '7':
         case 'y':
-            dungeon->prependText("Moving upper left");
+            movementString = "Moving upper left";
             y--;
             x--;
             break;
             // Up
         case '8':
         case 'k':
-            dungeon->prependText("Moving up");
+            movementString = "Moving up";
             y--;
             break;
             // Upper right
         case '9':
         case 'u':
-            dungeon->prependText("Moving upper right");
+            movementString = "Moving upper right";
             y--;
             x++;
             break;
             // Left
         case '4':
         case 'h':
-            dungeon->prependText("Moving left");
+            movementString = "Moving left";
             x--;
             break;
             // Right
         case '6':
         case 'l':
-            dungeon->prependText("Moving right");
+            movementString = "Moving right";
             x++;
             break;
             // Down left
         case '1':
         case 'b':
-            dungeon->prependText("Moving down left");
+            movementString = "Moving down left";
             y++;
             x--;
             break;
             // Down
         case '2':
         case 'j':
-            dungeon->prependText("Moving down");
+            movementString = "Moving down";
             y++;
             break;
             // Down right
         case '3':
         case 'n':
-            dungeon->prependText("Moving down right");
+            movementString = "Moving down right";
             y++;
             x++;
             break;
@@ -312,7 +314,7 @@ int Player::handleEventKeyMovement(int command) {
             // Rest for a turn
         case '5':
         case '.':
-            dungeon->prependText("A day of rest...");
+            movementString = "A day of rest...";
             break;
         default:
             dungeon->prependText("Invalid key entered");
@@ -324,6 +326,8 @@ int Player::handleEventKeyMovement(int command) {
         dungeon->prependText("Terrain is not walkable, invalid key entered");
         dungeon->getOutput()->print();
         return 1;
+    } else {
+        dungeon->prependText(movementString);
     }
 
     this->moveTo(x, y);
@@ -371,7 +375,6 @@ void Player::battleMonster(Monster* monster) {
 
         // Remove player corps
         this->floor->setCharacterAt(null, this->getX(), this->getY());
-
     } else {
         // Monster died
         monster->killCharacter();

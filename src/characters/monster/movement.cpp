@@ -17,16 +17,16 @@ void Monster::Move0(Monster* monster, u_char* x, u_char* y) {
             *x = monster->getX();
             *y = monster->getY();
 
-            *x = (*x + u_char(Dice::RandomNumberBetween(-1, 1)));
-            *y = (*y + u_char(Dice::RandomNumberBetween(-1, 1)));
+            *x = *x + Dice::RandomNumberBetween(-1, 1);
+            *y = *y + Dice::RandomNumberBetween(-1, 1);
         } while (floor->getTerrainAt(*x, *y)->isImmutable());
     } else {
         do {
             *x = monster->getX();
             *y = monster->getY();
 
-            *x = (*x + u_char(Dice::RandomNumberBetween(-1, 1)));
-            *y = (*y + u_char(Dice::RandomNumberBetween(-1, 1)));
+            *x = *x + Dice::RandomNumberBetween(-1, 1);
+            *y = *y + Dice::RandomNumberBetween(-1, 1);
         } while (!floor->getTerrainAt(*x, *y)->isWalkable());
     }
 }
@@ -393,7 +393,7 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
                 Monster::Move4, Monster::Move5,
                 Monster::Move6, Monster::Move7,
         };
-        monsterMovement[std::min(u_char(monster->getClassification()), u_char(7))](monster, x, y);
+        monsterMovement[monster->getAbility() & 0b111u](monster, x, y);
     } else {
         *x = monster->getX();
         *y = monster->getY();

@@ -1,8 +1,7 @@
 #include "monster.h"
 
 Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_char color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity)
-: Character(floor, x, y, symbol, speed, false, true)
-{
+        : Character(floor, x, y, symbol, speed, false, true) {
     this->name.assign(*name);
     this->description.assign(*description);
     this->color = color;
@@ -43,7 +42,7 @@ int Monster::HandleEvent(Event* event) {
         u_char x = monster->getX();
         u_char y = monster->getY();
 
-        monsterMovement[std::min(u_char(monster->getClassification()), u_char(8))](monster, &x, &y);
+        monsterMovement[std::min(monster->getMovementValue(), u_char(8))](monster, &x, &y);
 
         // Now a few things could happen
         // 0) The monster just moved on themselves
@@ -254,7 +253,8 @@ void Monster::battleMonster(Monster* otherMonster) {
         otherMonster->killCharacter();
     } else if (this->getRarity() < otherMonster->getRarity()) {
         this->killCharacter();
-    } if (Dice::RandomNumberBetween(false, true)) {
+    }
+    if (Dice::RandomNumberBetween(false, true)) {
         otherMonster->killCharacter();
     } else {
         this->killCharacter();
@@ -382,6 +382,14 @@ bool Monster::isBoss() {
     return bool(this->abilities & MONSTER_BOSS);
 }
 
+u_char Monster::getMovementValue() {
+    return this->abilities & MONSTER_MOVEMENT_MASK;
+}
+
+u_char Monster::getNonErraticMovementValue() {
+    return this->abilities & MONSTER_NON_ERRATIC_MOVEMENT_MASK;
+}
+
 /** GETTERS **/
 std::string Monster::getName() {
     return this->name;
@@ -403,7 +411,7 @@ u_int Monster::getAttackDamage() {
     return this->attackDamage;
 }
 
-u_char Monster::getClassification() {
+u_int Monster::getAbility() {
     return this->abilities;
 }
 

@@ -3,6 +3,17 @@
 
 #define MONSTER_TEMPLATE_HEADING "RLG327 MONSTER DESCRIPTION 1"
 
+#define MONSTER_TEMPLATE_NAME_VALID     0b000000001u
+#define MONSTER_TEMPLATE_DESC_VALID     0b000000010u
+#define MONSTER_TEMPLATE_COLOR_VALID    0b000000100u
+#define MONSTER_TEMPLATE_SPEED_VALID     0b000001000u
+#define MONSTER_TEMPLATE_ABILITIES_VALID     0b000010000u
+#define MONSTER_TEMPLATE_HIT_POINTS_VALID     0b000100000u
+#define MONSTER_TEMPLATE_ATTACK_DAMAGE_VALID     0b001000000u
+#define MONSTER_TEMPLATE_SYMBOL_VALID     0b010000000u
+#define MONSTER_TEMPLATE_RARITY_VALID     0b100000000u
+#define MONSTER_TEMPLATE_IS_VALID       0b111111111u
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -37,6 +48,7 @@ namespace App {
         u_char getRarity();
         /** GETTERS **/
     protected:
+
     private:
         bool validTemplate;
 

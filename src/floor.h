@@ -42,6 +42,7 @@ namespace App {
         Floor* resetCheapestPathToPlayer();
 
         u_char getOutputCharacterAt(u_char x, u_char y);
+        std::string getOutputColorAt(u_char x, u_char y);
 
         u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];

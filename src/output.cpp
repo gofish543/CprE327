@@ -139,28 +139,28 @@ Output* Output::printEndgame() {
 
     if (this->dungeon->getPlayer()->getRequestTerminate()) {
         this->print("Thank you for playing, safely exiting\n");
-    } else if (dungeon->getPlayer()->isAlive() && Monster::AliveCount(dungeon) > 0) {
+    } else if (dungeon->getPlayer()->isAlive()) {
         this->print("Queue completely empty, terminating the program safely\n");
     } else {
         u_char y;
 
         if (this->dontNCurses) {
             for (y = 0; y < DUNGEON_FLOOR_HEIGHT; y++) {
-                print("\n");
+                this->print("\n");
             }
         }
 
-        print("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
-        print("| Player Level   | %5d |                                                    |\n", this->dungeon->getPlayer()->getLevel());
-        print("| Days Survived  | %5d |                                                    |\n", this->dungeon->getPlayer()->getDaysSurvived());
-        print("| Monsters Slain | %5d |                                                    |\n", this->dungeon->getPlayer()->getMonstersSlain());
-        print("| Alive          | %5d |                                                    |\n", this->dungeon->getPlayer()->isAlive());
-        print("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+        this->print("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
+        this->print("| Player Level   | %5d |                                                    |\n", this->dungeon->getPlayer()->getLevel());
+        this->print("| Days Survived  | %5d |                                                    |\n", this->dungeon->getPlayer()->getDaysSurvived());
+        this->print("| Monsters Slain | %5d |                                                    |\n", this->dungeon->getPlayer()->getMonstersSlain());
+        this->print("| Alive          | %5d |                                                    |\n", this->dungeon->getPlayer()->isAlive());
+        this->print("+----------------+-------+--- PLAYER  STATISTICS -----------------------------+\n");
     }
 
     if (this->doNCurses) {
         refresh();
-        print("Press any key to continue...\n");
+        this->print("Press any key to continue...\n");
         getch();
     }
 
@@ -371,10 +371,10 @@ Output* Output::printMonsterTemplates() {
         this->print("Parsed Monster %s\n", monsterTemplate->getName().c_str());
         this->print("\tDescription: %s\n", monsterTemplate->getDescription().c_str());
         this->print("\tColor: %d\n", monsterTemplate->getColor());
-        this->print("\tSpeed: %d\n", monsterTemplate->getSpeed());
+        this->print("\tSpeed: %u\n", monsterTemplate->getSpeed());
         this->print("\tAbilities: %d\n", monsterTemplate->getAbilities());
-        this->print("\tHit Points: %d\n", monsterTemplate->getHitPoints());
-        this->print("\tAttack Damage: %d\n", monsterTemplate->getAttackDamage());
+        this->print("\tHit Points: %u\n", monsterTemplate->getHitPoints());
+        this->print("\tAttack Damage: %u\n", monsterTemplate->getAttackDamage());
         this->print("\tSymbol: %c\n", monsterTemplate->getSymbol());
         this->print("\tRarity: %d\n", monsterTemplate->getRarity());
         this->print("\n\n");
