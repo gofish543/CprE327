@@ -28,6 +28,8 @@ namespace App {
 
     class Player;
 
+    class Object;
+
     class EventManager;
 
     class Event;
@@ -55,6 +57,7 @@ using App::Character;
 using App::Monster;
 using App::MonsterCost;
 using App::Player;
+using App::Object;
 using App::EventManager;
 using App::Event;
 using App::Dice;

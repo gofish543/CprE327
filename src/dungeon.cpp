@@ -38,7 +38,7 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     this->eventManager = new EventManager(this);
 
     this->monsterTemplates = MonsterTemplate::GenerateTemplates(this->settings->getMonsterDesc());
-//    this->objectTemplates = ObjectTemplate::GenerateTemplates(this->settings->getObjectDesc());
+    this->objectTemplates = ObjectTemplate::GenerateTemplates(this->settings->getObjectDesc());
 
     this->player = new Player(null, 0, 0);
 
@@ -100,9 +100,9 @@ Dungeon::~Dungeon() {
         delete (this->textLines[index]);
     }
 
-//    for (index = 0; index < this->objectTemplates.size(); index++) {
-//        delete (this->objectTemplates[index]);
-//    }
+    for (index = 0; index < this->objectTemplates.size(); index++) {
+        delete (this->objectTemplates[index]);
+    }
 
     for (index = 0; index < this->monsterTemplates.size(); index++) {
         delete (this->monsterTemplates[index]);

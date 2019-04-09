@@ -6,7 +6,8 @@
 #define OUTPUT_DEBUG_NON_TUNNELER       0b0000100u
 #define OUTPUT_DEBUG_SHORTEST_PATH      0b0001000u
 #define OUTPUT_DEBUG_MONSTER_TEMPLATES  0b0010000u
-#define OUTPUT_DEBUG_TERMINATE          0b0100000u
+#define OUTPUT_DEBUG_OBJECT_TEMPLATES   0b0100000u
+#define OUTPUT_DEBUG_TERMINATE          0b1000000u
 
 #include <string>
 
@@ -36,6 +37,7 @@ namespace App {
         Output* printNonTunneler(Floor* floor);
         Output* printShortestPath(Floor* floor);
         Output* printMonsterTemplates();
+        Output* printObjectTemplates();
         void printTerminate();
         Output* printError(std::string* format, ...);
         Output* printError(const char* format, ...);

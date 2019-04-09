@@ -3,6 +3,9 @@
 int main(int argc, char* argv[]) {
     auto dungeon = new Dungeon(argc, argv);
 
+    dungeon->getOutput()->printObjectTemplates();
+    dungeon->getOutput()->printTerminate();
+
     while (dungeon->getPlayer()->isAlive() && !dungeon->getPlayer()->getRequestTerminate() && dungeon->getEventManager()->getQueue()->size > 0) {
         if (game_tick(dungeon)) {
             dungeon->getOutput()->printError("Game tick error encountered, exiting while loop\n");

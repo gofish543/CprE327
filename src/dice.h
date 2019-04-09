@@ -13,35 +13,35 @@
 namespace App {
     class Dice {
     public:
-        Dice(int base, u_short rolls, u_short sides);
+        Dice(int base, short rolls, short sides);
         explicit Dice(std::string* diceString);
         ~Dice();
 
         static int RandomNumberBetween(int min, int max);
         static u_int Hash3(u_int h1, u_int h2, u_int h3);
 
-        u_int roll();
+        int roll();
 
         /** GETTERS **/
-        u_int getBase();
-        u_short getRolls();
-        u_short getSides();
-        u_int getResult();
+        int getBase();
+        short getRolls();
+        short getSides();
+        int getResult();
         /** GETTERS **/
 
         /** SETTERS **/
         Dice* setBase(int base);
-        Dice* setRolls(u_short rolls);
-        Dice* setSides(u_short sides);
-        Dice* setResult(u_int result);
+        Dice* setRolls(short rolls);
+        Dice* setSides(short sides);
+        Dice* setResult(int result);
         /** SETTERS **/
 
     protected:
 
     private:
-        u_int base;
-        u_short rolls;
-        u_short sides;
+        int base;
+        short rolls;
+        short sides;
 
         int result;
     };

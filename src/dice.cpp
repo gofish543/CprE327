@@ -1,6 +1,6 @@
 #include "dice.h"
 
-Dice::Dice(int base, u_short rolls, u_short sides) {
+Dice::Dice(int base, short rolls, short sides) {
     this->base = base;
     this->rolls = rolls;
     this->sides = sides;
@@ -22,17 +22,17 @@ Dice::Dice(std::string* diceString) {
 
     long int base = std::stoi(diceString->substr(0, indexOfPlus));
     long int rolls = std::stoi(diceString->substr(indexOfPlus + 1, indexOfD));
-    long int sides = std::stoi(diceString->substr(indexOfD + 1)) > U_SHORT_MAX;
+    long int sides = std::stoi(diceString->substr(indexOfD + 1));
 
-    if (base < 0 || rolls < 0 || sides < 0 || base > U_INT_MAX || rolls > U_SHORT_MAX || sides > U_SHORT_MAX) {
+    if (std::abs(base) > U_INT_MAX || std::abs(rolls) > U_SHORT_MAX || std::abs(sides) > U_SHORT_MAX) {
         throw Exception::DiceStringInvalidParse();
     }
 
     this->result = 0;
 
-    this->base = u_int(base);
-    this->rolls = u_short(rolls);
-    this->sides = u_short(sides);
+    this->base = int(base);
+    this->rolls = short(rolls);
+    this->sides = short(sides);
 }
 
 Dice::~Dice() = default;
@@ -73,14 +73,14 @@ u_int Dice::Hash3(u_int h1, u_int h2, u_int h3) {
     return (((h1 * 2654435789U) + h2) * 2654435789U) + h3;
 }
 
-u_int Dice::roll() {
+int Dice::roll() {
     this->result = base;
 
-    for (u_short index = 0; index < rolls; index++) {
+    for (short index = 0; index < rolls; index++) {
         if (sides == 0) {
             continue;
         } else {
-            this->result += u_int(Dice::RandomNumberBetween(1, sides));
+            this->result += Dice::RandomNumberBetween(1, sides);
         }
     }
 
@@ -88,19 +88,19 @@ u_int Dice::roll() {
 }
 
 /** GETTERS **/
-u_int Dice::getBase() {
+int Dice::getBase() {
     return this->base;
 }
 
-u_short Dice::getRolls() {
+short Dice::getRolls() {
     return this->rolls;
 }
 
-u_short Dice::getSides() {
+short Dice::getSides() {
     return this->sides;
 }
 
-u_int Dice::getResult() {
+int Dice::getResult() {
     return this->result;
 }
 
@@ -111,18 +111,18 @@ Dice* Dice::setBase(int base) {
     return this;
 }
 
-Dice* Dice::setRolls(u_short rolls) {
+Dice* Dice::setRolls(short rolls) {
     this->rolls = rolls;
 
     return this;
 }
 
-Dice* Dice::setSides(u_short sides) {
+Dice* Dice::setSides(short sides) {
     this->sides = sides;
 
     return this;
 }
-Dice* Dice::setResult(u_int result) {
+Dice* Dice::setResult(int result) {
     this->result = result;
 
     return this;

@@ -77,6 +77,7 @@ namespace App {
 #include "settings.h"
 #include "output.h"
 #include "templates/MonsterTemplate.h"
+#include "templates/ObjectTemplate.h"
 #include "characters/player.h"
 
 #endif

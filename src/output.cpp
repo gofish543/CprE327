@@ -138,6 +138,10 @@ Output* Output::print(u_int debugFunctions, Floor* floor) {
         this->printMonsterTemplates();
     }
 
+    if (debugFunctions & OUTPUT_DEBUG_OBJECT_TEMPLATES) {
+        this->printObjectTemplates();
+    }
+
     if (debugFunctions & OUTPUT_DEBUG_TERMINATE) {
         this->printTerminate();
     }
@@ -398,6 +402,29 @@ Output* Output::printMonsterTemplates() {
         this->print("\tAttack Damage: %u\n", monsterTemplate->getAttackDamage());
         this->print("\tSymbol: %c\n", monsterTemplate->getSymbol());
         this->print("\tRarity: %d\n", monsterTemplate->getRarity());
+        this->print("\n\n");
+    }
+
+    return this;
+}
+
+Output* Output::printObjectTemplates() {
+    for (auto const& objectTemplate: dungeon->getObjectTemplates()) {
+        this->print("Parsed Object %s\n", objectTemplate->getName().c_str());
+        this->print("\tDescription: %s\n", objectTemplate->getDescription().c_str());
+        this->print("\tType: %d\n", objectTemplate->getItemType());
+        this->print("\tColor: %d\n", objectTemplate->getColor());
+        this->print("\tHit Bonus: %d\n", objectTemplate->getHitBonus());
+        this->print("\tDamage Bonus: %d\n", objectTemplate->getDamageBonus());
+        this->print("\tDodge Bonus: %d\n", objectTemplate->getDodgeBonus());
+        this->print("\tDefense Bonus: %d\n", objectTemplate->getDefenseBonus());
+        this->print("\tWeight: %d\n", objectTemplate->getWeight());
+        this->print("\tSpeed Bonus: %d\n", objectTemplate->getSpeedBonus());
+        this->print("\tSpecial Attribute: %d\n", objectTemplate->getSpecialAttribute());
+        this->print("\tValue: %d\n", objectTemplate->getValue());
+        this->print("\tIs Artifact: %d\n", objectTemplate->getIsArtifact());
+        this->print("\tRarity: %d\n", objectTemplate->getRarity());
+
         this->print("\n\n");
     }
 
