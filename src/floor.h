@@ -17,7 +17,6 @@
 #include <exception.h>
 #include <global.h>
 
-#include "dungeon.h"
 #include "dice.h"
 #include "terrains/terrain.h"
 #include "terrains/border.h"
@@ -28,6 +27,7 @@
 #include "characters/character.h"
 #include "characters/monster.h"
 #include "characters/player.h"
+#include "templates/MonsterTemplate.h"
 
 namespace App {
     class Floor {

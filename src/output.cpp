@@ -21,6 +21,13 @@ Output* Output::print() {
     u_char index;
     Floor* floor = dungeon->getCurrentFloor();
 
+    bgBlack(this->doNCurses);
+    textWhite(this->doNCurses);
+
+    if (this->dontNCurses) {
+        this->print("\n");
+    }
+
     if (this->doExpanded) {
         this->print("   ");
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
@@ -35,18 +42,28 @@ Output* Output::print() {
         }
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             if (this->doExpanded) {
+                this->print("%s", floor->getOutputColorAt(x, y).c_str());
                 this->print(" %c ", floor->getOutputCharacterAt(x, y));
             } else {
+                this->print("%s", floor->getOutputColorAt(x, y).c_str());
                 this->print("%c", floor->getOutputCharacterAt(x, y));
             }
+            bgBlack(this->doNCurses);
+            textWhite(this->doNCurses);
         }
         this->print("\n");
     }
 
     for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
-        this->print(this->dungeon->getText(index));
+        if (this->doExpanded) {
+            this->print("%s", this->dungeon->getText(index).c_str());
+        } else {
+            this->print("%s", this->dungeon->getText(index).c_str());
+        }
         this->print("\n");
     }
+
+    reset(this->dontNCurses);
 
     // Ncurses refresh
     if (this->doNCurses) {
@@ -115,10 +132,6 @@ Output* Output::print(u_int debugFunctions, Floor* floor) {
 
     if (debugFunctions & OUTPUT_DEBUG_MONSTER_TEMPLATES) {
         this->printMonsterTemplates();
-    }
-
-    if (debugFunctions & OUTPUT_DEBUG_COLOR_PALLET) {
-        this->printColorPallet();
     }
 
     if (debugFunctions & OUTPUT_DEBUG_TERMINATE) {
@@ -378,320 +391,6 @@ Output* Output::printMonsterTemplates() {
         this->print("\tSymbol: %c\n", monsterTemplate->getSymbol());
         this->print("\tRarity: %d\n", monsterTemplate->getRarity());
         this->print("\n\n");
-    }
-
-    return this;
-}
-
-Output* Output::printColorPallet() {
-    if (this->doNCurses) {
-
-    } else {
-        printf(SHELL_BG_BLACK "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_GREEN "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_CYAN "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_BLUE "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_RED "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_PURPLE "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_YELLOW "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_GREY "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_DARK_GREY "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_BLUE "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_GREEN "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_CYAN "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_RED "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_PURPLE "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_LIGHT_YELLOW "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_BG_WHITE "\n");
-        printf(SHELL_TEXT_BLACK "Hello World\n");
-        printf(SHELL_TEXT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_RED "Hello World\n");
-        printf(SHELL_TEXT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREY "Hello World\n");
-        printf(SHELL_TEXT_DARK_GREY "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_BLUE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_GREEN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_CYAN "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_RED "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_PURPLE "Hello World\n");
-        printf(SHELL_TEXT_LIGHT_YELLOW "Hello World\n");
-        printf(SHELL_TEXT_WHITE "Hello World\n");
-
-        printf(SHELL_DEFAULT "\n");
-
-        printf(SHELL_UNDERLINE "Hello World\n");
-
-        printf(SHELL_DEFAULT "\n");
-
-        printf(SHELL_BLINK "Hello World\n");
-
-        printf(SHELL_DEFAULT "\n");
-
-        printf(SHELL_INVERSE "Hello World\n");
-
-        printf(SHELL_DEFAULT "\n");
-
-        printf(SHELL_CONCEALED "Hello World\n");
-
-        printf(SHELL_DEFAULT "\n");
     }
 
     return this;

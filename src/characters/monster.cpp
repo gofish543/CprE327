@@ -1,6 +1,6 @@
 #include "monster.h"
 
-Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_char color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity)
+Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_short color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity)
         : Character(floor, x, y, symbol, speed, false, true) {
     this->name.assign(*name);
     this->description.assign(*description);
@@ -231,18 +231,28 @@ int Monster::RunDijkstra(Floor* floor, char type, u_char costChart[DUNGEON_FLOOR
 
 int Monster::moveTo(u_char toX, u_char toY) {
     Floor* floor = this->getFloor();
+    Terrain* toTerrain = floor->getTerrainAt(toX, toY);
 
-    // Tunneler monsters leave corridors behind if tunneling and on rock
-    if (this->isTunneler() && floor->getTerrainAt(this->getX(), this->getY())->isRock()) {
-        delete (floor->getTerrainAt(this->getX(), this->getY()));
-        floor->setTerrainAt(new Corridor(floor, 0, this->getX(), this->getY()), this->getX(), this->getY());
+    // Can only move if hardness is low enough
+    if (toTerrain->getHardness() < MONSTER_HARDNESS_PER_TURN) {
+        // Tunneler monsters leave corridors behind if tunneling and on rock
+        if (this->isTunneler() && floor->getTerrainAt(this->getX(), this->getY())->isRock()) {
+            delete (floor->getTerrainAt(this->getX(), this->getY()));
+            floor->setTerrainAt(new Corridor(floor, 0, this->getX(), this->getY()), this->getX(), this->getY());
+        }
+
+        // Can only move if hardness is low enough
+        floor->setCharacterAt(null, this->getX(), this->getY());
+
+        this->setX(toX)->setY(toY);
+
+        floor->setCharacterAt(this, this->getX(), this->getY());
+    } else {
+        printf("Reducing hardness by 85\n");
+        printf("old hardness: %d\n", toTerrain->getHardness());
+        toTerrain->setHardness(toTerrain->getHardness() - MONSTER_HARDNESS_PER_TURN);
+        printf("new hardness: %d\n", toTerrain->getHardness());
     }
-
-    floor->setCharacterAt(null, this->getX(), this->getY());
-
-    this->setX(toX)->setY(toY);
-
-    floor->setCharacterAt(this, this->getX(), this->getY());
 
     return 0;
 }
@@ -399,7 +409,7 @@ std::string Monster::getDescription() {
     return this->description;
 }
 
-std::string Monster::getColor() {
+u_short Monster::getColor() {
     return this->color;
 }
 
@@ -441,8 +451,8 @@ Monster* Monster::setDescription(std::string* description) {
     return this;
 }
 
-Monster* Monster::setColor(std::string* color) {
-    this->color = *color;
+Monster* Monster::setColor(u_short color) {
+    this->color = color;
 
     return this;
 }

@@ -38,7 +38,7 @@
 namespace App {
     class Monster : public Character {
     public:
-        explicit Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_char color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity);
+        explicit Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_short color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity);
         ~Monster();
 
         static u_int AliveCount(Dungeon* dungeon);
@@ -71,7 +71,7 @@ namespace App {
         /** GETTERS **/
         std::string getName();
         std::string getDescription();
-        std::string getColor();
+        u_short getColor();
         u_int getHitPoints();
         u_int getAttackDamage();
         u_int getAbility();
@@ -83,7 +83,7 @@ namespace App {
         /** SETTERS **/
         Monster* setName(std::string* name);
         Monster* setDescription(std::string* description);
-        Monster* setColor(std::string* color);
+        Monster* setColor(u_short color);
         Monster* setHitPoints(u_int hitPoints);
         Monster* setAttackDamage(u_int attackDamage);
         Monster* setAbilities(u_char abilities);
@@ -111,7 +111,7 @@ namespace App {
 
         std::string name;
         std::string description;
-        std::string color;
+        u_short color;
 
         u_int hitPoints;
         u_int attackDamage;

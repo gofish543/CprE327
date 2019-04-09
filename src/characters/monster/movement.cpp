@@ -393,7 +393,7 @@ void Monster::Move8(Monster* monster, u_char* x, u_char* y) {
                 Monster::Move4, Monster::Move5,
                 Monster::Move6, Monster::Move7,
         };
-        monsterMovement[monster->getAbility() & 0b111u](monster, x, y);
+        monsterMovement[monster->getNonErraticMovementValue()](monster, x, y);
     } else {
         *x = monster->getX();
         *y = monster->getY();

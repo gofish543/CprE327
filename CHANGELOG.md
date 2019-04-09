@@ -3,22 +3,27 @@
 ## Unreleased
 
 ### Added
-Added shell colors for non ncurses game play
-Added weekly assignment pdfs for eight, nine, and ten
-Added global declarations to include folder
-Added custom exceptions
+- Added shell colors for non ncurses game play
+- Added weekly assignment pdfs for eight, nine, and ten
+- Added global declarations to include folder
+- Added custom exceptions
+- Added monster color to shell or ncurses color conversion
+- Added monster creation from templated values
 ### Fixed
+- Fixed casting issues with dice
+- Fixed print monster template printing only an attack damage roll
 ### Changed
-Moved character listings to include folder
-Changed output functions to a class
-Changed location of random number generation to dice class
-Altered dungeon output to use output function
+- Moved character listings to include folder
+- Changed output functions to a class
+- Changed location of random number generation to dice class
+- Altered dungeon output to use output function
+- Refactored code base to handle templates
 
 ## [v0.1.7 (2019-04-02)](https://github.com/gofish543/CprE327/releases/tag/v0.1.7)
 
 ### Added
-Added MonsterTemplate parsing
-Added Dice operations
+- Added MonsterTemplate parsing
+- Added Dice operations
 
 ## [v0.1.6 (2019-03-22)](https://github.com/gofish543/CprE327/releases/tag/v0.1.6)
 

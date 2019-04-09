@@ -16,12 +16,14 @@
 #include <exception.h>
 #include <global.h>
 
-#include "floor.h"
+//#include "floor.h"
 #include "dice.h"
-#include "events.h"
+//#include "events.h"
 #include "settings.h"
-#include "save_load.h"
-#include "templates/MonsterTemplate.h"
+//#include "output.h"
+//#include "player.h"
+//#include "save_load.h"
+//#include "templates/MonsterTemplate.h"
 
 namespace App {
     class Dungeon {
@@ -30,8 +32,8 @@ namespace App {
         Dungeon(int argc, char* argv[]);
         ~Dungeon();
 
-        std::string* prependText(const std::string &text);
-        std::string* appendText(const std::string &text);
+        std::string* prependText(const std::string& text);
+        std::string* appendText(const std::string& text);
         std::string* prependText(const std::string* format, ...);
         std::string* appendText(const std::string* format, ...);
 
@@ -48,7 +50,7 @@ namespace App {
         Player* getPlayer();
         WINDOW* getWindow();
         Output* getOutput();
-        std::string* getText(u_char index);
+        std::string getText(u_char index);
         /** GETTERS **/
 
         /** SETTERS **/

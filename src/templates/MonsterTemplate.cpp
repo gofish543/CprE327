@@ -43,22 +43,25 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                     buffer = buffer.substr(5);
                     for (auto const& color: split(trim(buffer), ' ')) {
                         if (color == "RED") {
-                            this->color |= NCURSES_TEXT_RED;
+                            this->color = EFD_COLOR_RED;
                         } else if (color == "GREEN") {
-                            this->color |= NCURSES_TEXT_GREEN;
+                            this->color = EFD_COLOR_GREEN;
                         } else if (color == "BLUE") {
-                            this->color |= NCURSES_TEXT_BLUE;
+                            this->color = EFD_COLOR_BLUE;
                         } else if (color == "CYAN") {
-                            this->color |= NCURSES_TEXT_CYAN;
+                            this->color = EFD_COLOR_CYAN;
                         } else if (color == "YELLOW") {
-                            this->color |= NCURSES_TEXT_YELLOW;
+                            this->color = EFD_COLOR_YELLOW;
                         } else if (color == "MAGENTA") {
-                            this->color |= NCURSES_TEXT_MAGENTA;
+                            this->color = EFD_COLOR_MAGENTA;
                         } else if (color == "WHITE") {
-                            this->color |= NCURSES_TEXT_WHITE;
+                            this->color = EFD_COLOR_WHITE;
                         } else if (color == "BLACK") {
-                            this->color |= NCURSES_TEXT_BLACK;
+                            this->color = EFD_COLOR_BLACK;
+                        } else {
+                            continue;
                         }
+                        break;
                     }
                     isValid += MONSTER_TEMPLATE_COLOR_VALID;
 
@@ -68,7 +71,7 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                         buffer = buffer.substr(5);
                         this->speed = new Dice(&trim(buffer));
                         isValid += MONSTER_TEMPLATE_SPEED_VALID;
-                    } catch(Exception::DiceStringInvalidParse &exception) {
+                    } catch (Exception::DiceStringInvalidParse& exception) {
                         this->validTemplate = false;
                         return;
                     }
@@ -105,7 +108,7 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                         buffer = buffer.substr(2);
                         this->hitPoints = new Dice(&trim(buffer));
                         isValid += MONSTER_TEMPLATE_HIT_POINTS_VALID;
-                    } catch(Exception::DiceStringInvalidParse &exception) {
+                    } catch (Exception::DiceStringInvalidParse& exception) {
                         this->validTemplate = false;
                         return;
                     }
@@ -116,7 +119,7 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                         buffer = buffer.substr(3);
                         this->attackDamage = new Dice(&trim(buffer));
                         isValid += MONSTER_TEMPLATE_ATTACK_DAMAGE_VALID;
-                    } catch(Exception::DiceStringInvalidParse &exception) {
+                    } catch (Exception::DiceStringInvalidParse& exception) {
                         this->validTemplate = false;
                         return;
                     }
@@ -214,7 +217,7 @@ std::string MonsterTemplate::getDescription() {
     return this->description;
 }
 
-u_char MonsterTemplate::getColor() {
+u_short MonsterTemplate::getColor() {
     return this->color;
 }
 

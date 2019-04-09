@@ -39,7 +39,7 @@ namespace App {
         bool isValid();
         std::string getName();
         std::string getDescription();
-        u_char getColor();
+        u_short getColor();
         u_int getSpeed();
         u_short getAbilities();
         u_int getHitPoints();
@@ -54,7 +54,7 @@ namespace App {
 
         std::string name;
         std::string description;
-        u_char color;
+        u_short color;
         Dice* speed;
         u_short abilities;
         Dice* hitPoints;

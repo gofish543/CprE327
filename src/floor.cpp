@@ -128,6 +128,16 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
 }
 
 std::string Floor::getOutputColorAt(u_char x, u_char y) {
+    if (this->characters[y][x] != null) {
+        if (this->characters[y][x]->isMonster()) {
+            if (this->dungeon->getSettings()->doNCursesPrint()) {
+                return "";
+            } else {
+                return colorToShell(((Monster*) this->characters[y][x])->getColor());
+            }
+        }
+    }
+
     return "";
 }
 
@@ -398,7 +408,7 @@ Floor* Floor::generateRock() {
     }
 
     // Smooth out hardness so there is no sharp changes
-    for (index = 0; index < 2; index++) {
+    for (index = 0; index < 1; index++) {
         for (y = 0; y < DUNGEON_FLOOR_HEIGHT; y++) {
             for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
                 for (s = t = p = 0; p < 5; p++) {

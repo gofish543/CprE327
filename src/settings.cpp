@@ -9,13 +9,13 @@ Settings::Settings(int argc, char* argv[]) {
     this->save = false;
     this->expandedPrint = false;
     this->canNumberOfMonsters = false;
-    this->nCursesPrint = false;
-    this->fogOfWar = true;
+    this->nCursesPrint = true;
+    this->fogOfWar = false;
 
     this->monsterDesc = new std::ifstream();
     this->objectDesc = new std::ifstream();
 
-    this->loadFiles()->loadArguments(argc, argv);
+    this->loadArguments(argc, argv)->loadFiles();
 }
 
 Settings::~Settings() {

@@ -202,9 +202,9 @@ Output* Dungeon::getOutput() {
     return this->output;
 }
 
-std::string* Dungeon::getText(u_char index) {
+std::string Dungeon::getText(u_char index) {
     if (index < DUNGEON_TEXT_LINES) {
-        return this->textLines[index];
+        return *this->textLines[index];
     } else {
         throw Exception::DungeonTextOutOfBounds();
     }
