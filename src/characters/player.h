@@ -11,8 +11,6 @@
 #include <character_listings.h>
 #include <global.h>
 
-#include "../dungeon.h"
-#include "../input.h"
 #include "../resource.h"
 #include "character.h"
 
@@ -74,5 +72,10 @@ namespace App {
         u_int daysSurvived;
     };
 }
+
+#include "../floor.h"
+#include "../events.h"
+#include "../input.h"
+#include "../output.h"
 
 #endif

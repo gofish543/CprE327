@@ -8,9 +8,8 @@
 #define ROOM_MAX_HEIGHT 8
 
 #include <forward_declarations.h>
+#include <global.h>
 #include <character_listings.h>
-
-#include "../dice.h"
 
 #include "terrain.h"
 
@@ -46,5 +45,7 @@ namespace App {
         u_char startingY;
     };
 }
+
+#include "../dice.h"
 
 #endif

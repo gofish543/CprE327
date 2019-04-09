@@ -15,8 +15,6 @@
 #include <colors.h>
 #include <global.h>
 
-#include "dungeon.h"
-
 namespace App {
     class Output {
     public:
@@ -56,5 +54,7 @@ namespace App {
         WINDOW* window;
     };
 }
+
+#include "dungeon.h"
 
 #endif

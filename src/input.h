@@ -6,11 +6,6 @@
 #include <cstdarg>
 #include <ncurses.h>
 
-#include "dungeon.h"
-#include "resource.h"
-#include "floor.h"
-#include "output.h"
-
-int getChar(const bool ncurses);
+int getChar(bool ncurses);
 
 #endif

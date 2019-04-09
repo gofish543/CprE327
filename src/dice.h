@@ -1,8 +1,6 @@
 #ifndef DICE_H
 #define DICE_H
 
-#include <string>
-#include <fstream>
 #include <unistd.h>
 #include <fcntl.h>
 #include <random>

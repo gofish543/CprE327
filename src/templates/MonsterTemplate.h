@@ -21,9 +21,7 @@
 #include <sstream>
 
 #include <forward_declarations.h>
-
-#include "../characters/monster.h"
-#include "../dice.h"
+#include <global.h>
 
 namespace App {
     class MonsterTemplate {
@@ -63,4 +61,8 @@ namespace App {
         u_char rarity;
     };
 }
+
+#include "../characters/monster.h"
+#include "../dice.h"
+
 #endif

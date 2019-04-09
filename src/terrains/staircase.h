@@ -7,9 +7,8 @@
 #include <vector>
 
 #include <forward_declarations.h>
+#include <global.h>
 #include <character_listings.h>
-
-#include "../dungeon.h"
 
 #include "terrain.h"
 
@@ -36,5 +35,7 @@ namespace App {
         char direction;
     };
 }
+
+#include "../dungeon.h"
 
 #endif

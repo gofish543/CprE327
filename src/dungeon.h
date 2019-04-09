@@ -6,8 +6,6 @@
 #define DUNGEON_FLOORS_MIN 3
 #define DUNGEON_FLOORS_MAX 5
 
-#include <cstdio>
-#include <cstdarg>
 #include <string>
 #include <vector>
 #include <ncurses.h>
@@ -16,14 +14,7 @@
 #include <exception.h>
 #include <global.h>
 
-//#include "floor.h"
-#include "dice.h"
-//#include "events.h"
-#include "settings.h"
-//#include "output.h"
-//#include "player.h"
-//#include "save_load.h"
-//#include "templates/MonsterTemplate.h"
+#include "save_load.h"
 
 namespace App {
     class Dungeon {
@@ -79,5 +70,13 @@ namespace App {
         std::string* textLines[DUNGEON_TEXT_LINES];
     };
 }
+
+#include "floor.h"
+#include "dice.h"
+#include "events.h"
+#include "settings.h"
+#include "output.h"
+#include "templates/MonsterTemplate.h"
+#include "characters/player.h"
 
 #endif

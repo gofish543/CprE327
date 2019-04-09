@@ -1,7 +1,8 @@
 #ifndef ROCK_H
 #define ROCK_H
 
-#include<forward_declarations.h>
+#include <forward_declarations.h>
+#include <global.h>
 #include <character_listings.h>
 
 #include "terrain.h"

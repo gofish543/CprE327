@@ -11,29 +11,18 @@
 #define FLOOR_MONSTERS_MAX 10
 
 #include <vector>
+#include <string>
 
 #include <forward_declarations.h>
 #include <character_listings.h>
 #include <exception.h>
 #include <global.h>
 
-#include "dice.h"
-#include "terrains/terrain.h"
-#include "terrains/border.h"
-#include "terrains/corridor.h"
-#include "terrains/rock.h"
-#include "terrains/staircase.h"
-#include "terrains/room.h"
-#include "characters/character.h"
-#include "characters/monster.h"
-#include "characters/player.h"
-#include "templates/MonsterTemplate.h"
-
 namespace App {
     class Floor {
 
     public:
-        Floor(Dungeon* dungeon);
+        explicit Floor(Dungeon* dungeon);
         Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters);
         ~Floor();
 
@@ -121,5 +110,17 @@ namespace App {
         std::vector<Room*> rooms;
     };
 }
+
+#include "dice.h"
+#include "terrains/terrain.h"
+#include "terrains/border.h"
+#include "terrains/corridor.h"
+#include "terrains/rock.h"
+#include "terrains/staircase.h"
+#include "terrains/room.h"
+#include "characters/character.h"
+#include "characters/monster.h"
+#include "characters/player.h"
+#include "templates/MonsterTemplate.h"
 
 #endif

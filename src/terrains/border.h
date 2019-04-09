@@ -2,6 +2,7 @@
 #define BORDER_H
 
 #include <forward_declarations.h>
+#include <global.h>
 #include <character_listings.h>
 
 #include "terrain.h"

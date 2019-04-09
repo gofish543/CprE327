@@ -1,7 +1,11 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include "dungeon.h"
+#include <cstdlib>
+
+#include <forward_declarations.h>
+#include <global.h>
+
 #include "vendor/heap.h"
 
 enum EventType {
@@ -64,5 +68,7 @@ namespace App {
         enum EventType type;
     };
 }
+
+#include "characters/character.h"
 
 #endif

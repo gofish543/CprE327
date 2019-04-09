@@ -1,9 +1,6 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
-#define MONSTER_MIN_SPEED 5
-#define MONSTER_MAX_SPEED 20
-
 #define MONSTER_HARDNESS_PER_TURN 85
 
 #define MONSTER_INTELLIGENT     0b000000001u
@@ -30,8 +27,6 @@
 #include <exception.h>
 #include <global.h>
 
-#include "../dungeon.h"
-#include "../resource.h"
 #include "../vendor/heap.h"
 #include "character.h"
 
@@ -150,5 +145,8 @@ namespace App {
         u_char cost;
     };
 }
+
+#include "../dungeon.h"
+#include "../resource.h"
 
 #endif

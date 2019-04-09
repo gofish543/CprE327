@@ -13,6 +13,7 @@
 - Fixed casting issues with dice
 - Fixed print monster template printing only an attack damage roll
 ### Changed
+- Simplified dependency tree across files
 - Moved character listings to include folder
 - Changed output functions to a class
 - Changed location of random number generation to dice class
