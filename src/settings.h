@@ -50,11 +50,11 @@ namespace App {
         Settings* setLoad(bool load);
         Settings* setFogOfWar(bool fogOfWar);
         Settings* setFileVersion(u_char fileVersion);
-        Settings* setSavePath(std::string &savePath);
-        Settings* setLoadPath(std::string &loadPath);
+        Settings* setSavePath(std::string& savePath);
+        Settings* setLoadPath(std::string& loadPath);
         Settings* setNumberOfMonsters(u_short numberOfMonsters);
-        Settings* setMonsterDesc(std::string &path);
-        Settings* setObjectDesc(std::string &path);
+        Settings* setMonsterDesc(std::string& path);
+        Settings* setObjectDesc(std::string& path);
         /** SETTERS **/
 
     protected:

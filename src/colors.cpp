@@ -30,28 +30,25 @@ int colorToNcurses(int index) {
 }
 
 void bgBlack(bool ncurses) {
-    if(ncurses) {
+    if (ncurses) {
 
-    }
-    else {
+    } else {
         printf(SHELL_BG_BLACK);
     }
 }
 
 void textWhite(bool ncurses) {
-    if(ncurses) {
+    if (ncurses) {
 
-    }
-    else {
+    } else {
         printf(SHELL_TEXT_WHITE);
     }
 }
 
 void reset(bool ncurses) {
-    if(ncurses) {
+    if (ncurses) {
 
-    }
-    else {
+    } else {
         printf(SHELL_DEFAULT);
     }
 }
