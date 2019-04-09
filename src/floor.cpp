@@ -695,7 +695,13 @@ Floor* Floor::generateMonsters() {
             }
         }
 
-        this->monsters.push_back(this->dungeon->randomMonsterTemplate()->generateMonster(this, monsterX, monsterY));
+        MonsterTemplate* monsterTemplate = this->dungeon->randomMonsterTemplate();
+        Monster* monster = monsterTemplate->generateMonster(this, monsterX, monsterY);
+        // If the monster generated is a boss or is unique, remove from possible templates
+        if(monster->isBoss() || monster->isUnique()) {
+            monsterTemplate->setIsValid(false);
+        }
+        this->monsters.push_back(monster);
         this->characters[monsterY][monsterX] = this->monsters.at(index);
     }
 

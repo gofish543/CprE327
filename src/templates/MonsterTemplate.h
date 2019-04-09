@@ -45,6 +45,10 @@ namespace App {
         u_char getSymbol();
         u_char getRarity();
         /** GETTERS **/
+
+        /** SETTERS **/
+        MonsterTemplate* setIsValid(bool isValid);
+        /** SETTERS **/
     protected:
 
     private:

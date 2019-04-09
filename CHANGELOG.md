@@ -10,6 +10,8 @@
 - Added monster color to shell or ncurses color conversion
 - Added monster creation from templated values
 ### Fixed
+- Fixed monster scroll on dead monsters
+- Fixed unique and boss monster generation
 - Fixed casting issues with dice
 - Fixed print monster template printing only an attack damage roll
 ### Changed

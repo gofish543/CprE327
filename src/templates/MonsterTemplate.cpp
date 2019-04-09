@@ -245,3 +245,11 @@ u_char MonsterTemplate::getRarity() {
     return this->rarity;
 }
 /** GETTERS **/
+
+/** SETTERS **/
+MonsterTemplate* MonsterTemplate::setIsValid(bool isValid) {
+    this->validTemplate = isValid;
+
+    return this;
+}
+/** SETTERS **/

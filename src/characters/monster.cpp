@@ -248,10 +248,7 @@ int Monster::moveTo(u_char toX, u_char toY) {
 
         floor->setCharacterAt(this, this->getX(), this->getY());
     } else {
-        printf("Reducing hardness by 85\n");
-        printf("old hardness: %d\n", toTerrain->getHardness());
         toTerrain->setHardness(toTerrain->getHardness() - MONSTER_HARDNESS_PER_TURN);
-        printf("new hardness: %d\n", toTerrain->getHardness());
     }
 
     return 0;

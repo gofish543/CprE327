@@ -154,7 +154,12 @@ std::string* Dungeon::appendText(const std::string* format, ...) {
 }
 
 MonsterTemplate* Dungeon::randomMonsterTemplate() {
-    return this->monsterTemplates[Dice::RandomNumberBetween(0, this->monsterTemplates.size() - 1)];
+    MonsterTemplate* monsterTemplate;
+    do {
+        monsterTemplate = this->monsterTemplates[Dice::RandomNumberBetween(0, this->monsterTemplates.size() - 1)];
+    } while (!monsterTemplate->isValid());
+
+    return monsterTemplate;
 }
 
 /** GETTERS **/

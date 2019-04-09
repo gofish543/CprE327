@@ -193,14 +193,18 @@ Output* Output::printMonsterMenu(u_short startIndex) {
     this->print("| MONSTER | INTELLIGENT | TELEPATHIC | TUNNELER | ERRATIC |      LOCATION      |\n");
     this->print("+---------+-------------+------------+----------+---------+--------------------+\n");
     for (index = startIndex, y = 0; y < DUNGEON_FLOOR_HEIGHT && index < dungeon->getCurrentFloor()->getMonsterCount(); index++, y++) {
-        this->print("| %7d | %11s | %10s | %8s | %7s | %18s |\n",
-                    index,
-                    (dungeon->getCurrentFloor()->getMonster(index)->isIntelligent()) ? "YES" : "NO",
-                    (dungeon->getCurrentFloor()->getMonster(index)->isTelepathic()) ? "YES" : "NO",
-                    (dungeon->getCurrentFloor()->getMonster(index)->isTunneler()) ? "YES" : "NO",
-                    (dungeon->getCurrentFloor()->getMonster(index)->isErratic()) ? "YES" : "NO",
-                    dungeon->getCurrentFloor()->getMonster(index)->locationString(location)
-        );
+        if (dungeon->getCurrentFloor()->getMonster(index)->isAlive()) {
+            this->print("| %7d | %11s | %10s | %8s | %7s | %18s |\n",
+                        index,
+                        (dungeon->getCurrentFloor()->getMonster(index)->isIntelligent()) ? "YES" : "NO",
+                        (dungeon->getCurrentFloor()->getMonster(index)->isTelepathic()) ? "YES" : "NO",
+                        (dungeon->getCurrentFloor()->getMonster(index)->isTunneler()) ? "YES" : "NO",
+                        (dungeon->getCurrentFloor()->getMonster(index)->isErratic()) ? "YES" : "NO",
+                        dungeon->getCurrentFloor()->getMonster(index)->locationString(location)
+            );
+        } else {
+            y--;
+        }
     }
     this->print("+---------+-------------+------------+----------+---------+--------------------+\n");
 
