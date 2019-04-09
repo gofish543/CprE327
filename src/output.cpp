@@ -21,6 +21,7 @@ Output* Output::print() {
     u_char index;
     Floor* floor = dungeon->getCurrentFloor();
     Character* character;
+    Object* object;
 
     this->setColor(EFD_COLOR_WHITE);
 
@@ -44,11 +45,16 @@ Output* Output::print() {
             this->setColor(EFD_COLOR_WHITE);
 
             character = floor->getCharacterAt(x, y);
+            object = floor->getObjectAt(x, y);
             if (character != null) {
                 if (character->isMonster()) {
                     this->setColor(((Monster*) character)->getColor());
                 }
             }
+            else if(object != null) {
+                this->setColor(object->getColor());
+            }
+
             if (this->doExpanded) {
                 this->print(" %c ", floor->getOutputCharacterAt(x, y));
             } else {

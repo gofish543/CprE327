@@ -21,23 +21,106 @@
 #define OBJECT_WAND_KEYWORD         "WAND"
 #define OBJECT_CONTAINER_KEYWORD    "CONTAINER"
 
-#define OBJECT_WEAPON       0b0000000000000000001
-#define OBJECT_OFFHAND      0b0000000000000000010
-#define OBJECT_RANGED       0b0000000000000000100
-#define OBJECT_ARMOR        0b0000000000000001000
-#define OBJECT_HELMET       0b0000000000000010000
-#define OBJECT_CLOAK        0b0000000000000100000
-#define OBJECT_GLOVES       0b0000000000001000000
-#define OBJECT_BOOTS        0b0000000000010000000
-#define OBJECT_RING         0b0000000000100000000
-#define OBJECT_AMULET       0b0000000001000000000
-#define OBJECT_LIGHT        0b0000000010000000000
-#define OBJECT_SCROLL       0b0000000100000000000
-#define OBJECT_BOOK         0b0000001000000000000
-#define OBJECT_FLASK        0b0000010000000000000
-#define OBJECT_GOLD         0b0000100000000000000
-#define OBJECT_AMMUNITION   0b0001000000000000000
-#define OBJECT_FOOD         0b0010000000000000000
-#define OBJECT_WAND         0b0100000000000000000
-#define OBJECT_CONTAINER    0b1000000000000000000
+#define OBJECT_WEAPON       0b0000000000000000001u
+#define OBJECT_OFFHAND      0b0000000000000000010u
+#define OBJECT_RANGED       0b0000000000000000100u
+#define OBJECT_ARMOR        0b0000000000000001000u
+#define OBJECT_HELMET       0b0000000000000010000u
+#define OBJECT_CLOAK        0b0000000000000100000u
+#define OBJECT_GLOVES       0b0000000000001000000u
+#define OBJECT_BOOTS        0b0000000000010000000u
+#define OBJECT_RING         0b0000000000100000000u
+#define OBJECT_AMULET       0b0000000001000000000u
+#define OBJECT_LIGHT        0b0000000010000000000u
+#define OBJECT_SCROLL       0b0000000100000000000u
+#define OBJECT_BOOK         0b0000001000000000000u
+#define OBJECT_FLASK        0b0000010000000000000u
+#define OBJECT_GOLD         0b0000100000000000000u
+#define OBJECT_AMMUNITION   0b0001000000000000000u
+#define OBJECT_FOOD         0b0010000000000000000u
+#define OBJECT_WAND         0b0100000000000000000u
+#define OBJECT_CONTAINER    0b1000000000000000000u
+
+#include <string>
+
+#include <forward_declarations.h>
+#include <character_listings.h>
+#include <global.h>
+
+namespace App {
+    class Object {
+    public:
+        Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, u_short hitBonus, u_short damageBonus, u_short dodgeBonus, u_short defenseBonus, u_short weight, short speedBonus, u_short specialAttribute, u_short value, bool isArtifact, u_char rarity);
+        ~Object();
+
+        u_char getCharacter();
+
+        /** GETTERS **/
+        Floor* getFloor();
+        u_char getX();
+        u_char getY();
+        const std::string& getName();
+        const std::string& getDescription();
+        u_int getItemType();
+        u_short getColor();
+        u_short getHitBonus();
+        u_short getDamageBonus();
+        u_short getDodgeBonus();
+        u_short getDefenseBonus();
+        u_short getWeight();
+        short getSpeedBonus();
+        u_short getSpecialAttribute();
+        u_short getValue();
+        bool getIsArtifact();
+        u_char getRarity();
+        /** GETTERS **/
+
+        /** SETTERS **/
+        /** SETTERS **/
+
+        /** TYPE CONVERSION **/
+        bool isWeapon();
+        bool isOffHand();
+        bool isRanged();
+        bool isArmor();
+        bool isHelmet();
+        bool isCloak();
+        bool isGloves();
+        bool isBoots();
+        bool isRing();
+        bool isAmulet();
+        bool isLight();
+        bool isScroll();
+        bool isBook();
+        bool isFlask();
+        bool isGold();
+        bool isAmmunition();
+        bool isFood();
+        bool isWand();
+        bool isContainer();
+        /** TYPE CONVERSION **/
+    protected:
+
+    private:
+        Floor* floor;
+        u_char x;
+        u_char y;
+
+        std::string name;
+        std::string description;
+        u_int itemType;
+        u_short color;
+        u_short hitBonus;
+        u_short damageBonus;
+        u_short dodgeBonus;
+        u_short defenseBonus;
+        u_short weight;
+        short speedBonus;
+        u_short specialAttribute;
+        u_short value;
+        bool isArtifact;
+        u_char rarity;
+    };
+}
+
 #endif

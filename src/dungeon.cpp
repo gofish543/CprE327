@@ -61,7 +61,8 @@ Dungeon::Dungeon(int argc, char* argv[]) {
                             u_short(Dice::RandomNumberBetween(FLOOR_ROOMS_MIN, FLOOR_ROOMS_MAX)),
                             stairCount,
                             stairCount,
-                            u_short(Dice::RandomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX))
+                            u_short(Dice::RandomNumberBetween(FLOOR_MONSTERS_MIN, FLOOR_MONSTERS_MAX)),
+                            u_short(Dice::RandomNumberBetween(FLOOR_OBJECTS_MIN, FLOOR_OBJECTS_MAX))
                     )
             );
         }
@@ -181,6 +182,15 @@ MonsterTemplate* Dungeon::randomMonsterTemplate() {
     } while (!monsterTemplate->isValid());
 
     return monsterTemplate;
+}
+
+ObjectTemplate* Dungeon::randomObjectTemplate() {
+    ObjectTemplate* objectTemplate;
+    do {
+        objectTemplate = this->objectTemplates[Dice::RandomNumberBetween(0, this->objectTemplates.size() - 1)];
+    } while (!objectTemplate->isValid());
+
+    return objectTemplate;
 }
 
 /** GETTERS **/

@@ -268,8 +268,7 @@ ObjectTemplate::~ObjectTemplate() {
 }
 
 Object* ObjectTemplate::generateObject(Floor* floor, u_char x, u_char y) {
-    return null;
-//    return new Object();
+    return new Object(floor, x, y, &this->name, &this->description, this->itemType, this->color, this->hitBonus->roll(), this->damageBonus->roll(), this->dodgeBonus->roll(), this->defenseBonus->roll(), this->weight->roll(), this->speedBonus->roll(), this->specialAttribute->roll(), this->value->roll(), this->isArtifact, this->rarity);
 }
 
 std::vector<ObjectTemplate*> ObjectTemplate::GenerateTemplates(std::ifstream* inputFile) {

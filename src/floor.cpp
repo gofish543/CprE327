@@ -9,18 +9,20 @@ Floor::Floor(Dungeon* dungeon) {
     this->stairUpCount = 0;
     this->stairDownCount = 0;
     this->monsterCount = 0;
+    this->objectCount = 0;
 
     this->initializeToNull()
             ->generateBorders();
 }
 
-Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters) {
+Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters, u_short objectCount) {
     this->dungeon = dungeon;
     this->floorNumber = floorNumber;
 
     this->roomCount = roomCount;
     this->stairUpCount = stairUpCount;
     this->stairDownCount = stairDownCount;
+    this->objectCount = objectCount;
 
     if (this->floorNumber == 0) {
         this->stairDownCount = 0;
@@ -41,7 +43,8 @@ Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short st
             ->generateCorridors()
             ->generateRock()
             ->generatePlayer()
-            ->generateMonsters();
+            ->generateMonsters()
+            ->generateObjects();
 }
 
 Floor::~Floor() {
@@ -69,6 +72,10 @@ Floor::~Floor() {
 
     for (index = 0; index < this->monsterCount; index++) {
         delete (this->monsters.at(index));
+    }
+
+    for (index = 0; index < this->objectCount; index++) {
+        delete (this->objects.at(index));
     }
 }
 
@@ -120,10 +127,12 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
         } else {
             return this->dungeon->getPlayer()->visibility[y][x]->getCharacter();
         }
-    } else if (this->characters[y][x] == null) {
-        return this->terrains[y][x]->getCharacter();
-    } else {
+    } else if (this->characters[y][x] != null) {
         return this->characters[y][x]->getCharacter();
+    } else if (this->objectsMap[y][x] != null) {
+        return this->objectsMap[y][x]->getCharacter();
+    } else {
+        return this->terrains[y][x]->getCharacter();
     }
 }
 
@@ -152,12 +161,20 @@ u_short Floor::getMonsterCount() {
     return this->monsterCount;
 }
 
+u_short Floor::getObjectCount() {
+    return this->objectCount;
+}
+
 Terrain* Floor::getTerrainAt(u_char width, u_char height) {
     return this->terrains[height][width];
 }
 
 Character* Floor::getCharacterAt(u_char width, u_char height) {
     return this->characters[height][width];
+}
+
+Object* Floor::getObjectAt(u_char width, u_char height) {
+    return this->objectsMap[height][width];
 }
 
 u_char Floor::getTunnelerViewAt(u_char width, u_char height) {
@@ -323,6 +340,7 @@ Floor* Floor::initializeToNull() {
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             this->characters[y][x] = null;
             this->terrains[y][x] = null;
+            this->objectsMap[y][x] = null;
             this->tunnelerView[y][x] = U_CHAR_MIN;
             this->nonTunnelerView[y][x] = U_CHAR_MIN;
             this->cheapestPathToPlayer[y][x] = U_CHAR_MIN;
@@ -689,6 +707,40 @@ Floor* Floor::generateMonsters() {
         }
         this->monsters.push_back(monster);
         this->characters[monsterY][monsterX] = this->monsters.at(index);
+    }
+
+    return this;
+}
+
+Floor* Floor::generateObjects() {
+    u_short placementAttempts;
+    Room* objectRoom;
+    u_short index;
+
+    u_char objectX;
+    u_char objectY;
+
+    for (index = 0; index < this->objectCount; index++) {
+        placementAttempts = 0;
+
+        do {
+            objectRoom = this->rooms[u_char(Dice::RandomNumberBetween(0, this->roomCount - 1))];
+
+            // Select random spot inside the room
+            objectX = objectRoom->randomXInside();
+            objectY = objectRoom->randomYInside();
+
+            placementAttempts++;
+        } while (this->characters[objectY][objectX] != null && placementAttempts < 25);
+
+        ObjectTemplate* objectTemplate = this->dungeon->randomObjectTemplate();
+        Object* object = objectTemplate->generateObject(this, objectX, objectY);
+        // If the monster generated is a boss or is unique, remove from possible templates
+        if (object->getIsArtifact()) {
+            objectTemplate->setIsValid(false);
+        }
+        this->objects.push_back(object);
+        this->objectsMap[objectY][objectX] = this->objects.at(index);
     }
 
     return this;

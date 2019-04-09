@@ -29,6 +29,7 @@ namespace App {
         std::string* appendText(const std::string* format, ...);
 
         MonsterTemplate* randomMonsterTemplate();
+        ObjectTemplate* randomObjectTemplate();
 
         /** GETTERS **/
         Floor* getFloor(u_char index);

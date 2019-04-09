@@ -10,6 +10,9 @@
 #define FLOOR_MONSTERS_MIN 5
 #define FLOOR_MONSTERS_MAX 10
 
+#define FLOOR_OBJECTS_MIN 5
+#define FLOOR_OBJECTS_MAX 10
+
 #include <vector>
 #include <string>
 
@@ -23,7 +26,7 @@ namespace App {
 
     public:
         explicit Floor(Dungeon* dungeon);
-        Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters);
+        Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters, u_short objectCount);
         ~Floor();
 
         Floor* resetTunnelerView();
@@ -38,6 +41,7 @@ namespace App {
 
         Terrain* terrains[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         Character* characters[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
+        Object* objectsMap[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
 
         /** GETTERS **/
         Dungeon* getDungeon();
@@ -46,8 +50,10 @@ namespace App {
         u_short getStairUpCount();
         u_short getStairDownCount();
         u_short getMonsterCount();
+        u_short getObjectCount();
         Terrain* getTerrainAt(u_char width, u_char height);
         Character* getCharacterAt(u_char width, u_char height);
+        Object* getObjectAt(u_char width, u_char height);
         u_char getTunnelerViewAt(u_char width, u_char height);
         u_char getNonTunnelerViewAt(u_char width, u_char height);
         u_char getCheapestPathToPlayerAt(u_char width, u_char height);
@@ -84,6 +90,7 @@ namespace App {
         Floor* generateCorridors();
         Floor* generatePlayer();
         Floor* generateMonsters();
+        Floor* generateObjects();
 
         // Load class of functions
         Floor* loadBorders();
@@ -102,11 +109,13 @@ namespace App {
         u_short stairUpCount;
         u_short stairDownCount;
         u_short monsterCount;
+        u_short objectCount;
 
         std::vector<Monster*> monsters;
         std::vector<Staircase*> upStairs;
         std::vector<Staircase*> downStairs;
         std::vector<Room*> rooms;
+        std::vector<Object*> objects;
     };
 }
 
@@ -120,6 +129,8 @@ namespace App {
 #include "characters/character.h"
 #include "characters/monster.h"
 #include "characters/player.h"
+#include "objects/Object.h"
 #include "templates/MonsterTemplate.h"
+#include "templates/ObjectTemplate.h"
 
 #endif

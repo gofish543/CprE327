@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added object template parsing
 - Added color for ncurses game play
 - Added shell colors for non ncurses game play
 - Added weekly assignment pdfs for eight, nine, and ten
