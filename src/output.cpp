@@ -20,9 +20,9 @@ Output* Output::print() {
     u_char x;
     u_char index;
     Floor* floor = dungeon->getCurrentFloor();
+    Character* character;
 
-    bgBlack(this->doNCurses);
-    textWhite(this->doNCurses);
+    this->setColor(EFD_COLOR_WHITE);
 
     if (this->dontNCurses) {
         this->print("\n");
@@ -41,19 +41,25 @@ Output* Output::print() {
             this->print("%2d ", y);
         }
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
+            this->setColor(EFD_COLOR_WHITE);
+
+            character = floor->getCharacterAt(x, y);
+            if (character != null) {
+                if (character->isMonster()) {
+                    this->setColor(((Monster*) character)->getColor());
+                }
+            }
             if (this->doExpanded) {
-                this->print("%s", floor->getOutputColorAt(x, y).c_str());
                 this->print(" %c ", floor->getOutputCharacterAt(x, y));
             } else {
-                this->print("%s", floor->getOutputColorAt(x, y).c_str());
                 this->print("%c", floor->getOutputCharacterAt(x, y));
             }
-            bgBlack(this->doNCurses);
-            textWhite(this->doNCurses);
+
         }
         this->print("\n");
     }
 
+    this->setColor(EFD_COLOR_WHITE);
     for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
         if (this->doExpanded) {
             this->print("%s", this->dungeon->getText(index).c_str());
@@ -62,8 +68,6 @@ Output* Output::print() {
         }
         this->print("\n");
     }
-
-    reset(this->dontNCurses);
 
     // Ncurses refresh
     if (this->doNCurses) {
@@ -422,9 +426,11 @@ Output* Output::printError(std::string* format, ...) {
     va_start(args, format);
 
     if (this->doNCurses) {
+        attron(COLOR_PAIR(NCURSES_RED));
         vw_printw(this->window, format->c_str(), args);
         vw_printw(this->window, "Press any key to continue...\n", null);
         refresh();
+        attroff(COLOR_PAIR(NCURSES_RED));
 
         getch();
     } else {
@@ -449,8 +455,10 @@ Output* Output::printError(const char* format, ...) {
     va_start(args, format);
 
     if (this->doNCurses) {
+        attron(COLOR_PAIR(NCURSES_RED));
         vw_printw(this->window, format, args);
-        vw_printw(this->window, "Press any key to continue...\n", null);
+        wprintw(this->window, "Press any key to continue...\n");
+        attron(COLOR_PAIR(NCURSES_RED));
         refresh();
 
         getch();
@@ -463,4 +471,54 @@ Output* Output::printError(const char* format, ...) {
     va_end(args);
 
     return this;
+}
+
+void Output::setColor(int index) {
+    static const std::string shellColors[] = {
+            SHELL_TEXT_BLACK,
+            SHELL_TEXT_RED,
+            SHELL_TEXT_GREEN,
+            SHELL_TEXT_YELLOW,
+            SHELL_TEXT_BLUE,
+            SHELL_TEXT_PURPLE,
+            SHELL_TEXT_CYAN,
+            SHELL_TEXT_WHITE,
+    };
+
+    static const int nCursesColors[] = {
+            NCURSES_BLACK,
+            NCURSES_RED,
+            NCURSES_GREEN,
+            NCURSES_YELLOW,
+            NCURSES_BLUE,
+            NCURSES_MAGENTA,
+            NCURSES_CYAN,
+            NCURSES_WHITE
+    };
+
+    if (this->doNCurses) {
+        attron(COLOR_PAIR(nCursesColors[index]));
+    } else {
+        printf(SHELL_BG_BLACK);
+        printf("%s", shellColors[index].c_str());
+    }
+}
+
+void Output::resetColor(int index) {
+    static const int nCursesColors[] = {
+            NCURSES_BLACK,
+            NCURSES_RED,
+            NCURSES_GREEN,
+            NCURSES_YELLOW,
+            NCURSES_BLUE,
+            NCURSES_MAGENTA,
+            NCURSES_CYAN,
+            NCURSES_WHITE
+    };
+
+    if (this->doNCurses) {
+        attroff(COLOR_PAIR(nCursesColors[index]));
+    } else {
+        printf(SHELL_DEFAULT);
+    }
 }

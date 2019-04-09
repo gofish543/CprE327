@@ -8,6 +8,8 @@
 #define OUTPUT_DEBUG_MONSTER_TEMPLATES  0b0010000u
 #define OUTPUT_DEBUG_TERMINATE          0b0100000u
 
+#include <string>
+
 #include <ncurses.h>
 #include <cstdio>
 
@@ -38,6 +40,11 @@ namespace App {
         Output* printError(std::string* format, ...);
         Output* printError(const char* format, ...);
         /** DEBUG PRINTS **/
+
+        /** COLORED **/
+        void setColor(int index);
+        void resetColor(int index);
+        /** COLORED **/
 
         /** GETTERS **/
         /** GETTERS **/

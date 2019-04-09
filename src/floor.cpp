@@ -127,20 +127,6 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
     }
 }
 
-std::string Floor::getOutputColorAt(u_char x, u_char y) {
-    if (this->characters[y][x] != null) {
-        if (this->characters[y][x]->isMonster()) {
-            if (this->dungeon->getSettings()->doNCursesPrint()) {
-                return "";
-            } else {
-                return colorToShell(((Monster*) this->characters[y][x])->getColor());
-            }
-        }
-    }
-
-    return "";
-}
-
 /** GETTERS **/
 Dungeon* Floor::getDungeon() {
     return this->dungeon;
@@ -698,7 +684,7 @@ Floor* Floor::generateMonsters() {
         MonsterTemplate* monsterTemplate = this->dungeon->randomMonsterTemplate();
         Monster* monster = monsterTemplate->generateMonster(this, monsterX, monsterY);
         // If the monster generated is a boss or is unique, remove from possible templates
-        if(monster->isBoss() || monster->isUnique()) {
+        if (monster->isBoss() || monster->isUnique()) {
             monsterTemplate->setIsValid(false);
         }
         this->monsters.push_back(monster);

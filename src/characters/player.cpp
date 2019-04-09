@@ -145,10 +145,10 @@ int Player::handleEventKeyTeleport() {
                 this->y = u_char(std::max(1, this->y - 1));
                 break;
             case KEY_DOWN:
-                this->y = u_char(std::min(DUNGEON_FLOOR_HEIGHT - 1, this->y + 1));
+                this->y = u_char(std::min(DUNGEON_FLOOR_HEIGHT - 2, this->y + 1));
                 break;
             case KEY_RIGHT:
-                this->x = u_char(std::min(DUNGEON_FLOOR_WIDTH - 1, this->x + 1));
+                this->x = u_char(std::min(DUNGEON_FLOOR_WIDTH - 2,  this->x + 1));
                 break;
             case KEY_LEFT:
                 this->x = u_char(std::max(1, this->x - 1));

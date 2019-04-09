@@ -3,6 +3,7 @@
 Dungeon::Dungeon(int argc, char* argv[]) {
     u_char index;
 
+    this->window = null;
     this->settings = new Settings(argc, argv);
 
     if (this->settings->doNCursesPrint()) {
@@ -10,6 +11,27 @@ Dungeon::Dungeon(int argc, char* argv[]) {
         raw();
         keypad(stdscr, true);
         noecho();
+        curs_set(false);
+        use_default_colors();
+        start_color();
+
+        init_color(NCURSES_BLACK, 0, 0, 0);
+        init_color(NCURSES_RED, 1000, 0, 0);
+        init_color(NCURSES_GREEN, 0, 1000, 0);
+        init_color(NCURSES_YELLOW, 1000, 1000, 0);
+        init_color(NCURSES_BLUE, 0, 0, 1000);
+        init_color(NCURSES_MAGENTA, 1000, 0, 1000);
+        init_color(NCURSES_CYAN, 0, 1000, 1000);
+        init_color(NCURSES_WHITE, 1000, 1000, 1000);
+
+        init_pair(NCURSES_BLACK, NCURSES_BLACK, NCURSES_BLACK);
+        init_pair(NCURSES_RED, NCURSES_RED, NCURSES_BLACK);
+        init_pair(NCURSES_GREEN, NCURSES_GREEN, NCURSES_BLACK);
+        init_pair(NCURSES_YELLOW, NCURSES_YELLOW, NCURSES_BLACK);
+        init_pair(NCURSES_BLUE, NCURSES_BLUE, NCURSES_BLACK);
+        init_pair(NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BLACK);
+        init_pair(NCURSES_CYAN, NCURSES_CYAN, NCURSES_BLACK);
+        init_pair(NCURSES_WHITE, NCURSES_WHITE, NCURSES_BLACK);
     }
 
     this->output = new Output(this);
@@ -21,7 +43,6 @@ Dungeon::Dungeon(int argc, char* argv[]) {
     this->player = new Player(null, 0, 0);
 
     this->floor = null;
-    this->window = null;
 
     for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
         this->textLines[index] = new std::string();
