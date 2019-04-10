@@ -176,19 +176,29 @@ std::string* Dungeon::appendText(const std::string* format, ...) {
 }
 
 MonsterTemplate* Dungeon::randomMonsterTemplate() {
+    // Verify at least 1 monster template is valid
+    if (this->monsterTemplates.empty()) {
+        throw Exception::MonsterTemplatesEmpty();
+    }
+
     MonsterTemplate* monsterTemplate;
     do {
         monsterTemplate = this->monsterTemplates[Dice::RandomNumberBetween(0, this->monsterTemplates.size() - 1)];
-    } while (!monsterTemplate->isValid());
+    } while (monsterTemplate->getRarity() >= Dice::RandomNumberBetween(0, 100));
 
     return monsterTemplate;
 }
 
 ObjectTemplate* Dungeon::randomObjectTemplate() {
+    // Verify at least 1 monster template is valid
+    if (this->objectTemplates.empty()) {
+        throw Exception::ObjectTemplatesEmpty();
+    }
+
     ObjectTemplate* objectTemplate;
     do {
         objectTemplate = this->objectTemplates[Dice::RandomNumberBetween(0, this->objectTemplates.size() - 1)];
-    } while (!objectTemplate->isValid());
+    } while (objectTemplate->getRarity() >= Dice::RandomNumberBetween(0, 100));
 
     return objectTemplate;
 }
@@ -230,6 +240,10 @@ Player* Dungeon::getPlayer() {
     return this->player;
 }
 
+Monster* Dungeon::getBoss() {
+    return this->boss;
+}
+
 WINDOW* Dungeon::getWindow() {
     return this->window;
 }
@@ -268,6 +282,18 @@ Dungeon* Dungeon::addFloor(Floor* floor, u_char index) {
     return this;
 }
 
+Dungeon* Dungeon::removeMonsterTemplate(MonsterTemplate* monsterTemplate) {
+    this->monsterTemplates.erase(std::remove(this->monsterTemplates.begin(), this->monsterTemplates.end(), monsterTemplate), this->monsterTemplates.end());
+    delete (monsterTemplate);
+    return this;
+}
+
+Dungeon* Dungeon::removeObjectTemplate(ObjectTemplate* objectTemplate) {
+    this->objectTemplates.erase(std::remove(this->objectTemplates.begin(), this->objectTemplates.end(), objectTemplate), this->objectTemplates.end());
+    delete (objectTemplate);
+    return this;
+}
+
 Dungeon* Dungeon::setCurrentFloor(Floor* floor) {
     this->floor = floor;
 
@@ -288,6 +314,12 @@ Dungeon* Dungeon::setEventManager(EventManager* eventManager) {
 
 Dungeon* Dungeon::setPlayer(Player* player) {
     this->player = player;
+
+    return this;
+}
+
+Dungeon* Dungeon::setBoss(Monster* boss) {
+    this->boss = boss;
 
     return this;
 }

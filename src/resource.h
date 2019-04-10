@@ -17,9 +17,7 @@ int error_check_fwrite(void* __restrict ptr, size_t size, size_t nmemb, FILE* st
 u_char convert_base10_to_char(u_int integerValue);
 bool strstarts(std::string, std::string prefix);
 int get_sign(int value);
-std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
-std::string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
-std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
+std::string trim(std::string str, const std::string& chars = "\t\n\v\f\r ");
 std::vector<std::string> split(std::string str, char delimiter);
 
 #endif

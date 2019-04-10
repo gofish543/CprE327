@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added object creation from object templates
 - Added object template parsing
 - Added color for ncurses game play
 - Added shell colors for non ncurses game play

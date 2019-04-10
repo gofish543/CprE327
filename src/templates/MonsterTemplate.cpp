@@ -11,37 +11,30 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
     this->symbol = 0;
     this->rarity = 0;
 
-    u_short isValid = 0;
-
     if (!templateString.empty()) {
-        std::stringstream templateStream(templateString);
         std::string buffer;
-        std::string untrimmedBuffer;
+        std::stringstream templateStream(templateString);
 
         while (std::getline(templateStream, buffer, '\n')) {
-            if (!trim(buffer).empty()) {
-                if (strstarts(buffer, "NAME")) {
+            buffer = trim(buffer);
 
-                    buffer = buffer.substr(4);
-                    this->name = trim(buffer);
-                    isValid += MONSTER_TEMPLATE_NAME_VALID;
+            if (!buffer.empty()) {
+                if (strstarts(buffer, MONSTER_TEMPLATE_NAME)) {
 
-                } else if (strstarts(buffer, "DESC")) {
+                    this->name = buffer.substr(std::strlen(MONSTER_TEMPLATE_NAME));
+
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_DESCRIPTION)) {
 
                     while (std::getline(templateStream, buffer, '\n')) {
-                        untrimmedBuffer = buffer;
-                        trim(buffer);
-                        if (buffer == ".") {
+                        if (trim(buffer) == ".") {
                             break;
                         }
-                        this->description += untrimmedBuffer;
+                        this->description += buffer;
                     }
-                    isValid += MONSTER_TEMPLATE_DESC_VALID;
 
-                } else if (strstarts(buffer, "COLOR")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_COLOR)) {
 
-                    buffer = buffer.substr(5);
-                    for (auto const& color: split(trim(buffer), ' ')) {
+                    for (auto const& color: split(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_COLOR))), ' ')) {
                         if (color == "RED") {
                             this->color = EFD_COLOR_RED;
                         } else if (color == "GREEN") {
@@ -59,27 +52,22 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                         } else if (color == "BLACK") {
                             this->color = EFD_COLOR_BLACK;
                         } else {
-                            continue;
+                            throw std::exception();
                         }
                         break;
                     }
-                    isValid += MONSTER_TEMPLATE_COLOR_VALID;
 
-                } else if (strstarts(buffer, "SPEED")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_SPEED)) {
 
                     try {
-                        buffer = buffer.substr(5);
-                        this->speed = new Dice(&trim(buffer));
-                        isValid += MONSTER_TEMPLATE_SPEED_VALID;
+                        this->speed = new Dice(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_SPEED))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "ABIL")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_ABILITY)) {
 
-                    buffer = buffer.substr(4);
-                    for (auto const& ability: split(trim(buffer), ' ')) {
+                    for (auto const& ability: split(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_ABILITY))), ' ')) {
                         if (ability == "SMART") {
                             this->abilities |= MONSTER_INTELLIGENT;
                         } else if (ability == "TELE") {
@@ -98,54 +86,42 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                             this->abilities |= MONSTER_UNIQ;
                         } else if (ability == "BOSS") {
                             this->abilities |= MONSTER_BOSS;
+                        } else {
+                            return;
                         }
                     }
-                    isValid += MONSTER_TEMPLATE_ABILITIES_VALID;
 
-                } else if (strstarts(buffer, "HP")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_HIT_POINTS)) {
 
                     try {
-                        buffer = buffer.substr(2);
-                        this->hitPoints = new Dice(&trim(buffer));
-                        isValid += MONSTER_TEMPLATE_HIT_POINTS_VALID;
+                        this->hitPoints = new Dice(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_HIT_POINTS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "DAM")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_DAMAGE)) {
 
                     try {
-                        buffer = buffer.substr(3);
-                        this->attackDamage = new Dice(&trim(buffer));
-                        isValid += MONSTER_TEMPLATE_ATTACK_DAMAGE_VALID;
+                        this->attackDamage = new Dice(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_DAMAGE))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "SYMB")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_SYMBOL)) {
 
-                    buffer = buffer.substr(4);
-                    this->symbol = trim(buffer).at(0);
-                    isValid += MONSTER_TEMPLATE_SYMBOL_VALID;
+                    this->symbol = trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_SYMBOL))).at(0);
 
-                } else if (strstarts(buffer, "RRTY")) {
+                } else if (strstarts(buffer, MONSTER_TEMPLATE_RARITY)) {
 
                     try {
-                        buffer = buffer.substr(4);
-                        this->rarity = std::stoi(trim(buffer));
-                        isValid += MONSTER_TEMPLATE_RARITY_VALID;
+                        this->rarity = std::stoi(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_RARITY))));
                     } catch (std::exception& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
                 }
             }
         }
     }
-
-    this->validTemplate = isValid == MONSTER_TEMPLATE_IS_VALID;
 }
 
 MonsterTemplate::~MonsterTemplate() {
@@ -160,55 +136,49 @@ MonsterTemplate::~MonsterTemplate() {
     }
 }
 
-Monster* MonsterTemplate::generateMonster(Floor* floor, u_char x, u_char y) {
-    return new Monster(floor, x, y, &(this->name), &(this->description), this->color, this->speed->roll(), this->abilities, this->hitPoints->roll(), this->attackDamage->roll(), this->symbol, this->rarity);
-}
-
 std::vector<MonsterTemplate*> MonsterTemplate::GenerateTemplates(std::ifstream* inputFile) {
     std::vector<MonsterTemplate*> monsterTemplates;
 
-    // Pull heading
-    std::string heading;
-    std::getline(*inputFile, heading, '\n');
-
     std::string buffer;
-    std::string unTrimmedBuffer;
     std::string templateBuffer;
 
-    MonsterTemplate* monsterTemplate;
-
-    if (trim(heading) != MONSTER_TEMPLATE_HEADING) {
+    // Pull heading
+    std::getline(*inputFile, buffer, '\n');
+    if (trim(buffer) != MONSTER_TEMPLATE_HEADING) {
         printf(SHELL_TEXT_RED);
-        printf("Invalid heading %s\n", heading.c_str());
+        printf("Invalid heading %s\n", buffer.c_str());
         printf(SHELL_DEFAULT "\n");
         exit(1);
     }
 
     while (std::getline(*inputFile, buffer, '\n')) {
-        unTrimmedBuffer = buffer;
-        trim(buffer);
-        if (buffer == "BEGIN MONSTER") {
+        if (trim(buffer) == "BEGIN MONSTER") {
             templateBuffer = "";
-        } else if (buffer == "END") {
-            monsterTemplate = new MonsterTemplate(templateBuffer);
-            if (monsterTemplate->isValid()) {
-                monsterTemplates.push_back(monsterTemplate);
-            } else {
-                delete (monsterTemplate);
+        } else if (trim(buffer) == "END") {
+            try {
+                monsterTemplates.push_back(new MonsterTemplate(templateBuffer));
+            } catch (std::exception& exception) {
             }
         } else {
-            templateBuffer += (unTrimmedBuffer + "\n");
+            templateBuffer += buffer + "\n";
         }
     }
 
     return monsterTemplates;
 }
 
-/** GETTERS **/
-bool MonsterTemplate::isValid() {
-    return this->validTemplate;
+Monster* MonsterTemplate::generateMonster(Floor* floor, u_char x, u_char y) {
+    return new Monster(
+            floor, x, y,
+            &(this->name), &(this->description),
+            this->color, this->speed->roll(),
+            this->abilities, this->hitPoints->roll(),
+            this->attackDamage->roll(), this->symbol,
+            this->rarity
+    );
 }
 
+/** GETTERS **/
 std::string MonsterTemplate::getName() {
     return this->name;
 }
@@ -247,9 +217,4 @@ u_char MonsterTemplate::getRarity() {
 /** GETTERS **/
 
 /** SETTERS **/
-MonsterTemplate* MonsterTemplate::setIsValid(bool isValid) {
-    this->validTemplate = isValid;
-
-    return this;
-}
 /** SETTERS **/

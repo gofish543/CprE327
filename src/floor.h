@@ -7,11 +7,11 @@
 #define FLOOR_STAIRS_MIN 2
 #define FLOOR_STAIRS_MAX 4
 
-#define FLOOR_MONSTERS_MIN 5
-#define FLOOR_MONSTERS_MAX 10
+#define FLOOR_MONSTERS_MIN 500
+#define FLOOR_MONSTERS_MAX 1000
 
-#define FLOOR_OBJECTS_MIN 5
-#define FLOOR_OBJECTS_MAX 10
+#define FLOOR_OBJECTS_MIN 10
+#define FLOOR_OBJECTS_MAX 20
 
 #include <vector>
 #include <string>

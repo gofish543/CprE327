@@ -36,6 +36,10 @@ u_char Room::getEndY() {
     return this->startingY + this->height - 1;
 }
 
+u_char Room::getArea() {
+    return this->width * this->height;
+}
+
 /** GETTERS **/
 u_char Room::getWidth() {
     return this->width;

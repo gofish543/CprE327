@@ -63,6 +63,18 @@ namespace Exception {
             return "Failed to open file";
         }
     };
+
+    class MonsterTemplatesEmpty : public std::exception {
+        const char* what() const noexcept override {
+            return "No more available monster templates to select from";
+        }
+    };
+
+    class ObjectTemplatesEmpty : public std::exception {
+        const char* what() const noexcept override {
+            return "No more available object templates to select from";
+        }
+    };
 }
 
 #endif

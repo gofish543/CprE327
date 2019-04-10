@@ -13,8 +13,8 @@
 namespace App {
     class Dice {
     public:
-        Dice(int base, short rolls, short sides);
-        explicit Dice(std::string* diceString);
+        explicit Dice(std::string diceString);
+        Dice(int base, int rolls, int sides);
         ~Dice();
 
         static int RandomNumberBetween(int min, int max);
@@ -24,15 +24,15 @@ namespace App {
 
         /** GETTERS **/
         int getBase();
-        short getRolls();
-        short getSides();
+        int getRolls();
+        int getSides();
         int getResult();
         /** GETTERS **/
 
         /** SETTERS **/
         Dice* setBase(int base);
-        Dice* setRolls(short rolls);
-        Dice* setSides(short sides);
+        Dice* setRolls(int rolls);
+        Dice* setSides(int sides);
         Dice* setResult(int result);
         /** SETTERS **/
 
@@ -40,8 +40,8 @@ namespace App {
 
     private:
         int base;
-        short rolls;
-        short sides;
+        int rolls;
+        int sides;
 
         int result;
     };

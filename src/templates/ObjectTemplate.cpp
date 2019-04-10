@@ -16,37 +16,30 @@ ObjectTemplate::ObjectTemplate(std::string& templateString) {
     this->isArtifact = false;
     this->rarity = 0;
 
-    u_short isValid = 0;
-
     if (!templateString.empty()) {
-        std::stringstream templateStream(templateString);
         std::string buffer;
-        std::string untrimmedBuffer;
+        std::stringstream templateStream(templateString);
 
         while (std::getline(templateStream, buffer, '\n')) {
-            if (!trim(buffer).empty()) {
-                if (strstarts(buffer, "NAME")) {
+            buffer = trim(buffer);
 
-                    buffer = buffer.substr(4);
-                    this->name = trim(buffer);
-                    isValid += OBJECT_TEMPLATE_NAME_VALID;
+            if (!buffer.empty()) {
+                if (strstarts(buffer, OBJECT_TEMPLATE_NAME)) {
 
-                } else if (strstarts(buffer, "DESC")) {
+                    this->name = buffer.substr(std::strlen(OBJECT_TEMPLATE_NAME));
+
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_DESCRIPTION)) {
 
                     while (std::getline(templateStream, buffer, '\n')) {
-                        untrimmedBuffer = buffer;
-                        trim(buffer);
-                        if (buffer == ".") {
+                        if (trim(buffer) == ".") {
                             break;
                         }
-                        this->description += untrimmedBuffer;
+                        this->description += buffer;
                     }
-                    isValid += OBJECT_TEMPLATE_DESC_VALID;
 
-                } else if (strstarts(buffer, "TYPE")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_TYPE)) {
 
-                    buffer = buffer.substr(4);
-                    trim(buffer);
+                    buffer = trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_TYPE)));
 
                     if (buffer == OBJECT_WEAPON_KEYWORD) {
                         this->itemType = OBJECT_WEAPON;
@@ -87,15 +80,12 @@ ObjectTemplate::ObjectTemplate(std::string& templateString) {
                     } else if (buffer == OBJECT_CONTAINER_KEYWORD) {
                         this->itemType = OBJECT_CONTAINER;
                     } else {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
-                    isValid += OBJECT_TEMPLATE_TYPE_VALID;
 
-                } else if (strstarts(buffer, "COLOR")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_COLOR)) {
 
-                    buffer = buffer.substr(5);
-                    for (auto const& color: split(trim(buffer), ' ')) {
+                    for (auto const& color: split(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_COLOR))), ' ')) {
                         if (color == "RED") {
                             this->color = EFD_COLOR_RED;
                         } else if (color == "GREEN") {
@@ -113,156 +103,122 @@ ObjectTemplate::ObjectTemplate(std::string& templateString) {
                         } else if (color == "BLACK") {
                             this->color = EFD_COLOR_BLACK;
                         } else {
-                            continue;
+                            throw std::exception();
                         }
                         break;
                     }
-                    isValid += OBJECT_TEMPLATE_COLOR_VALID;
 
-                } else if (strstarts(buffer, "HIT")) {
-
-                    try {
-                        buffer = buffer.substr(3);
-                        this->hitBonus = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_HIT_BONUS_VALID;
-                    } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
-                    }
-
-                } else if (strstarts(buffer, "DAM")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_HIT_BONUS)) {
 
                     try {
-                        buffer = buffer.substr(3);
-                        this->damageBonus = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_DAMAGE_BONUS_VALID;
+                        this->hitBonus = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_HIT_BONUS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "DODGE")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_DAMAGE_BONUS)) {
 
                     try {
-                        buffer = buffer.substr(5);
-                        this->dodgeBonus = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_DODGE_BONUS_VALID;
+                        this->damageBonus = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_DAMAGE_BONUS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "DEF")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_DODGE_BONUS)) {
 
                     try {
-                        buffer = buffer.substr(3);
-                        this->defenseBonus = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_DEFENSE_BONUS_VALID;
+                        this->dodgeBonus = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_DODGE_BONUS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "WEIGHT")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_DEFENSE_BONUS)) {
 
                     try {
-                        buffer = buffer.substr(6);
-                        this->weight = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_WEIGHT_VALID;
+                        this->defenseBonus = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_DEFENSE_BONUS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "SPEED")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_WEIGHT)) {
 
                     try {
-                        buffer = buffer.substr(5);
-                        this->speedBonus = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_SPEED_BONUS_VALID;
+                        this->weight = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_WEIGHT))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "ATTR")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_SPEED_BONUS)) {
 
                     try {
-                        buffer = buffer.substr(4);
-                        this->specialAttribute = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_SPECIAL_ATTRIBUTE_VALID;
+                        this->speedBonus = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_SPEED_BONUS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "VAL")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_SPECIAL_ATTRIBUTE)) {
 
                     try {
-                        buffer = buffer.substr(3);
-                        this->value = new Dice(&trim(buffer));
-                        isValid += OBJECT_TEMPLATE_VALUE_VALID;
+                        this->specialAttribute = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_SPECIAL_ATTRIBUTE))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                } else if (strstarts(buffer, "ART")) {
-                    buffer = buffer.substr(3);
-                    trim(buffer);
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_VALUE)) {
+
+                    try {
+                        this->value = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_VALUE))));
+                    } catch (Exception::DiceStringInvalidParse& exception) {
+                        throw std::exception();
+                    }
+
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_ARTIFACT_STATUS)) {
+                    buffer = trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_ARTIFACT_STATUS)));
 
                     if (buffer == "TRUE") {
                         this->isArtifact = true;
                     } else if (buffer == "FALSE") {
                         this->isArtifact = false;
                     } else {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
 
-                    isValid += OBJECT_TEMPLATE_ARTIFACT_STATUS_VALID;
-
-                } else if (strstarts(buffer, "RRTY")) {
+                } else if (strstarts(buffer, OBJECT_TEMPLATE_RARITY)) {
 
                     try {
-                        buffer = buffer.substr(4);
-                        this->rarity = std::stoi(trim(buffer));
-                        isValid += OBJECT_TEMPLATE_RARITY_VALID;
+                        this->rarity = std::stoi(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_RARITY))));
                     } catch (std::exception& exception) {
-                        this->validTemplate = false;
-                        return;
+                        throw std::exception();
                     }
                 }
             }
         }
     }
-
-    this->validTemplate = isValid == OBJECT_TEMPLATE_IS_VALID;
 }
 
 ObjectTemplate::~ObjectTemplate() {
-    if (this->hitBonus) {
+    if (this->hitBonus != null) {
         delete (this->hitBonus);
     }
-    if (this->damageBonus) {
+    if (this->damageBonus != null) {
         delete (this->damageBonus);
     }
-    if (this->dodgeBonus) {
+    if (this->dodgeBonus != null) {
         delete (this->dodgeBonus);
     }
-    if (this->defenseBonus) {
+    if (this->defenseBonus != null) {
         delete (this->defenseBonus);
     }
-    if (this->weight) {
+    if (this->weight != null) {
         delete (this->weight);
     }
-    if (this->speedBonus) {
+    if (this->speedBonus != null) {
         delete (this->speedBonus);
     }
-    if (this->specialAttribute) {
+    if (this->specialAttribute != null) {
         delete (this->specialAttribute);
     }
-    if (this->value) {
+    if (this->value != null) {
         delete (this->value);
     }
 }
@@ -274,38 +230,27 @@ Object* ObjectTemplate::generateObject(Floor* floor, u_char x, u_char y) {
 std::vector<ObjectTemplate*> ObjectTemplate::GenerateTemplates(std::ifstream* inputFile) {
     std::vector<ObjectTemplate*> objectTemplates;
 
-    // Pull heading
-    std::string heading;
-    std::getline(*inputFile, heading, '\n');
-
     std::string buffer;
-    std::string unTrimmedBuffer;
     std::string templateBuffer;
+    // Pull heading
+    std::getline(*inputFile, buffer, '\n');
 
-    ObjectTemplate* objectTemplate;
-
-    if (trim(heading) != OBJECT_TEMPLATE_HEADING) {
+    if (trim(buffer) != OBJECT_TEMPLATE_HEADING) {
         printf(SHELL_TEXT_RED);
-        printf("Invalid heading %s\n", heading.c_str());
-        printf(SHELL_DEFAULT
-               "\n");
+        printf("Invalid heading %s\n", buffer.c_str());
+        printf(SHELL_DEFAULT "\n");
         exit(1);
     }
 
     while (std::getline(*inputFile, buffer, '\n')) {
-        unTrimmedBuffer = buffer;
-        trim(buffer);
-        if (buffer == "BEGIN OBJECT") {
-            templateBuffer = "";
-        } else if (buffer == "END") {
-            objectTemplate = new ObjectTemplate(templateBuffer);
-            if (objectTemplate->isValid()) {
-                objectTemplates.push_back(objectTemplate);
-            } else {
-                delete (objectTemplate);
+        if (trim(buffer) == "BEGIN OBJECT") {
+        } else if (trim(buffer) == "END") {
+            try {
+                objectTemplates.push_back(new ObjectTemplate(templateBuffer));
+            } catch (std::exception& exception) {
             }
         } else {
-            templateBuffer += (unTrimmedBuffer + "\n");
+            templateBuffer += buffer + "\n";
         }
     }
 
@@ -313,10 +258,6 @@ std::vector<ObjectTemplate*> ObjectTemplate::GenerateTemplates(std::ifstream* in
 }
 
 /** GETTERS **/
-bool ObjectTemplate::isValid() {
-    return this->validTemplate;
-}
-
 std::string ObjectTemplate::getName() {
     return this->name;
 }
@@ -375,9 +316,4 @@ u_char ObjectTemplate::getRarity() {
 /** GETTERS **/
 
 /** SETTERS **/
-ObjectTemplate* ObjectTemplate::setIsValid(bool isValid) {
-    this->validTemplate = isValid;
-
-    return this;
-}
 /** SETTERS **/

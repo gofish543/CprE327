@@ -26,6 +26,8 @@ namespace App {
         u_char getEndX();
         u_char getEndY();
 
+        u_char getArea();
+
         /** GETTERS **/
         u_char getWidth();
         u_char getHeight();
@@ -36,6 +38,8 @@ namespace App {
         /** SETTERS **/
         /** SETTERS */
 
+        /** OPERATORS **/
+        /** OPERATORS **/
     protected:
 
     private:

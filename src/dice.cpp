@@ -1,6 +1,6 @@
 #include "dice.h"
 
-Dice::Dice(int base, short rolls, short sides) {
+Dice::Dice(int base, int rolls, int sides) {
     this->base = base;
     this->rolls = rolls;
     this->sides = sides;
@@ -8,23 +8,23 @@ Dice::Dice(int base, short rolls, short sides) {
     this->result = 0;
 }
 
-Dice::Dice(std::string* diceString) {
+Dice::Dice(std::string diceString) {
     // String format is <base> + <rolls> d <sides>
     std::string firstDelimiter = "+";
     std::string secondDelimiter = "d";
 
-    long unsigned int indexOfPlus = diceString->find(firstDelimiter);
-    long unsigned int indexOfD = diceString->find(secondDelimiter);
+    long unsigned int indexOfPlus = diceString.find(firstDelimiter);
+    long unsigned int indexOfD = diceString.find(secondDelimiter);
 
     if (indexOfPlus == std::string::npos || indexOfD == std::string::npos) {
         throw Exception::DiceStringInvalidParse();
     }
 
-    long int base = std::stoi(diceString->substr(0, indexOfPlus));
-    long int rolls = std::stoi(diceString->substr(indexOfPlus + 1, indexOfD));
-    long int sides = std::stoi(diceString->substr(indexOfD + 1));
+    long int base = std::stoi(diceString.substr(0, indexOfPlus));
+    long int rolls = std::stoi(diceString.substr(indexOfPlus + 1, indexOfD));
+    long int sides = std::stoi(diceString.substr(indexOfD + 1));
 
-    if (std::abs(base) > U_INT_MAX || std::abs(rolls) > U_SHORT_MAX || std::abs(sides) > U_SHORT_MAX) {
+    if (std::abs(base) > U_INT_MAX || std::abs(rolls) > U_INT_MAX || std::abs(sides) > U_INT_MAX) {
         throw Exception::DiceStringInvalidParse();
     }
 
@@ -76,7 +76,7 @@ u_int Dice::Hash3(u_int h1, u_int h2, u_int h3) {
 int Dice::roll() {
     this->result = base;
 
-    for (short index = 0; index < rolls; index++) {
+    for (int index = 0; index < rolls; index++) {
         if (sides == 0) {
             continue;
         } else {
@@ -92,11 +92,11 @@ int Dice::getBase() {
     return this->base;
 }
 
-short Dice::getRolls() {
+int Dice::getRolls() {
     return this->rolls;
 }
 
-short Dice::getSides() {
+int Dice::getSides() {
     return this->sides;
 }
 
@@ -111,13 +111,13 @@ Dice* Dice::setBase(int base) {
     return this;
 }
 
-Dice* Dice::setRolls(short rolls) {
+Dice* Dice::setRolls(int rolls) {
     this->rolls = rolls;
 
     return this;
 }
 
-Dice* Dice::setSides(short sides) {
+Dice* Dice::setSides(int sides) {
     this->sides = sides;
 
     return this;

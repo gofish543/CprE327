@@ -643,7 +643,7 @@ Floor* Floor::generateMonsters() {
 
     u_char monsterX;
     u_char monsterY;
-    u_short monsterRoom;
+    Room* monsterRoom;
 
     auto playerRoom = (Room*) this->getTerrainAt(this->dungeon->getPlayer()->getX(), this->dungeon->getPlayer()->getY());
 
@@ -653,12 +653,9 @@ Floor* Floor::generateMonsters() {
 
     // Find out the max number of monsters possible within the program
     for (roomIndex = 0; roomIndex < this->roomCount; roomIndex++) {
-        if (this->rooms.at(roomIndex)->getId() == playerRoom->getId() && this->rooms.at(roomIndex)->getFloor() == dungeon->getPlayer()->getFloor()) {
-            continue;
-        } else {
-            maxMonsters += (this->rooms.at(roomIndex)->getWidth() * this->rooms.at(roomIndex)->getHeight());
-        }
+            maxMonsters += this->rooms[roomIndex]->getWidth();
     }
+    maxMonsters -= playerRoom->getWidth();
 
     // If there are more monsters trying to be placed than monsters available, set the max number of monsters
     if (this->monsterCount > maxMonsters) {
@@ -668,15 +665,15 @@ Floor* Floor::generateMonsters() {
     for (index = 0; index < this->monsterCount; index++) {
         placementAttempts = 0;
 
-        // Select random spots until they are only surrounded by room space
         do {
+            // Select a room as long as it isn't the player's room
             do {
-                monsterRoom = u_char(Dice::RandomNumberBetween(0, this->roomCount - 1));
-            } while (this->rooms.at(monsterRoom)->getId() == playerRoom->getId() && this->rooms.at(monsterRoom)->getFloor() == dungeon->getPlayer()->getFloor());
+                monsterRoom = this->rooms[Dice::RandomNumberBetween(0, this->roomCount - 1)];
+            } while (monsterRoom->getId() == playerRoom->getId() && monsterRoom->getFloor() == dungeon->getPlayer()->getFloor());
 
             // Select random spot inside the room
-            monsterX = u_char(Dice::RandomNumberBetween(this->rooms.at(monsterRoom)->getStartingX(), this->rooms.at(monsterRoom)->getStartingX() + this->rooms.at(monsterRoom)->getWidth() - 1));
-            monsterY = u_char(Dice::RandomNumberBetween(this->rooms.at(monsterRoom)->getStartingY(), this->rooms.at(monsterRoom)->getStartingY() + this->rooms.at(monsterRoom)->getHeight() - 1));
+            monsterX = monsterRoom->randomXInside();
+            monsterY = monsterRoom->randomYInside();
 
             placementAttempts++;
         } while (this->characters[monsterY][monsterX] != null && placementAttempts < 25);
@@ -703,8 +700,12 @@ Floor* Floor::generateMonsters() {
         Monster* monster = monsterTemplate->generateMonster(this, monsterX, monsterY);
         // If the monster generated is a boss or is unique, remove from possible templates
         if (monster->isBoss() || monster->isUnique()) {
-            monsterTemplate->setIsValid(false);
+           if(monster->isBoss()) {
+               this->dungeon->setBoss(monster);
+           }
+           this->dungeon->removeMonsterTemplate(monsterTemplate);
         }
+
         this->monsters.push_back(monster);
         this->characters[monsterY][monsterX] = this->monsters.at(index);
     }
@@ -735,9 +736,10 @@ Floor* Floor::generateObjects() {
 
         ObjectTemplate* objectTemplate = this->dungeon->randomObjectTemplate();
         Object* object = objectTemplate->generateObject(this, objectX, objectY);
-        // If the monster generated is a boss or is unique, remove from possible templates
+        // If the monster generated is an artifact, remove from possible templates
         if (object->getIsArtifact()) {
-            objectTemplate->setIsValid(false);
+            printf("Artifact found %s\n", object->getName().c_str());
+            this->dungeon->removeObjectTemplate(objectTemplate);
         }
         this->objects.push_back(object);
         this->objectsMap[objectY][objectX] = this->objects.at(index);

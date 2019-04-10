@@ -36,18 +36,13 @@ int get_sign(int value) {
     }
 }
 
-std::string& ltrim(std::string& str, const std::string& chars) {
-    str.erase(0, str.find_first_not_of(chars));
-    return str;
-}
+std::string trim(const std::string str, const std::string& chars) {
+    std::string newStr = str;
 
-std::string& rtrim(std::string& str, const std::string& chars) {
-    str.erase(str.find_last_not_of(chars) + 1);
-    return str;
-}
+    newStr.erase(0, newStr.find_first_not_of(chars));
+    newStr.erase(newStr.find_last_not_of(chars) + 1);
 
-std::string& trim(std::string& str, const std::string& chars) {
-    return ltrim(rtrim(str, chars), chars);
+    return newStr;
 }
 
 std::vector<std::string> split(std::string str, char delimiter) {
