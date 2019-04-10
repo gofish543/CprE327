@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Added
+### Fixed
+### Changed
+
+## [v0.1.8 (2019-04-10)](https://github.com/gofish543/CprE327/releases/tag/v0.1.8)
+
+### Added
 - Added object creation from object templates
 - Added object template parsing
 - Added color for ncurses game play
