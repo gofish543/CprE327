@@ -74,8 +74,8 @@ namespace App {
 }
 
 #include "character.h"
-#include "../floor.h"
-#include "../input.h"
+#include "../Floor.h"
+#include "../Input.h"
 #include "../output.h"
 
 #endif

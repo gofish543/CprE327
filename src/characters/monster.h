@@ -145,7 +145,7 @@ namespace App {
     };
 }
 
-#include "../floor.h"
+#include "../Floor.h"
 #include "../resource.h"
 
 #endif

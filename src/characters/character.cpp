@@ -1,5 +1,5 @@
 #include "character.h"
-#include "../floor.h"
+#include "../Floor.h"
 
 Character::Character(Floor* floor, u_char x, u_char y, u_char character, u_char speed, bool isPlayer, bool isMonster) {
     this->floor = floor;

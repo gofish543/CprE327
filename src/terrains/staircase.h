@@ -24,7 +24,6 @@ namespace App {
         int take();
 
         /** GETTERS **/
-        u_char getIndex();
         char getDirection();
         /** GETTERS **/
 

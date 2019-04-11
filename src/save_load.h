@@ -13,6 +13,6 @@ int save_to_file(Dungeon* dungeon);
 int load_from_file(Dungeon* dungeon);
 void save_error(Dungeon* dungeon);
 
-#include "floor.h"
+#include "Floor.h"
 
 #endif

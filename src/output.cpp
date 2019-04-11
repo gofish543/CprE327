@@ -18,6 +18,10 @@ Output* Output::print() {
 
     u_char y;
     u_char x;
+    u_char yMin;
+    u_char xMin;
+    u_char yMax;
+    u_char xMax;
     u_char index;
     Floor* floor = dungeon->getCurrentFloor();
 
@@ -28,18 +32,28 @@ Output* Output::print() {
     }
 
     if (this->doExpanded) {
+        yMin = 0;
+        xMin = 0;
+        yMax = DUNGEON_FLOOR_HEIGHT;
+        xMax = DUNGEON_FLOOR_WIDTH;
+
         this->print("   ");
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
             this->print("%3d", x);
         }
         this->print("\n");
+    } else {
+        yMin = 1;
+        xMin = 1;
+        yMax = DUNGEON_FLOOR_HEIGHT - 1;
+        xMax = DUNGEON_FLOOR_WIDTH - 1;
     }
 
-    for (y = 0; y < DUNGEON_FLOOR_HEIGHT; y++) {
+    for (y = yMin; y < yMax; y++) {
         if (this->doExpanded) {
             this->print("%2d ", y);
         }
-        for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
+        for (x = xMin; x < xMax; x++) {
             this->setColor(floor->getColorAt(x, y));
 
             if (this->doExpanded) {
@@ -54,11 +68,7 @@ Output* Output::print() {
 
     this->setColor(EFD_COLOR_WHITE);
     for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
-        if (this->doExpanded) {
-            this->print("%s", this->dungeon->getText(index).c_str());
-        } else {
-            this->print("%s", this->dungeon->getText(index).c_str());
-        }
+        this->print("%s", this->dungeon->getText(index).c_str());
         this->print("\n");
     }
 
@@ -153,7 +163,7 @@ Output* Output::printEndgame() {
 
     if (this->dungeon->getPlayer()->getRequestTerminate()) {
         this->print("Thank you for playing, safely exiting\n");
-    } else if (dungeon->getPlayer()->isAlive()) {
+    } else if (dungeon->getPlayer()->isAlive() && dungeon->getBoss()->isAlive()) {
         this->print("Queue completely empty, terminating the program safely\n");
     } else {
         u_char y;

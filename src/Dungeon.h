@@ -79,7 +79,7 @@ namespace App {
 }
 
 #include "save_load.h"
-#include "floor.h"
+#include "Floor.h"
 #include "Dice.h"
 #include "Events.h"
 #include "output.h"
