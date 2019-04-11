@@ -1,5 +1,5 @@
-#ifndef SAVE_LOAD_H
-#define SAVE_LOAD_H
+#ifndef SAVELOAD_H
+#define SAVELOAD_H
 
 #include <cstdio>
 #include <cstdlib>

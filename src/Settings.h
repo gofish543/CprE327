@@ -18,7 +18,7 @@
 #include <colors.h>
 #include <exception.h>
 
-#include "resource.h"
+#include "Resource.h"
 
 namespace App {
     class Settings {

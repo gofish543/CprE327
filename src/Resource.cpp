@@ -1,5 +1,4 @@
-#include <sstream>
-#include "resource.h"
+#include "Resource.h"
 
 int error_check_fread(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream) {
     if (fread(ptr, size, nmemb, stream) != nmemb) {
@@ -18,9 +17,9 @@ int error_check_fwrite(void* __restrict ptr, size_t size, size_t nmemb, FILE* st
 
 u_char convert_base10_to_char(u_int integerValue) {
     if (integerValue < 10) {
-        return (u_char) ('0' + integerValue);
+        return u_char('0' + integerValue);
     } else {
-        return (u_char) ('a' + (integerValue - 10));
+        return u_char('a' + (integerValue - 10));
     }
 }
 

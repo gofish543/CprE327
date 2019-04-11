@@ -135,13 +135,12 @@ std::string* Dungeon::appendText(const std::string& text) {
 
 std::string* Dungeon::prependText(const std::string* format, ...) {
     char buffer[DUNGEON_FLOOR_WIDTH + 1];
-    
+
     va_list args;
     va_start(args, format);
     vsnprintf(buffer, DUNGEON_FLOOR_WIDTH + 1, format->c_str(), args);
     va_end(args);
-    
-    
+
     return this->prependText(buffer);
 }
 
@@ -152,7 +151,7 @@ std::string* Dungeon::appendText(const std::string* format, ...) {
     va_start(args, format);
     vsnprintf(buffer, DUNGEON_FLOOR_WIDTH + 1, format->c_str(), args);
     va_end(args);
-    
+
     return this->appendText(buffer);
 }
 

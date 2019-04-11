@@ -78,11 +78,11 @@ namespace App {
     };
 }
 
-#include "save_load.h"
+#include "SaveLoad.h"
 #include "Floor.h"
 #include "Dice.h"
 #include "Events.h"
-#include "output.h"
+#include "Output.h"
 #include "templates/MonsterTemplate.h"
 #include "templates/ObjectTemplate.h"
 #include "characters/player.h"

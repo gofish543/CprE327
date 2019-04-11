@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <random>
 #include <string>
+#include <sstream>
 #include <unistd.h>
 #include <fcntl.h>
 #include <ncurses.h>
