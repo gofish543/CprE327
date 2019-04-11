@@ -497,7 +497,7 @@ Floor* Floor::generateRooms(u_short roomCount, u_short stairUpCount, u_short sta
             }
         } while (collision);
 
-        room = new Room(this, roomStartX, roomStartY, roomStartX, roomStartY, roomWidth, roomHeight);
+        room = new Room(this, roomStartX, roomStartY, roomWidth, roomHeight);
         this->rooms.push_back(room);
 
         // Are we placing any staircases in this room?
@@ -650,7 +650,7 @@ Floor* Floor::generateMonsters(u_short monsterCount) {
     u_char monsterY;
 
     Room* monsterRoom;
-    auto playerRoom = (Room*) this->terrains[this->dungeon->getPlayer()->getY()][this->dungeon->getPlayer()->getX()];
+    Room* playerRoom = null;
 
     u_int placementAttempts = 0;
     u_short maxMonsters = 0;
@@ -661,7 +661,10 @@ Floor* Floor::generateMonsters(u_short monsterCount) {
         maxMonsters += this->rooms[roomIndex]->getArea();
     }
 
-    maxMonsters -= playerRoom->getArea();
+    if (this->dungeon->getPlayer()->getFloor() == this) {
+        playerRoom = (Room*) this->terrains[this->dungeon->getPlayer()->getY()][this->dungeon->getPlayer()->getX()];
+        maxMonsters -= playerRoom->getArea();
+    }
 
     // If there are more monsters trying to be placed than monsters available, set the max number of monsters
     if (monsterCount > maxMonsters) {

@@ -4,6 +4,7 @@
 
 ### Added
 ### Fixed
+- Fixed room pointer issues
 - Fixed out of sight coloring on map
 - Fixed line of sight algorithm
 - Fixed reseeding of dice random number

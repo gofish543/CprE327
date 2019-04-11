@@ -1,11 +1,9 @@
 #include "room.h"
 
-Room::Room(Floor* floor, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height)
+Room::Room(Floor* floor, u_char x, u_char y, u_char width, u_char height)
         : Terrain(floor, x, y) {
     this->width = width;
     this->height = height;
-    this->startingX = startingX;
-    this->startingY = startingY;
 
     this->hardness = ROOM_HARDNESS;
     this->character = ROOM_CHARACTER;
@@ -13,32 +11,31 @@ Room::Room(Floor* floor, u_char x, u_char y, u_char startingX, u_char startingY,
 }
 
 u_char Room::randomXInside() {
-    return u_char(Dice::RandomNumberBetween(this->getStartX(), this->getEndX()));
+    return Dice::RandomNumberBetween(this->getStartX(), this->getEndX());
 }
 
 u_char Room::randomYInside() {
-    return u_char(Dice::RandomNumberBetween(this->getStartY(), this->getEndY()));
+    return Dice::RandomNumberBetween(this->getStartY(), this->getEndY());
 }
 
 u_char Room::getStartX() {
-    return this->startingX;
+    return this->x;
 }
 
 u_char Room::getStartY() {
-    return this->startingY;
+    return this->y;
 }
 
 u_char Room::getEndX() {
-    return this->startingX + this->width - 1;
+    return this->x + this->width - 1;
 }
 
 u_char Room::getEndY() {
-    return this->startingY + this->height - 1;
+    return this->y + this->height - 1;
 }
 
 u_char Room::getArea() {
-    printf("%d\n", this->width * this->height);
-    return u_char(this->width * this->height);
+    return this->width * this->height;
 }
 
 /** GETTERS **/
@@ -51,11 +48,11 @@ u_char Room::getHeight() {
 }
 
 u_char Room::getStartingX() {
-    return this->startingX;
+    return this->x;
 }
 
 u_char Room::getStartingY() {
-    return this->startingY;
+    return this->y;
 }
 /** GETTERS **/
 

@@ -25,7 +25,7 @@ namespace App {
     class Floor {
 
     public:
-        explicit Floor(Dungeon* dungeon);
+        Floor(Dungeon* dungeon);
         Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short monsterCount, u_short objectCount);
         ~Floor();
 
@@ -101,12 +101,6 @@ namespace App {
     private:
         Dungeon* dungeon;
         u_char floorNumber;
-
-//        u_short roomCount;
-//        u_short stairUpCount;
-//        u_short stairDownCount;
-//        u_short monsterCount;
-//        u_short objectCount;
 
         std::vector<Monster*> monsters;
         std::vector<Staircase*> upStairs;
