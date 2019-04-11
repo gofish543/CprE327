@@ -75,7 +75,6 @@ namespace App {
 
 #include "character.h"
 #include "../floor.h"
-#include "../events.h"
 #include "../input.h"
 #include "../output.h"
 

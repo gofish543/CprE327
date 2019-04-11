@@ -57,7 +57,6 @@ namespace App {
         Dungeon* setEventManager(EventManager* eventManager);
         Dungeon* setPlayer(Player* player);
         Dungeon* setBoss(Monster* boss);
-        Dungeon* setWindow(WINDOW* window);
         /** SETTERS **/
     protected:
 
@@ -81,8 +80,8 @@ namespace App {
 
 #include "save_load.h"
 #include "floor.h"
-#include "dice.h"
-#include "events.h"
+#include "Dice.h"
+#include "Events.h"
 #include "output.h"
 #include "templates/MonsterTemplate.h"
 #include "templates/ObjectTemplate.h"

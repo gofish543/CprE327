@@ -14,7 +14,7 @@
 namespace App {
     class Terrain {
     public:
-        Terrain(Floor* floor, u_short id, u_char x, u_char y);
+        Terrain(Floor* floor, u_char x, u_char y);
         ~Terrain();
 
         bool isBorder();
@@ -28,7 +28,6 @@ namespace App {
 
         /** GETTERS **/
         Floor* getFloor();
-        u_short getId();
         u_char getX();
         u_char getY();
         u_char getCharacter();
@@ -42,8 +41,6 @@ namespace App {
         /** SETTERS **/
     protected:
         Floor* floor;
-
-        u_short id;
 
         u_char x;
         u_char y;

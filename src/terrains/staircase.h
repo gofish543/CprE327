@@ -15,7 +15,7 @@
 namespace App {
     class Staircase : public Terrain {
     public:
-        Staircase(Floor* floor, u_short id, u_char x, u_char y, char direction);
+        Staircase(Floor* floor, u_char x, u_char y, u_char index, char direction);
         ~Staircase();
 
         Floor* getTargetFloor();
@@ -24,6 +24,7 @@ namespace App {
         int take();
 
         /** GETTERS **/
+        u_char getIndex();
         char getDirection();
         /** GETTERS **/
 
@@ -32,6 +33,8 @@ namespace App {
     protected:
 
     private:
+        u_char index;
+
         char direction;
     };
 }

@@ -10,7 +10,7 @@
 namespace App {
     class Corridor : public Terrain {
     public:
-        Corridor(Floor* floor, u_short id, u_char x, u_char y);
+        Corridor(Floor* floor, u_char x, u_char y);
         ~Corridor();
 
         /** GETTERS **/

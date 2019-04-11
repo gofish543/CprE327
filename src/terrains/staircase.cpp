@@ -1,9 +1,10 @@
 #include "staircase.h"
 
-Staircase::Staircase(Floor* floor, u_short id, u_char x, u_char y, char direction) : Terrain(floor, id, x, y) {
+Staircase::Staircase(Floor* floor, u_char x, u_char y, u_char index, char direction) : Terrain(floor, x, y) {
     this->hardness = STAIRCASE_HARDNESS;
     this->direction = direction;
     this->type = TERRAIN_STAIRCASE;
+    this->index = index;
 
     if (this->direction == STAIRCASE_DIRECTION_DOWN) {
         this->character = STAIRCASE_DOWN_CHARACTER;
@@ -40,12 +41,12 @@ int Staircase::take() {
 
     // Place the character on the upper floor's staircase
     // If up staircase and there is a down staircase to step on
-    if (this->isUp() && this->getId() < currentFloor->getStairDownCount()) {
-        player->setX(currentFloor->getDownStair(this->getId())->getX())->setY(currentFloor->getDownStair(this->getId())->getY());
+    if (this->isUp() && this->index < currentFloor->getStairDownCount()) {
+        player->setX(currentFloor->getDownStair(this->index)->getX())->setY(currentFloor->getDownStair(this->index)->getY());
     }
         // If down staircase and there is an up staircase to step on
-    else if (this->isDown() && this->getId() < currentFloor->getStairUpCount()) {
-        player->setX(currentFloor->getUpStair(this->getId())->getX())->setY(currentFloor->getUpStair(this->getId())->getY());
+    else if (this->isDown() && this->index < currentFloor->getStairUpCount()) {
+        player->setX(currentFloor->getUpStair(this->index)->getX())->setY(currentFloor->getUpStair(this->index)->getY());
     }
         // Else random location
     else {
@@ -82,7 +83,7 @@ int Staircase::take() {
                 do {
                     do {
                         monsterRoom = currentFloor->getRoom(u_char(Dice::RandomNumberBetween(0, currentFloor->getRoomCount() - 1)));
-                    } while (monsterRoom->getId() == playerRoom->getId());
+                    } while (monsterRoom == playerRoom);
 
                     // Select random spot inside the room
                     monsterX = monsterRoom->randomXInside();
@@ -94,7 +95,7 @@ int Staircase::take() {
                 // If failed to find, just man handle it through
                 if (placementAttempts >= 25) {
                     for (roomIndex = 0; roomIndex < currentFloor->getRoomCount(); roomIndex++) {
-                        if (currentFloor->getRoom(roomIndex)->getId() == playerRoom->getId()) {
+                        if (currentFloor->getRoom(roomIndex) == playerRoom) {
                             continue;
                         }
                         // Start looping and find the next open spot

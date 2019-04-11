@@ -61,7 +61,7 @@ int Monster::HandleEvent(Event* event) {
                     // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
                     if (monster->isTunneler() && floor->getTerrainAt(monster->getX(), monster->getY())->isRock()) {
                         delete (floor->getTerrainAt(monster->getX(), monster->getY()));
-                        floor->setTerrainAt(new Corridor(floor, 0, monster->getX(), monster->getY()), monster->getX(), monster->getY());
+                        floor->setTerrainAt(new Corridor(floor, monster->getX(), monster->getY()), monster->getX(), monster->getY());
                     }
                     return 0;
                 }
@@ -78,7 +78,7 @@ int Monster::HandleEvent(Event* event) {
                 // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
                 if (deadMonster->isTunneler() && floor->getTerrainAt(deadMonster->getX(), deadMonster->getY())->isRock()) {
                     delete (floor->getTerrainAt(deadMonster->getX(), deadMonster->getY()));
-                    floor->setTerrainAt(new Corridor(floor, 0, deadMonster->getX(), deadMonster->getY()), deadMonster->getX(), deadMonster->getY());
+                    floor->setTerrainAt(new Corridor(floor, deadMonster->getX(), deadMonster->getY()), deadMonster->getX(), deadMonster->getY());
                 }
 
                 if (deadMonster == monster) { // The other monster won
@@ -238,7 +238,7 @@ int Monster::moveTo(u_char toX, u_char toY) {
         // Tunneler monsters leave corridors behind if tunneling and on rock
         if (this->isTunneler() && floor->getTerrainAt(this->getX(), this->getY())->isRock()) {
             delete (floor->getTerrainAt(this->getX(), this->getY()));
-            floor->setTerrainAt(new Corridor(floor, 0, this->getX(), this->getY()), this->getX(), this->getY());
+            floor->setTerrainAt(new Corridor(floor, this->getX(), this->getY()), this->getX(), this->getY());
         }
 
         // Can only move if hardness is low enough

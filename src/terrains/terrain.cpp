@@ -1,8 +1,7 @@
 #include "terrain.h"
 
-Terrain::Terrain(Floor* floor, u_short id, u_char x, u_char y) {
+Terrain::Terrain(Floor* floor, u_char x, u_char y) {
     this->floor = floor;
-    this->id = id;
     this->x = x;
     this->y = y;
 
@@ -45,10 +44,6 @@ bool Terrain::isWalkable() {
 /** GETTERS **/
 Floor* Terrain::getFloor() {
     return this->floor;
-}
-
-u_short Terrain::getId() {
-    return this->id;
 }
 
 u_char Terrain::getX() {

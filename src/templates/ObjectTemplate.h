@@ -81,6 +81,6 @@ namespace App {
 }
 
 #include "../objects/Object.h"
-#include "../dice.h"
+#include "../Dice.h"
 
 #endif

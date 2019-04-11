@@ -16,7 +16,7 @@
 namespace App {
     class Room : public Terrain {
     public:
-        Room(Floor* floor, u_short id, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height);
+        Room(Floor* floor, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height);
 
         u_char randomXInside();
         u_char randomYInside();
@@ -50,6 +50,6 @@ namespace App {
     };
 }
 
-#include "../dice.h"
+#include "../Dice.h"
 
 #endif

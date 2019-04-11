@@ -1,7 +1,7 @@
 #include "room.h"
 
-Room::Room(Floor* floor, u_short id, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height)
-        : Terrain(floor, id, x, y) {
+Room::Room(Floor* floor, u_char x, u_char y, u_char startingX, u_char startingY, u_char width, u_char height)
+        : Terrain(floor, x, y) {
     this->width = width;
     this->height = height;
     this->startingX = startingX;

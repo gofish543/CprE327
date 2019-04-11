@@ -4,8 +4,13 @@
 
 ### Added
 ### Fixed
+- Fixed out of sight coloring on map
 - Fixed line of sight algorithm
+- Fixed reseeding of dice random number
 ### Changed
+- Changed dice random number to have static random generator
+- Changed monster, object, and room generation
+- Removed size counters under the floor class
 
 ## [v0.1.8 (2019-04-10)](https://github.com/gofish543/CprE327/releases/tag/v0.1.8)
 

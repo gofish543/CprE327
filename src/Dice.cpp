@@ -1,4 +1,4 @@
-#include "dice.h"
+#include "Dice.h"
 
 Dice::Dice(int base, int rolls, int sides) {
     this->base = base;
@@ -24,49 +24,46 @@ Dice::Dice(std::string diceString) {
     long int rolls = std::stoi(diceString.substr(indexOfPlus + 1, indexOfD));
     long int sides = std::stoi(diceString.substr(indexOfD + 1));
 
-    if (std::abs(base) > U_INT_MAX || std::abs(rolls) > U_INT_MAX || std::abs(sides) > U_INT_MAX) {
+    if (std::abs(base) > U_INT_MAX ||
+        std::abs(rolls) > U_INT_MAX ||
+        std::abs(sides) > U_INT_MAX) {
         throw Exception::DiceStringInvalidParse();
     }
-
-    this->result = 0;
 
     this->base = int(base);
     this->rolls = short(rolls);
     this->sides = short(sides);
+
+    this->result = 0;
 }
 
 Dice::~Dice() = default;
 
 int Dice::RandomNumberBetween(int min, int max) {
-    static int dice_random_offset = 0;
+    static std::random_device randomDevice;
+    static std::default_random_engine randomEngine(randomDevice());
+    static bool seedSet = false;
 
-    int fd = open("/dev/urandom", O_RDWR);
-    struct timeval time = {};
-    ::gettimeofday(&time, null);
-    u_int defaultSeed;
-    if (fd == 0) {
-        defaultSeed = Dice::Hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
-    } else {
+    if (!seedSet) {
+        struct timeval time = {};
+        gettimeofday(&time, null);
+
         size_t buffer[1];
-        lseek(fd, dice_random_offset, 0);
-        if (read(fd, buffer, sizeof(size_t)) != sizeof(size_t)) {
-            defaultSeed = Dice::Hash3((u_int) time.tv_sec, (u_int) time.tv_usec, (u_int) getpid());
-        } else {
-            defaultSeed = (u_int) buffer[0];
-            dice_random_offset += 8;
+        u_int defaultSeed;
+        int randomFile = open("/dev/random", O_RDWR);
 
-            if (dice_random_offset > 2048) {
-                dice_random_offset = 0;
-            }
+        if (randomFile == 0 || read(randomFile, buffer, sizeof(size_t)) != sizeof(size_t)) {
+            defaultSeed = Dice::Hash3(time.tv_sec, time.tv_usec, getpid());
+        } else {
+            defaultSeed = buffer[0];
         }
-        close(fd);
+
+        randomEngine.seed(defaultSeed);
+
+        seedSet = true;
     }
 
-    std::random_device randomDevice;
-    std::default_random_engine randomEngine(randomDevice());
-    randomEngine.seed(defaultSeed);
-
-    return ((u_int) randomEngine()) % ((max + 1) - min) + min;
+    return randomEngine() % ((max + 1) - min) + min;
 }
 
 u_int Dice::Hash3(u_int h1, u_int h2, u_int h3) {

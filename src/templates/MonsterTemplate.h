@@ -63,6 +63,6 @@ namespace App {
 }
 
 #include "../characters/monster.h"
-#include "../dice.h"
+#include "../Dice.h"
 
 #endif

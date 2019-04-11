@@ -26,7 +26,7 @@ namespace App {
 
     public:
         explicit Floor(Dungeon* dungeon);
-        Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters, u_short objectCount);
+        Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short monsterCount, u_short objectCount);
         ~Floor();
 
         Floor* resetTunnelerView();
@@ -66,10 +66,6 @@ namespace App {
 
         /** SETTERS **/
         Floor* setFloorNumber(u_char floorNumber);
-        Floor* setRoomCount(u_short roomCount);
-        Floor* setStairUpCount(u_short stairUpCount);
-        Floor* setStairDownCount(u_short stairDownCount);
-        Floor* setMonsterCount(u_short monsterCount);
         Floor* setTerrainAt(Terrain* terrain, u_char width, u_char height);
         Floor* setCharacterAt(Character* character, u_char width, u_char height);
         Floor* setTunnelerViewAt(u_char value, u_char width, u_char height);
@@ -87,11 +83,11 @@ namespace App {
         // Generate class of functions
         Floor* generateBorders();
         Floor* generateRock();
-        Floor* generateRooms();
+        Floor* generateRooms(u_short roomCount, u_short stairUpCount, u_short stairDownCount);
         Floor* generateCorridors();
         Floor* generatePlayer();
-        Floor* generateMonsters();
-        Floor* generateObjects();
+        Floor* generateMonsters(u_short monsterCount);
+        Floor* generateObjects(u_short objectCount);
 
         // Load class of functions
         Floor* loadBorders();
@@ -106,11 +102,11 @@ namespace App {
         Dungeon* dungeon;
         u_char floorNumber;
 
-        u_short roomCount;
-        u_short stairUpCount;
-        u_short stairDownCount;
-        u_short monsterCount;
-        u_short objectCount;
+//        u_short roomCount;
+//        u_short stairUpCount;
+//        u_short stairDownCount;
+//        u_short monsterCount;
+//        u_short objectCount;
 
         std::vector<Monster*> monsters;
         std::vector<Staircase*> upStairs;
@@ -120,7 +116,7 @@ namespace App {
     };
 }
 
-#include "dice.h"
+#include "Dice.h"
 #include "terrains/terrain.h"
 #include "terrains/border.h"
 #include "terrains/corridor.h"

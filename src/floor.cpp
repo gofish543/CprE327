@@ -1,50 +1,40 @@
 #include <exception.h>
 #include "floor.h"
 
-Floor::Floor(Dungeon* dungeon) {
+Floor::Floor(Dungeon* dungeon)
+        : tunnelerView{0}, nonTunnelerView{0}, cheapestPathToPlayer{0}, terrains{null}, characters{null}, objectsMap{null} {
     this->dungeon = dungeon;
 
     this->floorNumber = 0;
-    this->roomCount = 0;
-    this->stairUpCount = 0;
-    this->stairDownCount = 0;
-    this->monsterCount = 0;
-    this->objectCount = 0;
 
     this->initializeToNull()
             ->generateBorders();
 }
 
-Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short numberOfMonsters, u_short objectCount) {
+Floor::Floor(Dungeon* dungeon, u_char floorNumber, u_short roomCount, u_short stairUpCount, u_short stairDownCount, u_short monsterCount, u_short objectCount)
+        : tunnelerView{0}, nonTunnelerView{0}, cheapestPathToPlayer{0}, terrains{null}, characters{null}, objectsMap{null} {
     this->dungeon = dungeon;
     this->floorNumber = floorNumber;
 
-    this->roomCount = roomCount;
-    this->stairUpCount = stairUpCount;
-    this->stairDownCount = stairDownCount;
-    this->objectCount = objectCount;
-
     if (this->floorNumber == 0) {
-        this->stairDownCount = 0;
+        stairDownCount = 0;
     }
     if (this->floorNumber == this->dungeon->getFloorCount() - 1) {
-        this->stairUpCount = 0;
+        stairUpCount = 0;
     }
 
     if (this->dungeon->getSettings()->doNumberOfMonsters()) {
-        this->monsterCount = this->dungeon->getSettings()->getNumberOfMonsters();
-    } else {
-        this->monsterCount = numberOfMonsters;
+        monsterCount = this->dungeon->getSettings()->getNumberOfMonsters();
     }
 
     this->initializeToNull()
             ->generateBorders()
-            ->generateRooms()
+            ->generateRooms(roomCount, stairUpCount, stairDownCount)
             ->generateCorridors()
             ->generateRock()
             ->generatePlayer()
-            ->generateMonsters()
-            ->generateObjects();
+            ->generateMonsters(monsterCount)
+            ->generateObjects(objectCount);
 }
 
 Floor::~Floor() {
@@ -54,27 +44,32 @@ Floor::~Floor() {
 
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
+            // Rooms need to be deleted special due to pointer management
+            if (this->terrains[height][width]->isRoom()) {
+                continue;
+            }
+
             delete (this->terrains[height][width]);
         }
     }
 
-    for (index = 0; index < this->roomCount; index++) {
+    for (index = 0; index < this->getRoomCount(); index++) {
         delete (this->rooms.at(index));
     }
 
-    for (index = 0; index < this->stairUpCount; index++) {
+    for (index = 0; index < this->getStairUpCount(); index++) {
         delete (this->upStairs.at(index));
     }
 
-    for (index = 0; index < this->stairDownCount; index++) {
+    for (index = 0; index < this->getStairDownCount(); index++) {
         delete (this->downStairs.at(index));
     }
 
-    for (index = 0; index < this->monsterCount; index++) {
+    for (index = 0; index < this->getMonsterCount(); index++) {
         delete (this->monsters.at(index));
     }
 
-    for (index = 0; index < this->objectCount; index++) {
+    for (index = 0; index < this->getObjectCount(); index++) {
         delete (this->objects.at(index));
     }
 }
@@ -172,23 +167,23 @@ u_char Floor::getFloorNumber() {
 }
 
 u_short Floor::getRoomCount() {
-    return this->roomCount;
+    return this->rooms.size();
 }
 
 u_short Floor::getStairUpCount() {
-    return this->stairUpCount;
+    return this->upStairs.size();
 }
 
 u_short Floor::getStairDownCount() {
-    return this->stairDownCount;
+    return this->downStairs.size();
 }
 
 u_short Floor::getMonsterCount() {
-    return this->monsterCount;
+    return this->monsters.size();
 }
 
 u_short Floor::getObjectCount() {
-    return this->objectCount;
+    return this->objects.size();
 }
 
 Terrain* Floor::getTerrainAt(u_char width, u_char height) {
@@ -255,30 +250,6 @@ Floor* Floor::setFloorNumber(u_char floorNumber) {
     return this;
 }
 
-Floor* Floor::setRoomCount(u_short roomCount) {
-    this->roomCount = roomCount;
-
-    return this;
-}
-
-Floor* Floor::setStairUpCount(u_short stairUpCount) {
-    this->stairUpCount = stairUpCount;
-
-    return this;
-}
-
-Floor* Floor::setStairDownCount(u_short stairDownCount) {
-    this->stairDownCount = stairDownCount;
-
-    return this;
-}
-
-Floor* Floor::setMonsterCount(u_short monsterCount) {
-    this->monsterCount = monsterCount;
-
-    return this;
-}
-
 Floor* Floor::setTerrainAt(Terrain* terrain, u_char width, u_char height) {
     this->terrains[height][width] = terrain;
 
@@ -312,7 +283,7 @@ Floor* Floor::setCheapestPathToPlayer(u_char value, u_char width, u_char height)
 Floor* Floor::setMonster(Monster* monster, u_short index) {
     if (index == U_SHORT_MAX) {
         this->monsters.push_back(monster);
-    } else if (index < this->roomCount) {
+    } else if (index < this->getRoomCount()) {
         this->monsters[index] = monster;
     } else {
         throw Exception::MonsterOutOfBounds();
@@ -324,7 +295,7 @@ Floor* Floor::setMonster(Monster* monster, u_short index) {
 Floor* Floor::setUpStair(Staircase* staircase, u_short index) {
     if (index == U_SHORT_MAX) {
         this->upStairs.push_back(staircase);
-    } else if (index < this->stairUpCount) {
+    } else if (index < this->getStairUpCount()) {
         this->upStairs[index] = staircase;
     } else {
         throw Exception::StaircaseOutOfBounds();
@@ -336,7 +307,7 @@ Floor* Floor::setUpStair(Staircase* staircase, u_short index) {
 Floor* Floor::setDownStair(Staircase* staircase, u_short index) {
     if (index == U_SHORT_MAX) {
         this->downStairs.push_back(staircase);
-    } else if (index < this->stairDownCount) {
+    } else if (index < this->getStairDownCount()) {
         this->downStairs[index] = staircase;
     } else {
         throw Exception::StaircaseOutOfBounds();
@@ -383,28 +354,28 @@ Floor* Floor::generateBorders() {
     // Set NORTH and SOUTH walls, ignoring corners
     for (x = 1; x < DUNGEON_FLOOR_WIDTH - 1; x++) {
         // Create a new border
-        this->terrains[0][x] = new Border(this, 0, 0, x, NORTH_SOUTH_WALL_CHARACTER);
-        this->terrains[DUNGEON_FLOOR_HEIGHT - 1][x] = new Border(this, 0, x, DUNGEON_FLOOR_HEIGHT - 1, NORTH_SOUTH_WALL_CHARACTER);
+        this->terrains[0][x] = new Border(this, 0, x, NORTH_SOUTH_WALL_CHARACTER);
+        this->terrains[DUNGEON_FLOOR_HEIGHT - 1][x] = new Border(this, x, DUNGEON_FLOOR_HEIGHT - 1, NORTH_SOUTH_WALL_CHARACTER);
     }
 
     // Set EAST and WEST walls, ignoring corners
     for (y = 1; y < DUNGEON_FLOOR_HEIGHT - 1; y++) {
         // Create a new border
-        this->terrains[y][0] = new Border(this, 0, 0, y, EAST_WEST_WALL_CHARACTER);
-        this->terrains[y][DUNGEON_FLOOR_WIDTH - 1] = new Border(this, 0, DUNGEON_FLOOR_WIDTH - 1, y, EAST_WEST_WALL_CHARACTER);
+        this->terrains[y][0] = new Border(this, 0, y, EAST_WEST_WALL_CHARACTER);
+        this->terrains[y][DUNGEON_FLOOR_WIDTH - 1] = new Border(this, DUNGEON_FLOOR_WIDTH - 1, y, EAST_WEST_WALL_CHARACTER);
     }
 
     // Set top left corner
-    this->terrains[0][0] = new Border(this, 0, 0, 0, CORNER_WALL_CHARACTER);
+    this->terrains[0][0] = new Border(this, 0, 0, CORNER_WALL_CHARACTER);
 
     // Set top right corner
-    this->terrains[0][DUNGEON_FLOOR_WIDTH - 1] = new Border(this, 0, DUNGEON_FLOOR_WIDTH - 1, 0, CORNER_WALL_CHARACTER);
+    this->terrains[0][DUNGEON_FLOOR_WIDTH - 1] = new Border(this, DUNGEON_FLOOR_WIDTH - 1, 0, CORNER_WALL_CHARACTER);
 
     // Set bottom left corner
-    this->terrains[DUNGEON_FLOOR_HEIGHT - 1][0] = new Border(this, 0, 0, DUNGEON_FLOOR_HEIGHT - 1, CORNER_WALL_CHARACTER);
+    this->terrains[DUNGEON_FLOOR_HEIGHT - 1][0] = new Border(this, 0, DUNGEON_FLOOR_HEIGHT - 1, CORNER_WALL_CHARACTER);
 
     // Set bottom right corner
-    this->terrains[DUNGEON_FLOOR_HEIGHT - 1][DUNGEON_FLOOR_WIDTH - 1] = new Border(this, 0, DUNGEON_FLOOR_WIDTH - 1, DUNGEON_FLOOR_HEIGHT - 1, CORNER_WALL_CHARACTER);
+    this->terrains[DUNGEON_FLOOR_HEIGHT - 1][DUNGEON_FLOOR_WIDTH - 1] = new Border(this, DUNGEON_FLOOR_WIDTH - 1, DUNGEON_FLOOR_HEIGHT - 1, CORNER_WALL_CHARACTER);
 
     return this;
 }
@@ -432,7 +403,7 @@ Floor* Floor::generateRock() {
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
             if (this->terrains[height][width] == null) {
-                this->terrains[height][width] = new Rock(this, 0, width, height, u_char(Dice::RandomNumberBetween(ROCK_HARDNESS_MIN, ROCK_HARDNESS_MAX)));
+                this->terrains[height][width] = new Rock(this, width, height, u_char(Dice::RandomNumberBetween(ROCK_HARDNESS_MIN, ROCK_HARDNESS_MAX)));
             }
         }
     }
@@ -460,9 +431,9 @@ Floor* Floor::generateRock() {
     return this;
 }
 
-Floor* Floor::generateRooms() {
+Floor* Floor::generateRooms(u_short roomCount, u_short stairUpCount, u_short stairDownCount) {
     // Do some quick math to determine if the floor has room for all these rooms
-    if (this->roomCount * (ROOM_MAX_WIDTH * ROOM_MAX_HEIGHT) > .6 * (DUNGEON_FLOOR_WIDTH * DUNGEON_FLOOR_HEIGHT)) {
+    if (roomCount * (ROOM_MAX_WIDTH * ROOM_MAX_HEIGHT) > .6 * (DUNGEON_FLOOR_WIDTH * DUNGEON_FLOOR_HEIGHT)) {
         // If the max room characters is greater than 50% of the space available in the room, leave
         throw Exception::RoomEmptySpaceInvalid();
     }
@@ -484,36 +455,37 @@ Floor* Floor::generateRooms() {
     // Place to store the random stair room ids
     u_char stairX;
     u_char stairY;
+    Room* room;
 
     std::vector<u_short> upStairRooms;
     std::vector<u_short> downStairRooms;
 
     // Determine the rooms for each of the staircases
-    for (roomIndex = 0; roomIndex < this->stairUpCount; roomIndex++) {
-        upStairRooms.push_back(u_short(Dice::RandomNumberBetween(0, this->roomCount - 1)));
+    for (roomIndex = 0; roomIndex < stairUpCount; roomIndex++) {
+        upStairRooms.push_back(u_short(Dice::RandomNumberBetween(0, roomCount - 1)));
     }
 
-    for (roomIndex = 0; roomIndex < this->stairDownCount; roomIndex++) {
-        downStairRooms.push_back(u_short(Dice::RandomNumberBetween(0, this->roomCount - 1)));
+    for (roomIndex = 0; roomIndex < stairDownCount; roomIndex++) {
+        downStairRooms.push_back(u_short(Dice::RandomNumberBetween(0, roomCount - 1)));
     }
 
     // Place each room
-    for (index = 0; index < this->roomCount; index++) {
+    for (index = 0; index < roomCount; index++) {
         do {
             collision = false;
 
             // Find something inside the game play box
-            roomStartX = u_char(Dice::RandomNumberBetween(1, DUNGEON_FLOOR_WIDTH - 2));
-            roomStartY = u_char(Dice::RandomNumberBetween(1, DUNGEON_FLOOR_HEIGHT - 2));
+            roomStartX = Dice::RandomNumberBetween(1, DUNGEON_FLOOR_WIDTH - 2);
+            roomStartY = Dice::RandomNumberBetween(1, DUNGEON_FLOOR_HEIGHT - 2);
 
             // Select a random height and width
-            roomWidth = u_char(Dice::RandomNumberBetween(ROOM_MIN_WIDTH, ROOM_MAX_WIDTH));
-            roomHeight = u_char(Dice::RandomNumberBetween(ROOM_MIN_HEIGHT, ROOM_MAX_HEIGHT));
+            roomWidth = Dice::RandomNumberBetween(ROOM_MIN_WIDTH, ROOM_MAX_WIDTH);
+            roomHeight = Dice::RandomNumberBetween(ROOM_MIN_HEIGHT, ROOM_MAX_HEIGHT);
 
             // Need to check boundaries one off to make sure they are open spaces
-            for (height = roomStartY - u_char(1); height < (roomStartY + roomHeight + 1); height++) {
+            for (height = roomStartY - 1; height < (roomStartY + roomHeight + 1); height++) {
                 // Need to check boundaries one off to make sure they are open spaces
-                for (width = roomStartX - u_char(1); width < (roomStartX + roomWidth + 1); width++) {
+                for (width = roomStartX - 1; width < (roomStartX + roomWidth + 1); width++) {
                     if (
                             width >= DUNGEON_FLOOR_WIDTH - 1 || // Check if width in bounds
                             height >= DUNGEON_FLOOR_HEIGHT - 1 || // Check if height in bounds
@@ -525,30 +497,33 @@ Floor* Floor::generateRooms() {
             }
         } while (collision);
 
-        this->rooms.push_back(new Room(this, index, roomStartX, roomStartY, roomStartX, roomStartY, roomWidth, roomHeight));
+        room = new Room(this, roomStartX, roomStartY, roomStartX, roomStartY, roomWidth, roomHeight);
+        this->rooms.push_back(room);
 
         // Are we placing any staircases in this room?
-        for (roomIndex = 0; roomIndex < this->stairUpCount; roomIndex++) {
+        for (roomIndex = 0; roomIndex < stairUpCount; roomIndex++) {
             if (upStairRooms.at(roomIndex) == index) {
                 // Place the up staircase
                 do {
-                    stairX = u_char(Dice::RandomNumberBetween(roomStartX + 1, roomStartX + roomWidth - 2));
-                    stairY = u_char(Dice::RandomNumberBetween(roomStartY + 1, roomStartY + roomHeight - 2));
+                    stairX = room->randomXInside();
+                    stairY = room->randomYInside();
                 } while (this->terrains[stairY][stairX] != null);
-                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_UP);
-                this->upStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_UP));
+
+                this->terrains[stairY][stairX] = new Staircase(this, stairX, stairY, this->upStairs.size(), STAIRCASE_DIRECTION_UP);
+                this->upStairs.push_back(new Staircase(this, stairX, stairY, this->upStairs.size(), STAIRCASE_DIRECTION_UP));
             }
         }
 
-        for (roomIndex = 0; roomIndex < this->stairDownCount; roomIndex++) {
+        for (roomIndex = 0; roomIndex < stairDownCount; roomIndex++) {
             if (downStairRooms.at(roomIndex) == index) {
                 // Place the down staircase
                 do {
-                    stairX = u_char(Dice::RandomNumberBetween(roomStartX + 1, roomStartX + roomWidth - 2));
-                    stairY = u_char(Dice::RandomNumberBetween(roomStartY + 1, roomStartY + roomHeight - 2));
+                    stairX = room->randomXInside();
+                    stairY = room->randomYInside();
                 } while (this->terrains[stairY][stairX] != null);
-                this->terrains[stairY][stairX] = new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_DOWN);
-                this->downStairs.push_back(new Staircase(this, u_short(this->downStairs.size()), stairX, stairY, STAIRCASE_DIRECTION_DOWN));
+
+                this->terrains[stairY][stairX] = new Staircase(this, stairX, stairY, this->downStairs.size(), STAIRCASE_DIRECTION_DOWN);
+                this->downStairs.push_back(new Staircase(this, stairX, stairY, this->downStairs.size(), STAIRCASE_DIRECTION_DOWN));
             }
         }
 
@@ -556,7 +531,7 @@ Floor* Floor::generateRooms() {
         for (height = roomStartY; height < roomStartY + roomHeight; height++) {
             for (width = roomStartX; width < roomStartX + roomWidth; width++) {
                 if (this->terrains[height][width] == null) {
-                    this->terrains[height][width] = new Room(this, index, width, height, roomStartX, roomStartY, roomWidth, roomHeight);
+                    this->terrains[height][width] = room;
                 }
             }
         }
@@ -571,9 +546,11 @@ Floor* Floor::generateCorridors() {
     bool leftValid;
     bool rightValid;
 
+    Room* firstRoom;
     u_char firstRoomX;
     u_char firstRoomY;
 
+    Room* secondRoom;
     u_char secondRoomX;
     u_char secondRoomY;
 
@@ -581,11 +558,14 @@ Floor* Floor::generateCorridors() {
     u_char tempY;
 
     u_short index;
-    for (index = 0; index < this->roomCount - 1; index++) {
+    for (index = 0; index < this->getRoomCount() - 1; index++) {
+        firstRoom = this->rooms[index];
+        secondRoom = this->rooms[index + 1];
+
         // First we want to select a random spot within the room, but it needs to be on the border
         do {
-            firstRoomX = u_char(Dice::RandomNumberBetween(this->rooms[index]->getStartingX(), this->rooms[index]->getStartingX() + this->rooms[index]->getWidth() - 1));
-            firstRoomY = u_char(Dice::RandomNumberBetween(this->rooms[index]->getStartingY(), this->rooms[index]->getStartingY() + this->rooms[index]->getHeight() - 1));
+            firstRoomX = firstRoom->randomXInside();
+            firstRoomY = firstRoom->randomYInside();
 
             upValid = this->terrains[firstRoomY - 1][firstRoomX] == null;
             downValid = this->terrains[firstRoomY + 1][firstRoomX] == null;
@@ -595,8 +575,8 @@ Floor* Floor::generateCorridors() {
 
         // Second we want to select a random spot within the next room, but it needs to be on the border
         do {
-            secondRoomX = u_char(Dice::RandomNumberBetween(this->rooms[index + 1]->getStartingX(), this->rooms[index + 1]->getStartingX() + this->rooms[index + 1]->getWidth() - 1));
-            secondRoomY = u_char(Dice::RandomNumberBetween(this->rooms[index + 1]->getStartingY(), this->rooms[index + 1]->getStartingY() + this->rooms[index + 1]->getHeight() - 1));
+            secondRoomX = secondRoom->randomXInside();
+            secondRoomY = secondRoom->randomYInside();
 
             upValid = this->terrains[secondRoomY - 1][secondRoomX] == null;
             downValid = this->terrains[secondRoomY + 1][secondRoomX] == null;
@@ -614,7 +594,7 @@ Floor* Floor::generateCorridors() {
             }
 
             if (this->terrains[secondRoomY][tempX] == null) {
-                this->terrains[secondRoomY][tempX] = new Corridor(this, 0, tempX, secondRoomY);
+                this->terrains[secondRoomY][tempX] = new Corridor(this, tempX, secondRoomY);
             }
         }
 
@@ -628,13 +608,13 @@ Floor* Floor::generateCorridors() {
             }
 
             if (this->terrains[tempY][firstRoomX] == null) {
-                this->terrains[tempY][firstRoomX] = new Corridor(this, 0, firstRoomX, tempY);
+                this->terrains[tempY][firstRoomX] = new Corridor(this, firstRoomX, tempY);
             }
         }
 
         // Handle the corner case
         if (this->terrains[secondRoomY][firstRoomX] == null) {
-            this->terrains[secondRoomY][firstRoomX] = new Corridor(this, 0, firstRoomX, secondRoomY);
+            this->terrains[secondRoomY][firstRoomX] = new Corridor(this, firstRoomX, secondRoomY);
         }
     }
 
@@ -647,21 +627,20 @@ Floor* Floor::generatePlayer() {
         // Select random room and random coords and place character there
         u_char playerX;
         u_char playerY;
-        auto room = u_short(Dice::RandomNumberBetween(0, this->roomCount - 1));
+        auto room = u_short(Dice::RandomNumberBetween(0, this->getRoomCount() - 1));
         do {
             playerX = this->rooms.at(room)->randomXInside();
             playerY = this->rooms.at(room)->randomYInside();
         } while (this->terrains[playerY][playerX]->getCharacter() == STAIRCASE_UP_CHARACTER &&
                  this->terrains[playerY][playerX]->getCharacter() == STAIRCASE_DOWN_CHARACTER);
 
-        this->characters[playerY][playerX] = dungeon->getPlayer()
-                ->setFloor(this)->setX(playerX)->setY(playerY);
+        this->characters[playerY][playerX] = dungeon->getPlayer()->setFloor(this)->setX(playerX)->setY(playerY);
     }
 
     return this;
 }
 
-Floor* Floor::generateMonsters() {
+Floor* Floor::generateMonsters(u_short monsterCount) {
     u_char width;
     u_char height;
 
@@ -669,34 +648,34 @@ Floor* Floor::generateMonsters() {
 
     u_char monsterX;
     u_char monsterY;
-    Room* monsterRoom;
 
-    auto playerRoom = (Room*) this->getTerrainAt(this->dungeon->getPlayer()->getX(), this->dungeon->getPlayer()->getY());
+    Room* monsterRoom;
+    auto playerRoom = (Room*) this->terrains[this->dungeon->getPlayer()->getY()][this->dungeon->getPlayer()->getX()];
 
     u_int placementAttempts = 0;
     u_short maxMonsters = 0;
     u_char roomIndex;
 
     // Find out the max number of monsters possible within the program
-    for (roomIndex = 0; roomIndex < this->roomCount; roomIndex++) {
+    for (roomIndex = 0; roomIndex < this->getRoomCount(); roomIndex++) {
         maxMonsters += this->rooms[roomIndex]->getArea();
     }
 
     maxMonsters -= playerRoom->getArea();
 
     // If there are more monsters trying to be placed than monsters available, set the max number of monsters
-    if (this->monsterCount > maxMonsters) {
-        this->monsterCount = maxMonsters;
+    if (monsterCount > maxMonsters) {
+        monsterCount = maxMonsters;
     }
 
-    for (index = 0; index < this->monsterCount; index++) {
+    for (index = 0; index < monsterCount; index++) {
         placementAttempts = 0;
 
         do {
             // Select a room as long as it isn't the player's room
             do {
-                monsterRoom = this->rooms[Dice::RandomNumberBetween(0, this->roomCount - 1)];
-            } while (monsterRoom->getId() == playerRoom->getId() && monsterRoom->getFloor() == dungeon->getPlayer()->getFloor());
+                monsterRoom = this->rooms[Dice::RandomNumberBetween(0, this->getRoomCount() - 1)];
+            } while (monsterRoom == playerRoom);
 
             // Select random spot inside the room
             monsterX = monsterRoom->randomXInside();
@@ -707,13 +686,15 @@ Floor* Floor::generateMonsters() {
 
         // If failed to find, just man handle it through
         if (placementAttempts >= 25) {
-            for (roomIndex = 0; roomIndex < this->roomCount; roomIndex++) {
-                if (this->rooms.at(roomIndex)->getId() == playerRoom->getId() && this->rooms.at(roomIndex)->getFloor() == dungeon->getPlayer()->getFloor()) {
+            for (roomIndex = 0; roomIndex < this->getRoomCount(); roomIndex++) {
+                monsterRoom = this->rooms[roomIndex];
+                if (monsterRoom == playerRoom) {
                     continue;
                 }
+
                 // Start looping and find the next open spot
-                for (height = this->rooms.at(roomIndex)->getStartingY(); height < this->rooms.at(roomIndex)->getStartingY() + this->rooms.at(roomIndex)->getHeight(); height++) {
-                    for (width = this->rooms.at(roomIndex)->getStartingX(); width < this->rooms.at(roomIndex)->getStartingX() + this->rooms.at(roomIndex)->getWidth(); width++) {
+                for (height = monsterRoom->getStartY(); height < monsterRoom->getEndY(); height++) {
+                    for (width = monsterRoom->getStartX(); width < monsterRoom->getEndX(); width++) {
                         if (this->characters[height][width] == null) {
                             monsterX = width;
                             monsterY = height;
@@ -723,6 +704,7 @@ Floor* Floor::generateMonsters() {
             }
         }
 
+        // Select a random monster template
         MonsterTemplate* monsterTemplate = this->dungeon->randomMonsterTemplate();
         Monster* monster = monsterTemplate->generateMonster(this, monsterX, monsterY);
         // If the monster generated is a boss or is unique, remove from possible templates
@@ -740,34 +722,69 @@ Floor* Floor::generateMonsters() {
     return this;
 }
 
-Floor* Floor::generateObjects() {
+Floor* Floor::generateObjects(u_short objectCount) {
     u_short placementAttempts;
+
     Room* objectRoom;
     u_short index;
+    u_short roomIndex;
+    u_char height;
+    u_char width;
 
     u_char objectX;
     u_char objectY;
 
-    for (index = 0; index < this->objectCount; index++) {
+    u_short maxObjects = 0;
+
+    // Find out the max number of monsters possible within the program
+    for (index = 0; index < this->getRoomCount(); index++) {
+        maxObjects += this->rooms[index]->getArea();
+    }
+
+    // If there are more monsters trying to be placed than monsters available, set the max number of monsters
+    if (objectCount > maxObjects) {
+        objectCount = maxObjects;
+    }
+
+    for (index = 0; index < objectCount; index++) {
         placementAttempts = 0;
 
         do {
-            objectRoom = this->rooms[u_char(Dice::RandomNumberBetween(0, this->roomCount - 1))];
+            objectRoom = this->rooms[Dice::RandomNumberBetween(0, this->getRoomCount() - 1)];
 
             // Select random spot inside the room
             objectX = objectRoom->randomXInside();
             objectY = objectRoom->randomYInside();
 
             placementAttempts++;
-        } while (this->characters[objectY][objectX] != null && placementAttempts < 25);
+        } while (this->objectsMap[objectY][objectX] != null && placementAttempts < 25);
 
+        // If failed to find, just man handle it through
+        if (placementAttempts >= 25) {
+            for (roomIndex = 0; roomIndex < this->getRoomCount(); roomIndex++) {
+                objectRoom = this->rooms[roomIndex];
+
+                // Start looping and find the next open spot
+                for (height = objectRoom->getStartY(); height < objectRoom->getEndY(); height++) {
+                    for (width = objectRoom->getStartX(); width < objectRoom->getEndX(); width++) {
+                        if (this->objectsMap[height][width] == null) {
+                            objectX = width;
+                            objectY = height;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Select a random template and make an object
         ObjectTemplate* objectTemplate = this->dungeon->randomObjectTemplate();
         Object* object = objectTemplate->generateObject(this, objectX, objectY);
+
         // If the monster generated is an artifact, remove from possible templates
         if (object->getIsArtifact()) {
-            printf("Artifact found %s\n", object->getName().c_str());
             this->dungeon->removeObjectTemplate(objectTemplate);
         }
+
         this->objects.push_back(object);
         this->objectsMap[objectY][objectX] = this->objects.at(index);
     }
