@@ -109,7 +109,6 @@ ObjectTemplate::ObjectTemplate(std::string& templateString) {
                     }
 
                 } else if (strstarts(buffer, OBJECT_TEMPLATE_HIT_BONUS)) {
-
                     try {
                         this->hitBonus = new Dice(trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_HIT_BONUS))));
                     } catch (Exception::DiceStringInvalidParse& exception) {
@@ -244,13 +243,14 @@ std::vector<ObjectTemplate*> ObjectTemplate::GenerateTemplates(std::ifstream* in
 
     while (std::getline(*inputFile, buffer, '\n')) {
         if (trim(buffer) == "BEGIN OBJECT") {
+            templateBuffer = "";
         } else if (trim(buffer) == "END") {
             try {
                 objectTemplates.push_back(new ObjectTemplate(templateBuffer));
             } catch (std::exception& exception) {
             }
         } else {
-            templateBuffer += buffer + "\n";
+            templateBuffer += (buffer + "\n");
         }
     }
 

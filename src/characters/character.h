@@ -5,14 +5,19 @@
 
 #include <forward_declarations.h>
 #include <global.h>
+#include <colors.h>
+
+#include "../resource.h"
 
 namespace App {
     class Character {
     public:
         Character(Floor* floor, u_char x, u_char y, u_char character, u_char speed, bool isPlayer, bool isMonster);
-        ~Character();
+        virtual ~Character();
 
         Character* killCharacter();
+        bool hasLineOfSightTo(u_char width, u_char height);
+        virtual u_int getColor();
 
         /** GETTERS **/
         Floor* getFloor();

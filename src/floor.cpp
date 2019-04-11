@@ -124,6 +124,8 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
             return ROCK_CHARACTER;
         } else if (this->characters[y][x] != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
             return this->characters[y][x]->getCharacter();
+        } else if (this->objectsMap[y][x] != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+            return this->objectsMap[y][x]->getCharacter();
         } else {
             return this->dungeon->getPlayer()->visibility[y][x]->getCharacter();
         }
@@ -133,6 +135,30 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
         return this->objectsMap[y][x]->getCharacter();
     } else {
         return this->terrains[y][x]->getCharacter();
+    }
+}
+
+u_int Floor::getColorAt(u_char x, u_char y) {
+    Character* character = this->characters[y][x];
+    Object* object = this->objectsMap[y][x];
+    Terrain* visibility = this->dungeon->getPlayer()->visibility[y][x];
+
+    if (this->dungeon->getSettings()->doFogOfWar()) {
+        if (visibility == null) {
+            return EFD_COLOR_WHITE;
+        } else if (character != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+            return character->getColor();
+        } else if (object != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+            return object->getColor();
+        } else {
+            return EFD_COLOR_WHITE;
+        }
+    } else if (character != null && character->isMonster()) {
+        return character->getColor();
+    } else if (object != null) {
+        return object->getColor();
+    } else {
+        return EFD_COLOR_WHITE;
     }
 }
 
@@ -653,9 +679,10 @@ Floor* Floor::generateMonsters() {
 
     // Find out the max number of monsters possible within the program
     for (roomIndex = 0; roomIndex < this->roomCount; roomIndex++) {
-            maxMonsters += this->rooms[roomIndex]->getWidth();
+        maxMonsters += this->rooms[roomIndex]->getArea();
     }
-    maxMonsters -= playerRoom->getWidth();
+
+    maxMonsters -= playerRoom->getArea();
 
     // If there are more monsters trying to be placed than monsters available, set the max number of monsters
     if (this->monsterCount > maxMonsters) {
@@ -700,10 +727,10 @@ Floor* Floor::generateMonsters() {
         Monster* monster = monsterTemplate->generateMonster(this, monsterX, monsterY);
         // If the monster generated is a boss or is unique, remove from possible templates
         if (monster->isBoss() || monster->isUnique()) {
-           if(monster->isBoss()) {
-               this->dungeon->setBoss(monster);
-           }
-           this->dungeon->removeMonsterTemplate(monsterTemplate);
+            if (monster->isBoss()) {
+                this->dungeon->setBoss(monster);
+            }
+            this->dungeon->removeMonsterTemplate(monsterTemplate);
         }
 
         this->monsters.push_back(monster);

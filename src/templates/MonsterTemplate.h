@@ -8,13 +8,14 @@
 #define MONSTER_TEMPLATE_COLOR          "COLOR"
 #define MONSTER_TEMPLATE_SPEED          "SPEED"
 #define MONSTER_TEMPLATE_ABILITY        "ABIL"
-#define MONSTER_TEMPLATE_HIT_POINTS      "HP"
+#define MONSTER_TEMPLATE_HIT_POINTS     "HP"
 #define MONSTER_TEMPLATE_DAMAGE         "DAM"
 #define MONSTER_TEMPLATE_SYMBOL         "SYMB"
-#define MONSTER_TEMPLATE_RARITY     "RRTY"
+#define MONSTER_TEMPLATE_RARITY         "RRTY"
 
 #include <string>
 #include <vector>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <sstream>

@@ -20,8 +20,6 @@ Output* Output::print() {
     u_char x;
     u_char index;
     Floor* floor = dungeon->getCurrentFloor();
-    Character* character;
-    Object* object;
 
     this->setColor(EFD_COLOR_WHITE);
 
@@ -42,18 +40,7 @@ Output* Output::print() {
             this->print("%2d ", y);
         }
         for (x = 0; x < DUNGEON_FLOOR_WIDTH; x++) {
-            this->setColor(EFD_COLOR_WHITE);
-
-            character = floor->getCharacterAt(x, y);
-            object = floor->getObjectAt(x, y);
-            if (character != null) {
-                if (character->isMonster()) {
-                    this->setColor(((Monster*) character)->getColor());
-                }
-            }
-            else if(object != null) {
-                this->setColor(object->getColor());
-            }
+            this->setColor(floor->getColorAt(x, y));
 
             if (this->doExpanded) {
                 this->print(" %c ", floor->getOutputCharacterAt(x, y));
@@ -506,7 +493,7 @@ Output* Output::printError(const char* format, ...) {
     return this;
 }
 
-void Output::setColor(int index) {
+void Output::setColor(u_int index) {
     static const std::string shellColors[] = {
             SHELL_TEXT_BLACK,
             SHELL_TEXT_RED,
@@ -537,7 +524,7 @@ void Output::setColor(int index) {
     }
 }
 
-void Output::resetColor(int index) {
+void Output::resetColor(u_int index) {
     static const int nCursesColors[] = {
             NCURSES_BLACK,
             NCURSES_RED,

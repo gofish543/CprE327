@@ -272,55 +272,6 @@ void Monster::battlePlayer(Player* player) {
     player->battleMonster(this);
 }
 
-bool Monster::hasLineOfSightTo(Player* player) {
-    Floor* floor = this->getFloor();
-    double slope;
-    double error = 0.0;
-
-    u_char x;
-    u_char y;
-
-    u_char x0 = this->getX();
-    u_char x1 = player->getX();
-
-    u_char y0 = this->getY();
-    u_char y1 = player->getY();
-
-    char deltaX = x1 - x0;
-    char deltaY = y1 - y0;
-
-    if (deltaX == 0) {
-        // Horizontal line case
-        x = x0;
-        for (y = y0; y != y1; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
-                return false;
-            }
-        }
-    } else {
-        slope = abs(int(double(deltaY) / double(deltaX)));
-        y = y0;
-        for (x = x0; abs(x1 - x) != 0; x += get_sign(deltaX)) {
-            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
-                return false;
-            }
-
-            error += slope;
-            if (error >= 0.5) {
-                y += get_sign(deltaY);
-                error -= 1.0;
-            }
-        }
-        // Finish out vertical line case
-        for (; abs(y1 - y) != 0; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
 char* Monster::locationString(char location[19]) {
     Player* player = this->getFloor()->getDungeon()->getPlayer();
 
@@ -406,7 +357,7 @@ std::string Monster::getDescription() {
     return this->description;
 }
 
-u_short Monster::getColor() {
+u_int Monster::getColor() {
     return this->color;
 }
 

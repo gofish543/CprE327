@@ -4,6 +4,7 @@
 
 ### Added
 ### Fixed
+- Fixed line of sight algorithm
 ### Changed
 
 ## [v0.1.8 (2019-04-10)](https://github.com/gofish543/CprE327/releases/tag/v0.1.8)

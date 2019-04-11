@@ -37,7 +37,8 @@ u_char Room::getEndY() {
 }
 
 u_char Room::getArea() {
-    return this->width * this->height;
+    printf("%d\n", this->width * this->height);
+    return u_char(this->width * this->height);
 }
 
 /** GETTERS **/

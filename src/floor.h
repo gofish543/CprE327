@@ -7,8 +7,8 @@
 #define FLOOR_STAIRS_MIN 2
 #define FLOOR_STAIRS_MAX 4
 
-#define FLOOR_MONSTERS_MIN 500
-#define FLOOR_MONSTERS_MAX 1000
+#define FLOOR_MONSTERS_MIN 5
+#define FLOOR_MONSTERS_MAX 10
 
 #define FLOOR_OBJECTS_MIN 10
 #define FLOOR_OBJECTS_MAX 20
@@ -34,6 +34,7 @@ namespace App {
         Floor* resetCheapestPathToPlayer();
 
         u_char getOutputCharacterAt(u_char x, u_char y);
+        u_int getColorAt(u_char x, u_char y);
 
         u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];

@@ -1,4 +1,4 @@
-#include "settings.h"
+#include "Settings.h"
 
 Settings::Settings(int argc, char* argv[]) {
     this->loadPath = new std::string("");
@@ -10,7 +10,7 @@ Settings::Settings(int argc, char* argv[]) {
     this->expandedPrint = false;
     this->canNumberOfMonsters = false;
     this->nCursesPrint = true;
-    this->fogOfWar = false;
+    this->fogOfWar = true;
 
     this->monsterDesc = new std::ifstream();
     this->objectDesc = new std::ifstream();
@@ -19,22 +19,21 @@ Settings::Settings(int argc, char* argv[]) {
 }
 
 Settings::~Settings() {
+    if (this->objectDesc->is_open()) {
+        this->objectDesc->close();
+    }
+    delete (this->objectDesc);
+
     if (this->monsterDesc->is_open()) {
         this->monsterDesc->close();
     }
-
-    if (this->monsterDesc->is_open()) {
-        this->objectDesc->close();
-    }
-
-    delete (this->loadPath);
-    delete (this->savePath);
     delete (this->monsterDesc);
-    delete (this->objectDesc);
+
+    delete (this->savePath);
+    delete (this->loadPath);
 }
 
 Settings* Settings::loadArguments(int argc, char* argv[]) {
-
     u_char index;
     for (index = 0; index < argc; index++) {
         if (strcmp(argv[index], "--save") == 0 || strcmp(argv[index], "-s") == 0) {

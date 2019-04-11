@@ -44,8 +44,8 @@ namespace App {
         /** DEBUG PRINTS **/
 
         /** COLORED **/
-        void setColor(int index);
-        void resetColor(int index);
+        void setColor(u_int index);
+        void resetColor(u_int index);
         /** COLORED **/
 
         /** GETTERS **/
@@ -64,6 +64,6 @@ namespace App {
     };
 }
 
-#include "dungeon.h"
+#include "Dungeon.h"
 
 #endif

@@ -47,7 +47,6 @@ namespace App {
         int moveTo(u_char toX, u_char toY);
         void battleMonster(Monster* otherMonster);
         void battlePlayer(Player* player);
-        bool hasLineOfSightTo(Player* player);
         char* locationString(char location[19]);
 
         bool isIntelligent();
@@ -66,7 +65,7 @@ namespace App {
         /** GETTERS **/
         std::string getName();
         std::string getDescription();
-        u_short getColor();
+        u_int getColor();
         u_int getHitPoints();
         u_int getAttackDamage();
         u_int getAbility();
@@ -146,7 +145,7 @@ namespace App {
     };
 }
 
-#include "../dungeon.h"
+#include "../floor.h"
 #include "../resource.h"
 
 #endif

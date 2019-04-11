@@ -1,9 +1,8 @@
-#include "dungeon.h"
+#include "Dungeon.h"
 
-Dungeon::Dungeon(int argc, char* argv[]) {
+Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::string, new std::string} {
     u_char index;
 
-    this->window = null;
     this->settings = new Settings(argc, argv);
 
     if (this->settings->doNCursesPrint()) {
@@ -32,28 +31,24 @@ Dungeon::Dungeon(int argc, char* argv[]) {
         init_pair(NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BLACK);
         init_pair(NCURSES_CYAN, NCURSES_CYAN, NCURSES_BLACK);
         init_pair(NCURSES_WHITE, NCURSES_WHITE, NCURSES_BLACK);
+    } else {
+        this->window = null;
     }
 
     this->output = new Output(this);
     this->eventManager = new EventManager(this);
+    this->player = new Player(null, 0, 0);
+    this->boss = null;
 
     this->monsterTemplates = MonsterTemplate::GenerateTemplates(this->settings->getMonsterDesc());
     this->objectTemplates = ObjectTemplate::GenerateTemplates(this->settings->getObjectDesc());
-
-    this->player = new Player(null, 0, 0);
-
-    this->floor = null;
-
-    for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
-        this->textLines[index] = new std::string();
-    }
 
     if (this->settings->doLoad()) {
         load_from_file(this);
     } else {
         auto stairCount = u_short(Dice::RandomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX));
 
-        for (index = 0; index < u_char(Dice::RandomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX)); index++) {
+        for (index = 0; index < Dice::RandomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX); index++) {
             this->floors.push_back(
                     new Floor(
                             this,
@@ -74,8 +69,9 @@ Dungeon::Dungeon(int argc, char* argv[]) {
 
     this->eventManager->addToQueue(new Event(0, event_type_player, this->player, Player::HandleEvent, Player::NextEventTick));
     for (index = 0; index < this->floor->getMonsterCount(); index++) {
-        this->eventManager
-                ->addToQueue(new Event(1 + index, event_type_monster, this->floor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick));
+        this->eventManager->addToQueue(
+                new Event(1 + index, event_type_monster, this->floor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick)
+        );
     }
 
     this->player->updateVisibility();
@@ -97,10 +93,6 @@ Dungeon::~Dungeon() {
         delete (this->floors[index]);
     }
 
-    for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
-        delete (this->textLines[index]);
-    }
-
     for (index = 0; index < this->objectTemplates.size(); index++) {
         delete (this->objectTemplates[index]);
     }
@@ -113,6 +105,10 @@ Dungeon::~Dungeon() {
     delete (this->eventManager);
     delete (this->output);
     delete (this->settings);
+
+    for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
+        delete (this->textLines[index]);
+    }
 }
 
 std::string* Dungeon::prependText(const std::string& text) {
@@ -201,6 +197,21 @@ ObjectTemplate* Dungeon::randomObjectTemplate() {
     } while (objectTemplate->getRarity() >= Dice::RandomNumberBetween(0, 100));
 
     return objectTemplate;
+}
+
+bool Dungeon::continueGame() {
+    if (this->boss == null) {
+        this->getOutput()->printError("No boss created. Terminating safely\n");
+        return false;
+    }
+    if (this->eventManager->getQueue()->size == 0) {
+        this->getOutput()->printError("Queue of events is empty. Terminating safely\n");
+        return false;
+    }
+    return
+            this->player->isAlive() &&
+            !this->player->getRequestTerminate();
+//            this->boss->isAlive();
 }
 
 /** GETTERS **/

@@ -14,6 +14,8 @@
 #include <exception.h>
 #include <global.h>
 
+#include "Settings.h"
+
 namespace App {
     class Dungeon {
 
@@ -28,6 +30,8 @@ namespace App {
 
         MonsterTemplate* randomMonsterTemplate();
         ObjectTemplate* randomObjectTemplate();
+
+        bool continueGame();
 
         /** GETTERS **/
         Floor* getFloor(u_char index);
@@ -79,7 +83,6 @@ namespace App {
 #include "floor.h"
 #include "dice.h"
 #include "events.h"
-#include "settings.h"
 #include "output.h"
 #include "templates/MonsterTemplate.h"
 #include "templates/ObjectTemplate.h"

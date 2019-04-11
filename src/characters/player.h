@@ -39,8 +39,8 @@ namespace App {
         Player* incrementMonstersSlain();
         Player* incrementDaysSurvived();
 
+        u_int getColor();
         Player* updateVisibility();
-        bool hasLineOfSightTo(u_char width, u_char height);
 
         /** GETTERS **/
         Staircase* getTakingStaircase();
@@ -73,6 +73,7 @@ namespace App {
     };
 }
 
+#include "character.h"
 #include "../floor.h"
 #include "../events.h"
 #include "../input.h"

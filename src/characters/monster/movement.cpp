@@ -58,7 +58,7 @@ void Monster::Move1(Monster* monster, u_char* x, u_char* y) {
     u_char cheapestCost = U_CHAR_MAX;
 
     // If the monster has line of sight, store previous location
-    if (monster->hasLineOfSightTo(player)) {
+    if (monster->hasLineOfSightTo(player->getX(), player->getY())) {
         monster->setPlayerLastSpottedX(playerX)->setPlayerLastSpottedY(playerY);
     } else if ((monster->getPlayerLastSpottedY() == 0 && monster->getPlayerLastSpottedX() == 0) ||
                (monster->getX() == monster->getPlayerLastSpottedX() && monster->getY() == monster->getPlayerLastSpottedY())) {
@@ -184,7 +184,7 @@ void Monster::Move4(Monster* monster, u_char* x, u_char* y) {
     char deltaY;
 
     // If the monster has line of sight, store previous location
-    if (monster->hasLineOfSightTo(player)) {
+    if (monster->hasLineOfSightTo(player->getX(), player->getY())) {
         monster->setPlayerLastSpottedX(player->getX())->setPlayerLastSpottedY(player->getY());
     } else if ((monster->getPlayerLastSpottedY() == 0 && monster->getPlayerLastSpottedX() == 0) ||
                (monster->getX() == monster->getPlayerLastSpottedX() && monster->getY() == monster->getPlayerLastSpottedY())) {
@@ -247,7 +247,7 @@ void Monster::Move5(Monster* monster, u_char* x, u_char* y) {
     u_char cheapestCost = U_CHAR_MAX;
 
     // If the monster has line of sight, store previous location
-    if (monster->hasLineOfSightTo(player)) {
+    if (monster->hasLineOfSightTo(player->getX(), player->getY())) {
         monster->setPlayerLastSpottedX(player->getX());
         monster->setPlayerLastSpottedY(player->getY());
     } else if ((monster->getPlayerLastSpottedY() == 0 && monster->getPlayerLastSpottedX() == 0) ||

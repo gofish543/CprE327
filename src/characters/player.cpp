@@ -47,6 +47,8 @@ int Player::HandleEvent(Event* event) {
     auto player = (Player*) event->character;
     Dungeon* dungeon = player->getFloor()->getDungeon();
 
+    dungeon->getOutput()->print();
+
     move = getChar(dungeon->getSettings()->doNCursesPrint());
 
     switch (move) {
@@ -148,7 +150,7 @@ int Player::handleEventKeyTeleport() {
                 this->y = u_char(std::min(DUNGEON_FLOOR_HEIGHT - 2, this->y + 1));
                 break;
             case KEY_RIGHT:
-                this->x = u_char(std::min(DUNGEON_FLOOR_WIDTH - 2,  this->x + 1));
+                this->x = u_char(std::min(DUNGEON_FLOOR_WIDTH - 2, this->x + 1));
                 break;
             case KEY_LEFT:
                 this->x = u_char(std::max(1, this->x - 1));
@@ -404,6 +406,10 @@ Player* Player::removeLevel(int amount) {
     return this;
 }
 
+u_int Player::getColor() {
+    return EFD_COLOR_WHITE;
+}
+
 Player* Player::updateVisibility() {
     u_char height;
     u_char width;
@@ -415,61 +421,12 @@ Player* Player::updateVisibility() {
     for (height = minHeight; height < maxHeight; height++) {
         for (width = minWidth; width < maxWidth; width++) {
             if (this->hasLineOfSightTo(width, height)) {
-                this->visibility[height][width] = this->getFloor()->getTerrainAt(width, height);
+                this->visibility[height][width] = this->floor->getTerrainAt(width, height);
             }
         }
     }
 
     return this;
-}
-
-bool Player::hasLineOfSightTo(u_char width, u_char height) {
-    Floor* floor = this->getFloor();
-    double slope;
-    double error = 0.0;
-
-    u_char x;
-    u_char y;
-
-    u_char x0 = this->getX();
-    u_char x1 = width;
-
-    u_char y0 = this->getY();
-    u_char y1 = height;
-
-    char deltaX = x1 - x0;
-    char deltaY = y1 - y0;
-
-    if (deltaX == 0) {
-        // Horizontal line case
-        x = x0;
-        for (y = y0; y != y1; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
-                return false;
-            }
-        }
-    } else {
-        slope = abs(int(double(deltaY) / double(deltaX)));
-        y = y0;
-        for (x = x0; abs(x1 - x) != 0; x += get_sign(deltaX)) {
-            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
-                return false;
-            }
-
-            error += slope;
-            if (error >= 0.5) {
-                y += get_sign(deltaY);
-                error -= 1.0;
-            }
-        }
-        // Finish out vertical line case
-        for (; abs(y1 - y) != 0; y += get_sign(deltaY)) {
-            if (floor->getTerrainAt(x, y)->isRock() || floor->getTerrainAt(x, y)->isImmutable()) {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 Player* Player::incrementMonstersSlain() {
