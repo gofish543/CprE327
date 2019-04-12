@@ -16,7 +16,7 @@ Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::strin
 
 Monster::~Monster() {
     delete (this->attackDamage);
-};
+}
 
 int Monster::NextEventTick(Event* event) {
     auto monster = (Monster*) event->character;

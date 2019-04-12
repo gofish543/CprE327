@@ -110,7 +110,7 @@ namespace App {
     };
 }
 
-#include "Dice.h"
+#include "dice.h"
 #include "terrains/terrain.h"
 #include "terrains/border.h"
 #include "terrains/corridor.h"
@@ -120,8 +120,8 @@ namespace App {
 #include "characters/character.h"
 #include "characters/monster.h"
 #include "characters/player.h"
-#include "objects/Object.h"
-#include "templates/MonsterTemplate.h"
-#include "templates/ObjectTemplate.h"
+#include "objects/object.h"
+#include "templates/monster_template.h"
+#include "templates/object_template.h"
 
 #endif

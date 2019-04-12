@@ -1,4 +1,4 @@
-#include "ObjectTemplate.h"
+#include "object_template.h"
 
 ObjectTemplate::ObjectTemplate(std::string& templateString) {
     this->name = "";

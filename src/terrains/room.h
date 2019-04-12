@@ -48,6 +48,6 @@ namespace App {
     };
 }
 
-#include "../Dice.h"
+#include "../dice.h"
 
 #endif

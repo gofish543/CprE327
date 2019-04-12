@@ -1,4 +1,4 @@
-#include "Dice.h"
+#include "dice.h"
 
 Dice::Dice(int base, int rolls, int sides) {
     this->base = base;

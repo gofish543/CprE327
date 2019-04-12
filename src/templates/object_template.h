@@ -80,7 +80,7 @@ namespace App {
     };
 }
 
-#include "../objects/Object.h"
-#include "../Dice.h"
+#include "../objects/object.h"
+#include "../dice.h"
 
 #endif

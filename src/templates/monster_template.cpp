@@ -1,4 +1,4 @@
-#include "MonsterTemplate.h"
+#include "monster_template.h"
 
 MonsterTemplate::MonsterTemplate(std::string& templateString) {
     this->name = "";

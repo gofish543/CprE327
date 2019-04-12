@@ -147,6 +147,6 @@ namespace App {
 }
 
 #include "../Floor.h"
-#include "../Dice.h"
+#include "../dice.h"
 
 #endif
