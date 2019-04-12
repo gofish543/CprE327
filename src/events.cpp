@@ -1,4 +1,4 @@
-#include "Events.h"
+#include "events.h"
 
 EventManager::EventManager(Dungeon* dungeon) {
     this->dungeon = dungeon;

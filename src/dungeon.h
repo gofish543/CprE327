@@ -81,7 +81,7 @@ namespace App {
 #include "SaveLoad.h"
 #include "Floor.h"
 #include "dice.h"
-#include "Events.h"
+#include "events.h"
 #include "Output.h"
 #include "templates/monster_template.h"
 #include "templates/object_template.h"

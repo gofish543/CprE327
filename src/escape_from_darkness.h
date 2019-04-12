@@ -3,7 +3,7 @@
 
 #include <global.h>
 
-#include "Dungeon.h"
+#include "dungeon.h"
 
 int game_tick(Dungeon* dungeon);
 

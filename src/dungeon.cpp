@@ -1,4 +1,4 @@
-#include "Dungeon.h"
+#include "dungeon.h"
 
 Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::string, new std::string} {
     u_char index;

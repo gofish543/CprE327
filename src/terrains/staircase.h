@@ -38,6 +38,6 @@ namespace App {
     };
 }
 
-#include "../Dungeon.h"
+#include "../dungeon.h"
 
 #endif

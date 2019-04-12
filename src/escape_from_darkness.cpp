@@ -1,4 +1,4 @@
-#include "EscapeFromDarkness.h"
+#include "escape_from_darkness.h"
 
 int main(int argc, char* argv[]) {
     auto dungeon = new Dungeon(argc, argv);
