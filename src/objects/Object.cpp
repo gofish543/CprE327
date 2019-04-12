@@ -1,6 +1,6 @@
 #include "Object.h"
 
-Object::Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, u_short hitBonus, u_short damageBonus, u_short dodgeBonus, u_short defenseBonus, u_short weight, short speedBonus, u_short specialAttribute, u_short value, bool isArtifact, u_char rarity) {
+Object::Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, Dice* weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity) {
     this->floor = floor;
     this->x = x;
     this->y = y;
@@ -20,7 +20,16 @@ Object::Object(Floor* floor, u_char x, u_char y, std::string* name, std::string*
     this->rarity = rarity;
 }
 
-Object::~Object() = default;
+Object::~Object() {
+    delete(this->hitBonus);
+    delete(this->damageBonus);
+    delete(this->dodgeBonus);
+    delete(this->defenseBonus);
+    delete(this->weight);
+    delete(this->speedBonus);
+    delete(this->specialAttribute);
+    delete(this->value);
+}
 
 u_char Object::getCharacter() {
     if (this->isWeapon()) {
@@ -96,35 +105,35 @@ u_short Object::getColor() {
 }
 
 u_short Object::getHitBonus() {
-    return hitBonus;
+    return hitBonus->roll();
 }
 
 u_short Object::getDamageBonus() {
-    return damageBonus;
+    return damageBonus->roll();
 }
 
 u_short Object::getDodgeBonus() {
-    return dodgeBonus;
+    return dodgeBonus->roll();
 }
 
 u_short Object::getDefenseBonus() {
-    return defenseBonus;
+    return defenseBonus->roll();
 }
 
 u_short Object::getWeight() {
-    return weight;
+    return weight->roll();
 }
 
 short Object::getSpeedBonus() {
-    return speedBonus;
+    return speedBonus->roll();
 }
 
 u_short Object::getSpecialAttribute() {
-    return specialAttribute;
+    return specialAttribute->roll();
 }
 
 u_short Object::getValue() {
-    return value;
+    return value->roll();
 }
 
 bool Object::getIsArtifact() {

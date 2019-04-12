@@ -50,7 +50,7 @@
 namespace App {
     class Object {
     public:
-        Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, u_short hitBonus, u_short damageBonus, u_short dodgeBonus, u_short defenseBonus, u_short weight, short speedBonus, u_short specialAttribute, u_short value, bool isArtifact, u_char rarity);
+        Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, Dice* weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity);
         ~Object();
 
         u_char getCharacter();
@@ -110,17 +110,19 @@ namespace App {
         std::string description;
         u_int itemType;
         u_short color;
-        u_short hitBonus;
-        u_short damageBonus;
-        u_short dodgeBonus;
-        u_short defenseBonus;
-        u_short weight;
-        short speedBonus;
-        u_short specialAttribute;
-        u_short value;
+        Dice* hitBonus;
+        Dice* damageBonus;
+        Dice* dodgeBonus;
+        Dice* defenseBonus;
+        Dice* weight;
+        Dice* speedBonus;
+        Dice* specialAttribute;
+        Dice* value;
         bool isArtifact;
         u_char rarity;
     };
 }
+
+#include "../Dice.h"
 
 #endif

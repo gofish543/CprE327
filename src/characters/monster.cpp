@@ -1,6 +1,6 @@
 #include "monster.h"
 
-Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_short color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity)
+Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_short color, u_char speed, u_short abilities, u_int hitPoints, Dice* attackDamage, u_char symbol, u_char rarity)
         : Character(floor, x, y, symbol, speed, false, true) {
     this->name.assign(*name);
     this->description.assign(*description);
@@ -14,7 +14,9 @@ Monster::Monster(Floor* floor, u_char x, u_char y, std::string* name, std::strin
     this->playerLastSpottedY = 0;
 }
 
-Monster::~Monster() = default;
+Monster::~Monster() {
+    delete (this->attackDamage);
+};
 
 int Monster::NextEventTick(Event* event) {
     auto monster = (Monster*) event->character;
@@ -365,7 +367,7 @@ u_int Monster::getHitPoints() {
     return this->hitPoints;
 }
 
-u_int Monster::getAttackDamage() {
+Dice* Monster::getAttackDamage() {
     return this->attackDamage;
 }
 
@@ -411,7 +413,7 @@ Monster* Monster::setHitPoints(u_int hitPoints) {
     return this;
 }
 
-Monster* Monster::setAttackDamage(u_int attackDamage) {
+Monster* Monster::setAttackDamage(Dice* attackDamage) {
     this->attackDamage = attackDamage;
 
     return this;

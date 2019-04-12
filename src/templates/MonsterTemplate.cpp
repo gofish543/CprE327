@@ -173,8 +173,8 @@ Monster* MonsterTemplate::generateMonster(Floor* floor, u_char x, u_char y) {
             &(this->name), &(this->description),
             this->color, this->speed->roll(),
             this->abilities, this->hitPoints->roll(),
-            this->attackDamage->roll(), this->symbol,
-            this->rarity
+            this->attackDamage->copy(),
+            this->symbol, this->rarity
     );
 }
 

@@ -417,14 +417,14 @@ Output* Output::printObjectTemplates() {
         this->print("\tDescription: %s\n", objectTemplate->getDescription().c_str());
         this->print("\tType: %d\n", objectTemplate->getItemType());
         this->print("\tColor: %d\n", objectTemplate->getColor());
-        this->print("\tHit Bonus: %d\n", objectTemplate->getHitBonus());
-        this->print("\tDamage Bonus: %d\n", objectTemplate->getDamageBonus());
-        this->print("\tDodge Bonus: %d\n", objectTemplate->getDodgeBonus());
-        this->print("\tDefense Bonus: %d\n", objectTemplate->getDefenseBonus());
-        this->print("\tWeight: %d\n", objectTemplate->getWeight());
-        this->print("\tSpeed Bonus: %d\n", objectTemplate->getSpeedBonus());
-        this->print("\tSpecial Attribute: %d\n", objectTemplate->getSpecialAttribute());
-        this->print("\tValue: %d\n", objectTemplate->getValue());
+        this->print("\tHit Bonus: %s\n", objectTemplate->getHitBonus()->toString().c_str());
+        this->print("\tDamage Bonus: %s\n", objectTemplate->getDamageBonus()->toString().c_str());
+        this->print("\tDodge Bonus: %s\n", objectTemplate->getDodgeBonus()->toString().c_str());
+        this->print("\tDefense Bonus: %s\n", objectTemplate->getDefenseBonus()->toString().c_str());
+        this->print("\tWeight: %s\n", objectTemplate->getWeight()->toString().c_str());
+        this->print("\tSpeed Bonus: %s\n", objectTemplate->getSpeedBonus()->toString().c_str());
+        this->print("\tSpecial Attribute: %s\n", objectTemplate->getSpecialAttribute()->toString().c_str());
+        this->print("\tValue: %s\n", objectTemplate->getValue()->toString().c_str());
         this->print("\tIs Artifact: %d\n", objectTemplate->getIsArtifact());
         this->print("\tRarity: %d\n", objectTemplate->getRarity());
 

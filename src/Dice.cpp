@@ -37,6 +37,10 @@ Dice::Dice(std::string diceString) {
     this->result = 0;
 }
 
+Dice* Dice::copy() {
+    return new Dice(this->base, this->rolls, this->sides);
+}
+
 Dice::~Dice() = default;
 
 int Dice::RandomNumberBetween(int min, int max) {
@@ -82,6 +86,10 @@ int Dice::roll() {
     }
 
     return this->result;
+}
+
+std::string Dice::toString() {
+    return std::to_string(this->base) + "+" + std::to_string(this->rolls) + "d" + std::to_string(this->sides);
 }
 
 /** GETTERS **/

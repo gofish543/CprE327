@@ -16,11 +16,14 @@ namespace App {
         explicit Dice(std::string diceString);
         Dice(int base, int rolls, int sides);
         ~Dice();
+        Dice* copy();
 
         static int RandomNumberBetween(int min, int max);
         static u_int Hash3(u_int h1, u_int h2, u_int h3);
 
         int roll();
+
+        std::string toString();
 
         /** GETTERS **/
         int getBase();

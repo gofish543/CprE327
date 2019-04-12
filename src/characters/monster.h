@@ -34,7 +34,7 @@
 namespace App {
     class Monster : public Character {
     public:
-        explicit Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_short color, u_char speed, u_short abilities, u_int hitPoints, u_int attackDamage, u_char symbol, u_char rarity);
+        explicit Monster(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_short color, u_char speed, u_short abilities, u_int hitPoints, Dice* attackDamage, u_char symbol, u_char rarity);
         ~Monster();
 
         static u_int AliveCount(Dungeon* dungeon);
@@ -68,7 +68,7 @@ namespace App {
         std::string getDescription();
         u_int getColor();
         u_int getHitPoints();
-        u_int getAttackDamage();
+        Dice* getAttackDamage();
         u_int getAbility();
         u_char getRarity();
         u_char getPlayerLastSpottedX();
@@ -80,7 +80,7 @@ namespace App {
         Monster* setDescription(std::string* description);
         Monster* setColor(u_short color);
         Monster* setHitPoints(u_int hitPoints);
-        Monster* setAttackDamage(u_int attackDamage);
+        Monster* setAttackDamage(Dice* attackDamage);
         Monster* setAbilities(u_char abilities);
         Monster* setRarity(u_char rarity);
         Monster* setPlayerLastSpottedX(u_char playerLastSpottedX);
@@ -109,7 +109,7 @@ namespace App {
         u_short color;
 
         u_int hitPoints;
-        u_int attackDamage;
+        Dice* attackDamage;
 
         u_int abilities;
         u_char rarity;
@@ -147,5 +147,6 @@ namespace App {
 }
 
 #include "../Floor.h"
+#include "../Dice.h"
 
 #endif

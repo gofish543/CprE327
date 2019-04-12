@@ -46,14 +46,14 @@ namespace App {
         std::string getDescription();
         u_int getItemType();
         u_short getColor();
-        u_short getHitBonus();
-        u_short getDamageBonus();
-        u_short getDodgeBonus();
-        u_short getDefenseBonus();
-        u_short getWeight();
-        short getSpeedBonus();
-        u_short getSpecialAttribute();
-        u_short getValue();
+        Dice* getHitBonus();
+        Dice* getDamageBonus();
+        Dice* getDodgeBonus();
+        Dice* getDefenseBonus();
+        Dice* getWeight();
+        Dice* getSpeedBonus();
+        Dice* getSpecialAttribute();
+        Dice* getValue();
         bool getIsArtifact();
         u_char getRarity();
         /** GETTERS **/

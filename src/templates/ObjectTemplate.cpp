@@ -223,7 +223,15 @@ ObjectTemplate::~ObjectTemplate() {
 }
 
 Object* ObjectTemplate::generateObject(Floor* floor, u_char x, u_char y) {
-    return new Object(floor, x, y, &this->name, &this->description, this->itemType, this->color, this->hitBonus->roll(), this->damageBonus->roll(), this->dodgeBonus->roll(), this->defenseBonus->roll(), this->weight->roll(), this->speedBonus->roll(), this->specialAttribute->roll(), this->value->roll(), this->isArtifact, this->rarity);
+    return new Object(
+            floor, x, y,
+            &this->name, &this->description,
+            this->itemType, this->color,
+            this->hitBonus->copy(), this->damageBonus->copy(), this->dodgeBonus->copy(),
+            this->defenseBonus->copy(), this->weight->copy(), this->speedBonus->copy(),
+            this->specialAttribute->copy(), this->value->copy(),
+            this->isArtifact, this->rarity
+    );
 }
 
 std::vector<ObjectTemplate*> ObjectTemplate::GenerateTemplates(std::ifstream* inputFile) {
@@ -274,36 +282,36 @@ u_short ObjectTemplate::getColor() {
     return this->color;
 }
 
-u_short ObjectTemplate::getHitBonus() {
-    return this->hitBonus->roll();
+Dice* ObjectTemplate::getHitBonus() {
+    return this->hitBonus;
 }
 
-u_short ObjectTemplate::getDamageBonus() {
-    return this->damageBonus->roll();
+Dice* ObjectTemplate::getDamageBonus() {
+    return this->damageBonus;
 }
 
-u_short ObjectTemplate::getDodgeBonus() {
-    return this->dodgeBonus->roll();
+Dice* ObjectTemplate::getDodgeBonus() {
+    return this->dodgeBonus;
 }
 
-u_short ObjectTemplate::getDefenseBonus() {
-    return this->defenseBonus->roll();
+Dice* ObjectTemplate::getDefenseBonus() {
+    return this->defenseBonus;
 }
 
-u_short ObjectTemplate::getWeight() {
-    return this->weight->roll();
+Dice* ObjectTemplate::getWeight() {
+    return this->weight;
 }
 
-short ObjectTemplate::getSpeedBonus() {
-    return this->speedBonus->roll();
+Dice* ObjectTemplate::getSpeedBonus() {
+    return this->speedBonus;
 }
 
-u_short ObjectTemplate::getSpecialAttribute() {
-    return this->specialAttribute->roll();
+Dice* ObjectTemplate::getSpecialAttribute() {
+    return this->specialAttribute;
 }
 
-u_short ObjectTemplate::getValue() {
-    return this->value->roll();
+Dice* ObjectTemplate::getValue() {
+    return this->value;
 }
 
 bool ObjectTemplate::getIsArtifact() {
