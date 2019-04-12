@@ -11,7 +11,7 @@
 #include <character_listings.h>
 #include <global.h>
 
-#include "../Resource.h"
+#include "../resource.h"
 #include "character.h"
 
 namespace App {
@@ -73,8 +73,8 @@ namespace App {
     };
 }
 
-#include "../Floor.h"
-#include "../Input.h"
-#include "../Output.h"
+#include "../floor.h"
+#include "../input.h"
+#include "../output.h"
 
 #endif

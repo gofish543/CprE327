@@ -1,4 +1,4 @@
-#include "Output.h"
+#include "output.h"
 
 Output::Output(Dungeon* dungeon) {
     this->doNCurses = dungeon->getSettings()->doNCursesPrint();

@@ -1,5 +1,5 @@
 #include <exception.h>
-#include "Floor.h"
+#include "floor.h"
 
 Floor::Floor(Dungeon* dungeon)
         : tunnelerView{0}, nonTunnelerView{0}, cheapestPathToPlayer{0}, terrains{null}, characters{null}, objectsMap{null} {

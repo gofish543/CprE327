@@ -7,7 +7,7 @@
 #include <global.h>
 #include <colors.h>
 
-#include "../Resource.h"
+#include "../resource.h"
 
 namespace App {
     class Character {

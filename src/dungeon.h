@@ -14,7 +14,7 @@
 #include <exception.h>
 #include <global.h>
 
-#include "Settings.h"
+#include "settings.h"
 
 namespace App {
     class Dungeon {
@@ -78,11 +78,11 @@ namespace App {
     };
 }
 
-#include "SaveLoad.h"
-#include "Floor.h"
+#include "save_load.h"
+#include "floor.h"
 #include "dice.h"
 #include "events.h"
-#include "Output.h"
+#include "output.h"
 #include "templates/monster_template.h"
 #include "templates/object_template.h"
 #include "characters/player.h"

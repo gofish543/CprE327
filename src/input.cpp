@@ -1,4 +1,4 @@
-#include "Input.h"
+#include "input.h"
 
 int getChar(const bool ncurses) {
     int userInput = 0;

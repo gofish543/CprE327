@@ -29,7 +29,7 @@
 #include <colors.h>
 #include <global.h>
 
-#include "../Resource.h"
+#include "../resource.h"
 
 namespace App {
     class ObjectTemplate {

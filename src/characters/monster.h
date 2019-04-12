@@ -28,7 +28,7 @@
 #include <global.h>
 
 #include "../vendor/heap.h"
-#include "../Resource.h"
+#include "../resource.h"
 #include "character.h"
 
 namespace App {
@@ -146,7 +146,7 @@ namespace App {
     };
 }
 
-#include "../Floor.h"
+#include "../floor.h"
 #include "../dice.h"
 
 #endif

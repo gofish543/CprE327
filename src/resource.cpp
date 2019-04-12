@@ -1,4 +1,4 @@
-#include "Resource.h"
+#include "resource.h"
 
 int error_check_fread(void* __restrict ptr, size_t size, size_t nmemb, FILE* stream) {
     if (fread(ptr, size, nmemb, stream) != nmemb) {

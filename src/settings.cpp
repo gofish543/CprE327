@@ -1,4 +1,4 @@
-#include "Settings.h"
+#include "settings.h"
 
 Settings::Settings(int argc, char* argv[]) {
     this->loadPath = new std::string("");

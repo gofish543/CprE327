@@ -7,7 +7,7 @@
 #include <global.h>
 
 #include "../monster.h"
-#include "../../Resource.h"
+#include "../../resource.h"
 
 #define TELEPORT_CHANCE                 5
 #define RANDOM_MOVE_CHANCE              (TELEPORT_CHANCE + 45)
