@@ -134,27 +134,38 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
 }
 
 u_int Floor::getColorAt(u_char x, u_char y) {
-    Character* character = this->characters[y][x];
-    Object* object = this->objectsMap[y][x];
-    Terrain* visibility = this->dungeon->getPlayer()->visibility[y][x];
-
-    if (this->dungeon->getSettings()->doFogOfWar()) {
-        if (visibility == null) {
-            return EFD_COLOR_WHITE;
-        } else if (character != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
-            return character->getColor();
-        } else if (object != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
-            return object->getColor();
-        } else {
-            return EFD_COLOR_WHITE;
-        }
-    } else if (character != null && character->isMonster()) {
-        return character->getColor();
-    } else if (object != null) {
-        return object->getColor();
-    } else {
-        return EFD_COLOR_WHITE;
-    }
+    return EFD_COLOR_WHITE;
+//    u_int colors[2] = {EFD_COLOR_WHITE, EFD_COLOR_DARK_GREY};
+//    Character* character = this->characters[y][x];
+//    Object* object = this->objectsMap[y][x];
+//    Terrain* visibility = this->dungeon->getPlayer()->visibility[y][x];
+//
+//    if (this->dungeon->getSettings()->doFogOfWar()) {
+//        if (visibility == null) {
+//            colors[0] = EFD_COLOR_WHITE;
+//            colors[1] = EFD_COLOR_DARK_GREY;
+//        } else if (character != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+//            colors[0] = character->getColor();
+//            colors[1] = EFD_COLOR_LIGHT_GREY;
+//        } else if (object != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+//            colors[0] = object->getColor();
+//            colors[1] = EFD_COLOR_LIGHT_GREY;
+//        } else {
+//            colors[0] = EFD_COLOR_WHITE;
+//            colors[1] = EFD_COLOR_DARK_GREY;
+//        }
+//    } else if (character != null && character->isMonster()) {
+//        colors[0] = character->getColor();
+//        colors[1] = EFD_COLOR_LIGHT_GREY;
+//    } else if (object != null) {
+//        colors[0] = object->getColor();
+//        colors[1] = EFD_COLOR_LIGHT_GREY;
+//    } else {
+//        colors[0] = EFD_COLOR_WHITE;
+//        colors[1] = EFD_COLOR_DARK_GREY;
+//    }
+//
+//    return colors;
 }
 
 /** GETTERS **/

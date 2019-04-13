@@ -75,6 +75,12 @@ namespace Exception {
             return "No more available object templates to select from";
         }
     };
+
+    class NoBossCreated : public std::exception {
+        const char* what() const noexcept override {
+            return "No boss created, double check there is a template for a boss";
+        }
+    };
 }
 
 #endif

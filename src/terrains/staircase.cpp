@@ -72,7 +72,7 @@ int Staircase::take() {
 
     for (height = playerRoom->getStartingY(); height < playerRoom->getStartingY() + playerRoom->getHeight(); height++) {
         for (width = playerRoom->getStartingX(); width < playerRoom->getStartingX() + playerRoom->getWidth(); width++) {
-            if (currentFloor->getCharacterAt(width, height) != null && currentFloor->getCharacterAt(width, height)->isMonster()) {
+            if (currentFloor->getCharacterAt(width, height) != null && currentFloor->getCharacterAt(width, height)->isMonster() && !((Monster*) currentFloor->getCharacterAt(width, height))->isBoss()) {
                 u_char placementAttempts = 0;
                 Room* monsterRoom;
                 u_char monsterX;

@@ -65,6 +65,23 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
         this->floor = this->getFloor(0);
     }
 
+    // If after creation the boss was not created, we need to create it now
+    for(index = 0; index < this->monsterTemplates.size(); index++) {
+        if(this->monsterTemplates[index]->getAbilities() & MONSTER_BOSS) {
+            // Put the boss on the final floor, first room
+            this->boss = this->monsterTemplates[index]->generateMonster(this->floors.back(), this->floors.back()->getRoom(0)->randomXInside(), this->floors.back()->getRoom(0)->randomYInside());
+            // Delete what ever was previously there
+            delete(this->floors.back()->getCharacterAt(this->boss->getX(), this->boss->getY()));
+            // Place our boss there
+            this->floors.back()->setCharacterAt(this->boss, this->boss->getX(), this->boss->getY());
+        }
+    }
+
+    if(this->boss == null) {
+        // No boss template was defined, and no boss was created... terminate
+        throw Exception::NoBossCreated();
+    }
+
     Monster::RunDijkstraOnFloor(this->floor);
 
     this->eventManager->addToQueue(new Event(0, event_type_player, this->player, Player::HandleEvent, Player::NextEventTick));

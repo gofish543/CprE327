@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added forced boss monster generation or fail
 ### Fixed
 - Fixed room pointer issues
 - Fixed out of sight coloring on map
