@@ -21,14 +21,14 @@ Object::Object(Floor* floor, u_char x, u_char y, std::string* name, std::string*
 }
 
 Object::~Object() {
-    delete(this->hitBonus);
-    delete(this->damageBonus);
-    delete(this->dodgeBonus);
-    delete(this->defenseBonus);
-    delete(this->weight);
-    delete(this->speedBonus);
-    delete(this->specialAttribute);
-    delete(this->value);
+    delete (this->hitBonus);
+    delete (this->damageBonus);
+    delete (this->dodgeBonus);
+    delete (this->defenseBonus);
+    delete (this->weight);
+    delete (this->speedBonus);
+    delete (this->specialAttribute);
+    delete (this->value);
 }
 
 u_char Object::getCharacter() {

@@ -60,7 +60,7 @@ int Player::HandleEvent(Event* event) {
             player->handleEventKeyToggleFog();
 
             return Player::HandleEvent(event);
-        case 't':
+        case 'g':
             player->handleEventKeyTeleport();
 
             return 0;
@@ -138,7 +138,7 @@ int Player::handleEventKeyTeleport() {
 
     this->getFloor()->setCharacterAt(null, this->x, this->y);
 
-    while (character != 27 && character != 't' && character != 'r') {
+    while (character != 27 && character != 'g' && character != 'r') {
         character = getChar(dungeon->getSettings()->doNCursesPrint());
         this->getFloor()->setCharacterAt(null, this->getX(), this->getY());
 
@@ -181,7 +181,7 @@ int Player::handleEventKeyTeleport() {
             this->getFloor()->setCharacterAt(null, this->x, this->y);
             this->setX(originalX)->setY(originalY);
             break;
-        case 't':
+        case 'g':
             break;
         case 'r':
             this->getFloor()->setCharacterAt(null, this->x, this->y);

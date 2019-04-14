@@ -11,6 +11,7 @@
 - Fixed line of sight algorithm
 - Fixed reseeding of dice random number
 ### Changed
+- Changed teleport key from 't' to 'g'
 - Changed dice random number to have static random generator
 - Changed monster, object, and room generation
 - Removed size counters under the floor class
