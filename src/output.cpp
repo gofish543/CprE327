@@ -23,9 +23,11 @@ Output* Output::print() {
     u_char yMax;
     u_char xMax;
     u_char index;
+    u_int foreground;
+    u_int background;
     Floor* floor = dungeon->getCurrentFloor();
 
-    this->setColor(EFD_COLOR_WHITE);
+    this->setColor(EFD_COLOR_WHITE, EFD_COLOR_GREY_DARK);
 
     if (this->dontNCurses) {
         this->print("\n");
@@ -54,7 +56,8 @@ Output* Output::print() {
             this->print("%2d ", y);
         }
         for (x = xMin; x < xMax; x++) {
-            this->setColor(floor->getColorAt(x, y));
+            floor->getColorAt(x, y, &foreground, &background);
+            this->setColor(foreground, background);
 
             if (this->doExpanded) {
                 this->print(" %c ", floor->getOutputCharacterAt(x, y));
@@ -66,7 +69,7 @@ Output* Output::print() {
         this->print("\n");
     }
 
-    this->setColor(EFD_COLOR_WHITE);
+    this->setColor(EFD_COLOR_WHITE, EFD_COLOR_GREY_DARK);
     for (index = 0; index < DUNGEON_TEXT_LINES; index++) {
         this->print("%s", this->dungeon->getText(index).c_str());
         this->print("\n");
@@ -439,7 +442,7 @@ void Output::printTerminate() {
         endwin();
     }
 
-    printf(SHELL_BG_BLACK "\n");
+    printf(SHELL_BG_GREY_DARK "\n");
     printf(SHELL_TEXT_RED "Forceful termination\n");
     printf(SHELL_DEFAULT "\n");
     exit(1);
@@ -503,7 +506,7 @@ Output* Output::printError(const char* format, ...) {
     return this;
 }
 
-void Output::setColor(u_int index) {
+void Output::setColor(u_int foreground, u_int background) {
     static const std::string shellColors[] = {
             SHELL_TEXT_BLACK,
             SHELL_TEXT_RED,
@@ -513,6 +516,8 @@ void Output::setColor(u_int index) {
             SHELL_TEXT_PURPLE,
             SHELL_TEXT_CYAN,
             SHELL_TEXT_WHITE,
+            SHELL_BG_GREY_LIGHT,
+            SHELL_BG_GREY_DARK,
     };
 
     static const int nCursesColors[] = {
@@ -527,14 +532,18 @@ void Output::setColor(u_int index) {
     };
 
     if (this->doNCurses) {
-        attron(COLOR_PAIR(nCursesColors[index]));
+        if (background == EFD_COLOR_GREY_DARK) {
+            attron(COLOR_PAIR(NCURSES_BG_GREY_DARK | nCursesColors[foreground]));
+        } else {
+            attron(COLOR_PAIR(NCURSES_BG_GREY_LIGHT | nCursesColors[foreground]));
+        }
     } else {
-        printf(SHELL_BG_BLACK);
-        printf("%s", shellColors[index].c_str());
+        printf("%s%s", shellColors[background].c_str(), shellColors[foreground].c_str());
+
     }
 }
 
-void Output::resetColor(u_int index) {
+void Output::resetColor(u_int foreground, u_int background) {
     static const int nCursesColors[] = {
             NCURSES_BLACK,
             NCURSES_RED,
@@ -547,7 +556,11 @@ void Output::resetColor(u_int index) {
     };
 
     if (this->doNCurses) {
-        attroff(COLOR_PAIR(nCursesColors[index]));
+        if (background == EFD_COLOR_GREY_DARK) {
+            attron(COLOR_PAIR(NCURSES_BG_GREY_DARK | nCursesColors[foreground]));
+        } else {
+            attron(COLOR_PAIR(NCURSES_BG_GREY_LIGHT | nCursesColors[foreground]));
+        }
     } else {
         printf(SHELL_DEFAULT);
     }

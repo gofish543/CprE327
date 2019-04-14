@@ -44,8 +44,8 @@ namespace App {
         /** DEBUG PRINTS **/
 
         /** COLORED **/
-        void setColor(u_int index);
-        void resetColor(u_int index);
+        void setColor(u_int foreground, u_int background);
+        void resetColor(u_int foreground, u_int background);
         /** COLORED **/
 
         /** GETTERS **/

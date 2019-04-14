@@ -22,15 +22,35 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
         init_color(NCURSES_MAGENTA, 1000, 0, 1000);
         init_color(NCURSES_CYAN, 0, 1000, 1000);
         init_color(NCURSES_WHITE, 1000, 1000, 1000);
+        init_color(NCURSES_BG_GREY_LIGHT, 333, 333, 333);
+        init_color(NCURSES_BG_GREY_DARK, 666, 666, 666);
 
-        init_pair(NCURSES_BLACK, NCURSES_BLACK, NCURSES_BLACK);
-        init_pair(NCURSES_RED, NCURSES_RED, NCURSES_BLACK);
-        init_pair(NCURSES_GREEN, NCURSES_GREEN, NCURSES_BLACK);
-        init_pair(NCURSES_YELLOW, NCURSES_YELLOW, NCURSES_BLACK);
-        init_pair(NCURSES_BLUE, NCURSES_BLUE, NCURSES_BLACK);
-        init_pair(NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BLACK);
-        init_pair(NCURSES_CYAN, NCURSES_CYAN, NCURSES_BLACK);
-        init_pair(NCURSES_WHITE, NCURSES_WHITE, NCURSES_BLACK);
+//        init_pair(NCURSES_BLACK, NCURSES_BLACK, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_RED, NCURSES_RED, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_GREEN, NCURSES_GREEN, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_YELLOW, NCURSES_YELLOW, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_BLUE, NCURSES_BLUE, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_CYAN, NCURSES_CYAN, NCURSES_BG_GREY_LIGHT);
+//        init_pair(NCURSES_WHITE, NCURSES_WHITE, NCURSES_BG_GREY_LIGHT);
+
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_BLACK, NCURSES_BLACK, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_RED, NCURSES_RED, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_GREEN, NCURSES_GREEN, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_YELLOW, NCURSES_YELLOW, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_BLUE, NCURSES_BLUE, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_CYAN, NCURSES_CYAN, NCURSES_BG_GREY_LIGHT);
+        init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_WHITE, NCURSES_WHITE, NCURSES_BG_GREY_LIGHT);
+
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_BLACK, NCURSES_BLACK, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_RED, NCURSES_RED, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_GREEN, NCURSES_GREEN, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_YELLOW, NCURSES_YELLOW, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_BLUE, NCURSES_BLUE, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_CYAN, NCURSES_CYAN, NCURSES_BG_GREY_DARK);
+        init_pair(NCURSES_BG_GREY_DARK | NCURSES_WHITE, NCURSES_WHITE, NCURSES_BG_GREY_DARK);
     } else {
         this->window = null;
     }
@@ -66,18 +86,18 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
     }
 
     // If after creation the boss was not created, we need to create it now
-    for(index = 0; index < this->monsterTemplates.size(); index++) {
-        if(this->monsterTemplates[index]->getAbilities() & MONSTER_BOSS) {
+    for (index = 0; index < this->monsterTemplates.size(); index++) {
+        if (this->monsterTemplates[index]->getAbilities() & MONSTER_BOSS) {
             // Put the boss on the final floor, first room
             this->boss = this->monsterTemplates[index]->generateMonster(this->floors.back(), this->floors.back()->getRoom(0)->randomXInside(), this->floors.back()->getRoom(0)->randomYInside());
             // Delete what ever was previously there
-            delete(this->floors.back()->getCharacterAt(this->boss->getX(), this->boss->getY()));
+            delete (this->floors.back()->getCharacterAt(this->boss->getX(), this->boss->getY()));
             // Place our boss there
             this->floors.back()->setCharacterAt(this->boss, this->boss->getX(), this->boss->getY());
         }
     }
 
-    if(this->boss == null) {
+    if (this->boss == null) {
         // No boss template was defined, and no boss was created... terminate
         throw Exception::NoBossCreated();
     }
@@ -211,8 +231,8 @@ bool Dungeon::continueGame() {
     }
     return
             this->player->isAlive() &&
-            !this->player->getRequestTerminate();
-//            this->boss->isAlive();
+            !this->player->getRequestTerminate() &&
+            this->boss->isAlive();
 }
 
 /** GETTERS **/

@@ -34,7 +34,7 @@ namespace App {
         Floor* resetCheapestPathToPlayer();
 
         u_char getOutputCharacterAt(u_char x, u_char y);
-        u_int getColorAt(u_char x, u_char y);
+        void getColorAt(u_char x, u_char y, u_int* foreground, u_int* background);
 
         u_char tunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
         u_char nonTunnelerView[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];

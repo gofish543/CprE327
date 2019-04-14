@@ -133,39 +133,41 @@ u_char Floor::getOutputCharacterAt(u_char x, u_char y) {
     }
 }
 
-u_int Floor::getColorAt(u_char x, u_char y) {
-    return EFD_COLOR_WHITE;
-//    u_int colors[2] = {EFD_COLOR_WHITE, EFD_COLOR_DARK_GREY};
-//    Character* character = this->characters[y][x];
-//    Object* object = this->objectsMap[y][x];
-//    Terrain* visibility = this->dungeon->getPlayer()->visibility[y][x];
-//
-//    if (this->dungeon->getSettings()->doFogOfWar()) {
-//        if (visibility == null) {
-//            colors[0] = EFD_COLOR_WHITE;
-//            colors[1] = EFD_COLOR_DARK_GREY;
-//        } else if (character != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
-//            colors[0] = character->getColor();
-//            colors[1] = EFD_COLOR_LIGHT_GREY;
-//        } else if (object != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
-//            colors[0] = object->getColor();
-//            colors[1] = EFD_COLOR_LIGHT_GREY;
-//        } else {
-//            colors[0] = EFD_COLOR_WHITE;
-//            colors[1] = EFD_COLOR_DARK_GREY;
-//        }
-//    } else if (character != null && character->isMonster()) {
-//        colors[0] = character->getColor();
-//        colors[1] = EFD_COLOR_LIGHT_GREY;
-//    } else if (object != null) {
-//        colors[0] = object->getColor();
-//        colors[1] = EFD_COLOR_LIGHT_GREY;
-//    } else {
-//        colors[0] = EFD_COLOR_WHITE;
-//        colors[1] = EFD_COLOR_DARK_GREY;
-//    }
-//
-//    return colors;
+void Floor::getColorAt(u_char x, u_char y, u_int* foreground, u_int* background) {
+    *foreground = EFD_COLOR_WHITE;
+    *background = EFD_COLOR_GREY_DARK;
+
+    Character* character = this->characters[y][x];
+    Object* object = this->objectsMap[y][x];
+    Terrain* visibility = this->dungeon->getPlayer()->visibility[y][x];
+
+    // Set the background color
+    if (this->dungeon->getSettings()->doFogOfWar() && this->dungeon->getPlayer()->hasLineOfSightTo(x, y) && this->terrains[y][x]->isWalkable()) {
+        *background = EFD_COLOR_GREY_LIGHT;
+    } else {
+        *background = EFD_COLOR_GREY_DARK;
+    }
+
+    if (this->dungeon->getSettings()->doFogOfWar()) {
+        if (this->dungeon->getPlayer()->getX() == x && this->dungeon->getPlayer()->getY() == y) {
+            *foreground = EFD_COLOR_WHITE;
+        }
+        if (visibility == null) {
+            *foreground = EFD_COLOR_WHITE;
+        } else if (character != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+            *foreground = character->getColor();
+        } else if (object != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
+            *foreground = object->getColor();
+        } else {
+            *foreground = EFD_COLOR_WHITE;
+        }
+    } else if (character != null && character->isMonster()) {
+        *foreground = character->getColor();
+    } else if (object != null) {
+        *foreground = object->getColor();
+    } else {
+        *foreground = EFD_COLOR_WHITE;
+    }
 }
 
 /** GETTERS **/
