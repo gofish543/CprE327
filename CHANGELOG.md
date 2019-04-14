@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added ncurses and shell colors based on visibility
 - Added forced boss monster generation or fail
 ### Fixed
 - Fixed room pointer issues

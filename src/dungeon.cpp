@@ -22,17 +22,8 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
         init_color(NCURSES_MAGENTA, 1000, 0, 1000);
         init_color(NCURSES_CYAN, 0, 1000, 1000);
         init_color(NCURSES_WHITE, 1000, 1000, 1000);
-        init_color(NCURSES_BG_GREY_LIGHT, 333, 333, 333);
-        init_color(NCURSES_BG_GREY_DARK, 666, 666, 666);
-
-//        init_pair(NCURSES_BLACK, NCURSES_BLACK, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_RED, NCURSES_RED, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_GREEN, NCURSES_GREEN, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_YELLOW, NCURSES_YELLOW, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_BLUE, NCURSES_BLUE, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_MAGENTA, NCURSES_MAGENTA, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_CYAN, NCURSES_CYAN, NCURSES_BG_GREY_LIGHT);
-//        init_pair(NCURSES_WHITE, NCURSES_WHITE, NCURSES_BG_GREY_LIGHT);
+        init_color(NCURSES_BG_GREY_LIGHT, 300, 300, 300);
+        init_color(NCURSES_BG_GREY_DARK, 100, 100, 100);
 
         init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_BLACK, NCURSES_BLACK, NCURSES_BG_GREY_LIGHT);
         init_pair(NCURSES_BG_GREY_LIGHT | NCURSES_RED, NCURSES_RED, NCURSES_BG_GREY_LIGHT);

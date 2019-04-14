@@ -148,10 +148,9 @@ void Floor::getColorAt(u_char x, u_char y, u_int* foreground, u_int* background)
         *background = EFD_COLOR_GREY_DARK;
     }
 
-    if (this->dungeon->getSettings()->doFogOfWar()) {
-        if (this->dungeon->getPlayer()->getX() == x && this->dungeon->getPlayer()->getY() == y) {
-            *foreground = EFD_COLOR_WHITE;
-        }
+    if (this->dungeon->getPlayer()->getX() == x && this->dungeon->getPlayer()->getY() == y) {
+        *foreground = EFD_COLOR_WHITE;
+    } else if (this->dungeon->getSettings()->doFogOfWar()) {
         if (visibility == null) {
             *foreground = EFD_COLOR_WHITE;
         } else if (character != null && this->dungeon->getPlayer()->hasLineOfSightTo(x, y)) {
