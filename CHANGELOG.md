@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Added
+### Fixed
+### Changed
+
+## [v0.1.9 (2019-04-15)](https://github.com/gofish543/CprE327/releases/tag/v0.1.9)
+
+### Added
 - Added ability to inspect monsters
 - Added ability to inspect inventory items
 - Added players can now destroy items from the game
@@ -18,6 +24,7 @@
 - Fixed line of sight algorithm
 - Fixed reseeding of dice random number
 ### Changed
+- Changed battle schematics to use items
 - Changed teleport key from 't' to 'g'
 - Changed dice random number to have static random generator
 - Changed monster, object, and room generation

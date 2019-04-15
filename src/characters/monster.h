@@ -46,7 +46,6 @@ namespace App {
         static int HandleEvent(Event* event);
 
         int moveTo(u_char toX, u_char toY);
-        void battleMonster(Monster* otherMonster);
         void battlePlayer(Player* player);
         char* locationString(char location[19]);
 

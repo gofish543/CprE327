@@ -7,6 +7,8 @@
 
 #define PLAYER_MAX_INVENTORY_SIZE 10
 
+#define PLAYER_BASE_HEALTH 10000
+
 #include <algorithm>
 #include <map>
 
@@ -21,7 +23,7 @@ namespace App {
     class Player : public Character {
     public:
         Player(Floor* floor, u_char x, u_char y);
-        Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived);
+        Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived, u_int health);
         ~Player();
 
         static int NextEventTick(Event* event);
@@ -66,6 +68,7 @@ namespace App {
         u_char getInventoryCount();
         Object* getInventoryAt(u_char index);
         std::map<u_int, Object*>* getEquipment();
+        u_int getHealth();
         /** GETTERS **/
 
         /** SETTERS **/
@@ -76,6 +79,7 @@ namespace App {
         Player* setMonstersSlain(u_int monstersSlain);
         Player* setDaysSurvived(u_int daysSurvived);
         Player* removeFromInventory(u_char index);
+        Player* setHealth(u_int health);
         /** SETTERS **/
 
         Terrain* visibility[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
@@ -89,6 +93,7 @@ namespace App {
         u_int level;
         u_int monstersSlain;
         u_int daysSurvived;
+        u_int health;
 
         std::map<u_int, Object*> equipment;
         std::vector<Object*> inventory;

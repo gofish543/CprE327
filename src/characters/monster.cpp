@@ -65,28 +65,12 @@ int Monster::HandleEvent(Event* event) {
                         delete (floor->getTerrainAt(monster->getX(), monster->getY()));
                         floor->setTerrainAt(new Corridor(floor, monster->getX(), monster->getY()), monster->getX(), monster->getY());
                     }
-                    return 0;
                 }
+
+                return 0;
             } else if (floor->getCharacterAt(x, y)->isMonster()) { // The monster fell on another monster
-                auto otherMonster = (Monster*) floor->getCharacterAt(x, y);
-                Monster* deadMonster;
-
-                monster->battleMonster(otherMonster);
-                deadMonster = monster->isAlive() ? otherMonster : monster;
-
-                // Remove this monster's corpse
-                floor->setCharacterAt(null, deadMonster->getX(), deadMonster->getY());
-
-                // Where our glorious monster was now become a corridor if they are a tunneler and were on rock
-                if (deadMonster->isTunneler() && floor->getTerrainAt(deadMonster->getX(), deadMonster->getY())->isRock()) {
-                    delete (floor->getTerrainAt(deadMonster->getX(), deadMonster->getY()));
-                    floor->setTerrainAt(new Corridor(floor, deadMonster->getX(), deadMonster->getY()), deadMonster->getX(), deadMonster->getY());
-                }
-
-                if (deadMonster == monster) { // The other monster won
-                    // Stop running this monster
-                    return 0;
-                }
+                // Ignore
+                return 0;
             } else {
                 // Unknown case encountered, exit
                 return 0;
@@ -256,22 +240,26 @@ int Monster::moveTo(u_char toX, u_char toY) {
     return 0;
 }
 
-void Monster::battleMonster(Monster* otherMonster) {
-    // Stronger wins
-    if (this->getRarity() > otherMonster->getRarity()) {
-        otherMonster->killCharacter();
-    } else if (this->getRarity() < otherMonster->getRarity()) {
-        this->killCharacter();
-    }
-    if (Dice::RandomNumberBetween(false, true)) {
-        otherMonster->killCharacter();
-    } else {
-        this->killCharacter();
-    }
-}
-
 void Monster::battlePlayer(Player* player) {
-    player->battleMonster(this);
+    // Roll the monster damage
+    u_int monsterDamage = this->getAttackDamage()->roll();
+
+    if (player->getHealth() > monsterDamage) {
+        // Player lived, subtract health
+        player->setHealth(player->getHealth() - monsterDamage);
+
+        std::string message = "%s hit you for %d";
+        this->floor->getDungeon()->prependText(&message, this->getName().c_str(), monsterDamage);
+    } else {
+        // Player died
+        player->killCharacter();
+
+        // Remove player corps
+        player->getFloor()->setCharacterAt(null, this->getX(), this->getY());
+
+        std::string message = "%s killed you";
+        this->floor->getDungeon()->prependText(&message, this->getName().c_str());
+    }
 }
 
 char* Monster::locationString(char location[19]) {

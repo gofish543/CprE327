@@ -12,6 +12,7 @@ Player::Player(Floor* floor, u_char x, u_char y)
     this->level = 0;
     this->monstersSlain = 0;
     this->daysSurvived = 0;
+    this->health = PLAYER_BASE_HEALTH;
 
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
@@ -40,7 +41,7 @@ Player::Player(Floor* floor, u_char x, u_char y)
     this->equipment.insert(std::pair<u_int, Object*>(OBJECT_CONTAINER, null));
 }
 
-Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived)
+Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived, u_int health)
         : Player(floor, x, y) {
     this->takingStaircase = null;
 
@@ -49,6 +50,7 @@ Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlai
     this->level = level;
     this->monstersSlain = monstersSlain;
     this->daysSurvived = daysSurvived;
+    this->health = health;
 }
 
 Player::~Player() = default;
@@ -769,10 +771,14 @@ int Player::moveTo(u_char toX, u_char toY) {
 
     // Check out target location
     if (this->floor->getCharacterAt(toX, toY) != null) {
-        this->battleMonster((Monster*) this->floor->getCharacterAt(toX, toY));
+        auto target = (Monster*) this->floor->getCharacterAt(toX, toY);
+        this->battleMonster(target);
 
         if (!this->isAlive()) {
             // Player died, don't move to spot
+            return 0;
+        }
+        if (target->isAlive()) {
             return 0;
         }
     }
@@ -801,22 +807,30 @@ int Player::moveTo(u_char toX, u_char toY) {
 }
 
 void Player::battleMonster(Monster* monster) {
-    if (Monster::AliveCount(this->floor->getDungeon()) == 1) {
-        // Player died
-        this->killCharacter();
+    u_int playerDamage = 0;
+    for (auto const& equipment : this->equipment) {
+        if (equipment.second != null) {
+            playerDamage += equipment.second->getDamageBonus();
+        }
+    }
 
-        // Remove player corps
-        this->floor->setCharacterAt(null, this->getX(), this->getY());
+    if (monster->getHitPoints() > playerDamage) {
+        monster->setHitPoints(monster->getHitPoints() - playerDamage);
+
+        std::string message = "You hit %s for %d";
+        this->floor->getDungeon()->prependText(&message, monster->getName().c_str(), playerDamage);
     } else {
         // Monster died
         monster->killCharacter();
 
         // Remove monster corps
-        this->floor->setCharacterAt(null, monster->getX(), monster->getY());
+        monster->getFloor()->setCharacterAt(null, monster->getX(), monster->getY());
 
         // Add level to the player
-        this->addLevel(1);
-        this->incrementMonstersSlain();
+        this->addLevel(1)->incrementMonstersSlain();
+
+        std::string message = "You killed %s with a final hit of %d";
+        this->floor->getDungeon()->prependText(&message, monster->getName().c_str(), playerDamage);
     }
 }
 
@@ -913,6 +927,10 @@ Object* Player::getInventoryAt(u_char index) {
 std::map<u_int, Object*>* Player::getEquipment() {
     return &this->equipment;
 }
+
+u_int Player::getHealth() {
+    return this->health;
+}
 /** GETTERS **/
 
 /** SETTERS **/
@@ -953,6 +971,12 @@ Player* Player::setDaysSurvived(u_int daysSurvived) {
 
 Player* Player::removeFromInventory(u_char index) {
     this->inventory.erase(this->inventory.begin() + index);
+
+    return this;
+}
+
+Player* Player::setHealth(u_int health) {
+    this->health = health;
 
     return this;
 }
