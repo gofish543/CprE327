@@ -274,6 +274,12 @@ Floor* Floor::setCharacterAt(Character* character, u_char width, u_char height) 
     return this;
 }
 
+Floor* Floor::setObjectAt(Object* object, u_char width, u_char height) {
+    this->objectsMap[height][width] = object;
+
+    return this;
+}
+
 Floor* Floor::setTunnelerViewAt(u_char value, u_char width, u_char height) {
     this->tunnelerView[height][width] = value;
 

@@ -30,6 +30,7 @@ namespace App {
         Output* print(u_int debugFunctions, Floor* floor = null);
         Output* printEndgame();
         Output* printMonsterMenu(u_short startIndex);
+        Output* printInventory(u_char selectIndex = U_CHAR_MAX);
 
         /** DEBUG PRINTS **/
         Output* printHardness(Floor* floor);

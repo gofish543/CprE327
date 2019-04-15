@@ -1,6 +1,7 @@
 #include "player.h"
 
-Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER_CHARACTER, PLAYER_SPEED, true, false) {
+Player::Player(Floor* floor, u_char x, u_char y)
+        : Character(floor, x, y, PLAYER_CHARACTER, PLAYER_SPEED, true, false), visibility{null} {
     u_char height;
     u_char width;
 
@@ -17,6 +18,26 @@ Player::Player(Floor* floor, u_char x, u_char y) : Character(floor, x, y, PLAYER
             this->visibility[height][width] = null;
         }
     }
+
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_WEAPON, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_OFFHAND, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_RANGED, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_ARMOR, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_HELMET, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_CLOAK, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_GLOVES, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_BOOTS, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_RING, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_AMULET, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_LIGHT, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_SCROLL, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_BOOK, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_FLASK, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_GOLD, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_AMMUNITION, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_FOOD, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_WAND, null));
+    this->equipment.insert(std::pair<u_int, Object*>(OBJECT_CONTAINER, null));
 }
 
 Player::Player(Floor* floor, u_char x, u_char y, u_int level, u_int monstersSlain, u_int daysSurvived)
@@ -52,28 +73,61 @@ int Player::HandleEvent(Event* event) {
     move = getChar(dungeon->getSettings()->doNCursesPrint());
 
     switch (move) {
+        case 'w':
+            player->handleEventKeyWearItem();
+
+            return Player::HandleEvent(event);
+
+        case 't':
+            return Player::HandleEvent(event);
+
+        case 'd':
+            return Player::HandleEvent(event);
+
+        case 'x':
+            return Player::HandleEvent(event);
+
+        case 'i':
+            player->handleEventKeyInventoryMenu();
+
+            return Player::HandleEvent(event);
+        case 'e':
+            return Player::HandleEvent(event);
+
+        case 'I':
+            return Player::HandleEvent(event);
+
+        case 'L':
+            return Player::HandleEvent(event);
+
         case 'm':
             player->handleEventKeyMonsterMenu();
 
             return Player::HandleEvent(event);
+
         case 'f':
             player->handleEventKeyToggleFog();
 
             return Player::HandleEvent(event);
+
         case 'g':
             player->handleEventKeyTeleport();
 
             return 0;
+
         case '<':
         case '>':
             if (player->handleEventKeyStaircase(move)) {
                 return Player::HandleEvent(event);
             }
+
             return 0;
+
         default:
             if (player->handleEventKeyMovement(move)) {
                 return Player::HandleEvent(event);
             }
+
             return 0;
     }
 }
@@ -102,6 +156,66 @@ int Player::handleEventKeyMonsterMenu() {
                 break;
             default:
                 break;
+        }
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
+
+int Player::handleEventKeyInventoryMenu() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+
+    while (character != 27) {
+        dungeon->getOutput()->printInventory();
+        dungeon->getOutput()->print("Esc: Close\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
+
+int Player::handleEventKeyWearItem() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+    u_char selectedIndex = 0;
+
+    while (character != 27 && character != KEY_ENTER) {
+        dungeon->getOutput()->printInventory(selectedIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (selectedIndex < PLAYER_MAX_INVENTORY_SIZE) {
+                    selectedIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (selectedIndex > 0) {
+                    selectedIndex--;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (character == KEY_ENTER) {
+        // Wear the item at selected index
+        if (selectedIndex < this->getInventoryCount()) {
+            auto object = this->wearItem(selectedIndex);
+
+            std::string wearText = "Equipped %s";
+            dungeon->prependText(&wearText, object->getName().c_str());
+        } else {
+            dungeon->prependText("Cannot wear item");
         }
     }
 
@@ -337,17 +451,33 @@ int Player::handleEventKeyMovement(int command) {
     return 0;
 }
 
-int Player::moveTo(u_char toX, u_char toY) {
-    Floor* floor = this->getFloor();
+Object* Player::wearItem(u_char index) {
+    if (index > this->getInventoryCount()) {
+        return null;
+    }
 
+    // Try to find the item
+    Object* toAdd = this->inventory[index];
+    auto iterator = this->equipment.find(toAdd->getItemType());
+
+    if (iterator != this->equipment.end()) {
+        iterator->second = toAdd;
+
+        this->removeFromInventory(index);
+    }
+
+    return toAdd;
+}
+
+int Player::moveTo(u_char toX, u_char toY) {
     // If moving to the same spot, just exit
     if (toX == this->getX() && toY == this->getY()) {
         return 0;
     }
 
     // Check out target location
-    if (floor->getCharacterAt(toX, toY) != null) {
-        this->battleMonster((Monster*) floor->getCharacterAt(toX, toY));
+    if (this->floor->getCharacterAt(toX, toY) != null) {
+        this->battleMonster((Monster*) this->floor->getCharacterAt(toX, toY));
 
         if (!this->isAlive()) {
             // Player died, don't move to spot
@@ -356,16 +486,24 @@ int Player::moveTo(u_char toX, u_char toY) {
     }
 
     // Move the character to the requested spot
-    floor->setCharacterAt(null, this->x, this->y);
+    this->floor->setCharacterAt(null, this->x, this->y);
 
     this->x = toX;
     this->y = toY;
 
-    floor->setCharacterAt(this, this->x, this->y);
+    this->floor->setCharacterAt(this, this->x, this->y);
 
-    Monster::RunDijkstraOnFloor(floor);
+    Monster::RunDijkstraOnFloor(this->floor);
 
     this->updateVisibility();
+
+    // If standing on an object, place in bag
+    if (floor->getObjectAt(x, y) != null && this->inventory.size() < PLAYER_MAX_INVENTORY_SIZE) {
+        std::string pickUpString = "Picked up %s";
+        this->floor->getDungeon()->prependText(&pickUpString, floor->getObjectAt(x, y)->getName().c_str());
+        this->inventory.push_back(floor->getObjectAt(x, y));
+        this->floor->setObjectAt(null, x, y);
+    }
 
     return 0;
 }
@@ -408,6 +546,12 @@ Player* Player::removeLevel(int amount) {
 
 u_int Player::getColor() {
     return EFD_COLOR_WHITE;
+}
+
+u_char Player::getSpeed() {
+    u_char baseSpeed = this->speed;
+
+    return baseSpeed;
 }
 
 Player* Player::updateVisibility() {
@@ -461,6 +605,18 @@ u_int Player::getMonstersSlain() {
 u_int Player::getDaysSurvived() {
     return this->daysSurvived;
 }
+
+u_char Player::getInventoryCount() {
+    return this->inventory.size();
+}
+
+Object* Player::getInventoryAt(u_char index) {
+    if (index > this->getInventoryCount()) {
+        throw Exception::InventoryOutOfBounds();
+    } else {
+        return this->inventory[index];
+    }
+}
 /** GETTERS **/
 
 /** SETTERS **/
@@ -495,6 +651,12 @@ Player* Player::setMonstersSlain(u_int monstersSlain) {
 
 Player* Player::setDaysSurvived(u_int daysSurvived) {
     this->daysSurvived = daysSurvived;
+
+    return this;
+}
+
+Player* Player::removeFromInventory(u_char index) {
+    this->inventory.erase(this->inventory.begin() + index);
 
     return this;
 }

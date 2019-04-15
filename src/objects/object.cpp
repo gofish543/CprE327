@@ -100,6 +100,49 @@ u_int Object::getItemType() {
     return itemType;
 }
 
+std::string Object::getTypeString() {
+    switch (this->itemType) {
+        case OBJECT_WEAPON:
+            return OBJECT_WEAPON_KEYWORD;
+        case OBJECT_OFFHAND:
+            return OBJECT_OFFHAND_KEYWORD;
+        case OBJECT_RANGED:
+            return OBJECT_RANGED_KEYWORD;
+        case OBJECT_ARMOR:
+            return OBJECT_ARMOR_KEYWORD;
+        case OBJECT_HELMET:
+            return OBJECT_HELMET_KEYWORD;
+        case OBJECT_CLOAK:
+            return OBJECT_CLOAK_KEYWORD;
+        case OBJECT_GLOVES:
+            return OBJECT_GLOVES_KEYWORD;
+        case OBJECT_BOOTS:
+            return OBJECT_BOOTS_KEYWORD;
+        case OBJECT_RING:
+            return OBJECT_RING_KEYWORD;
+        case OBJECT_AMULET:
+            return OBJECT_AMULET_KEYWORD;
+        case OBJECT_LIGHT:
+            return OBJECT_LIGHT_KEYWORD;
+        case OBJECT_SCROLL:
+            return OBJECT_SCROLL_KEYWORD;
+        case OBJECT_BOOK:
+            return OBJECT_BOOK_KEYWORD;
+        case OBJECT_FLASK:
+            return OBJECT_FLASK_KEYWORD;
+        case OBJECT_GOLD:
+            return OBJECT_GOLD_KEYWORD;
+        case OBJECT_AMMUNITION:
+            return OBJECT_AMMUNITION_KEYWORD;
+        case OBJECT_FOOD:
+            return OBJECT_FOOD_KEYWORD;
+        case OBJECT_WAND:
+            return OBJECT_WAND_KEYWORD;
+        case OBJECT_CONTAINER:
+            return OBJECT_CONTAINER_KEYWORD;
+    }
+}
+
 u_short Object::getColor() {
     return color;
 }

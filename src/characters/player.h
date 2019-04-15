@@ -5,7 +5,10 @@
 
 #define PLAYER_SPEED 10
 
+#define PLAYER_MAX_INVENTORY_SIZE 10
+
 #include <algorithm>
+#include <map>
 
 #include <forward_declarations.h>
 #include <character_listings.h>
@@ -25,10 +28,17 @@ namespace App {
         static int HandleEvent(Event* event);
 
         int handleEventKeyMonsterMenu();
+        int handleEventKeyInventoryMenu();
+        int handleEventKeyWearItem();
+        int handleEventKeyTakeOffItem();
+        int handleEventKeyDropItem();
+        int handleEventKeyDestroyItem();
         int handleEventKeyToggleFog();
         int handleEventKeyTeleport();
         int handleEventKeyStaircase(int command);
         int handleEventKeyMovement(int command);
+
+        Object* wearItem(u_char index);
 
         int moveTo(u_char toX, u_char toY);
         void battleMonster(Monster* monster);
@@ -40,6 +50,7 @@ namespace App {
         Player* incrementDaysSurvived();
 
         u_int getColor();
+        u_char getSpeed();
         Player* updateVisibility();
 
         /** GETTERS **/
@@ -48,6 +59,8 @@ namespace App {
         u_int getLevel();
         u_int getMonstersSlain();
         u_int getDaysSurvived();
+        u_char getInventoryCount();
+        Object* getInventoryAt(u_char index);
         /** GETTERS **/
 
         /** SETTERS **/
@@ -57,6 +70,7 @@ namespace App {
         Player* setLevel(u_int level);
         Player* setMonstersSlain(u_int monstersSlain);
         Player* setDaysSurvived(u_int daysSurvived);
+        Player* removeFromInventory(u_char index);
         /** SETTERS **/
 
         Terrain* visibility[DUNGEON_FLOOR_HEIGHT][DUNGEON_FLOOR_WIDTH];
@@ -70,11 +84,15 @@ namespace App {
         u_int level;
         u_int monstersSlain;
         u_int daysSurvived;
+
+        std::map<u_int, Object*> equipment;
+        std::vector<Object*> inventory;
     };
 }
 
 #include "../floor.h"
 #include "../input.h"
 #include "../output.h"
+#include "../objects/object.h"
 
 #endif

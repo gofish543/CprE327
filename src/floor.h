@@ -68,6 +68,7 @@ namespace App {
         Floor* setFloorNumber(u_char floorNumber);
         Floor* setTerrainAt(Terrain* terrain, u_char width, u_char height);
         Floor* setCharacterAt(Character* character, u_char width, u_char height);
+        Floor* setObjectAt(Object* object, u_char width, u_char height);
         Floor* setTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setNonTunnelerViewAt(u_char value, u_char width, u_char height);
         Floor* setCheapestPathToPlayer(u_char value, u_char width, u_char height);

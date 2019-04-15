@@ -22,8 +22,11 @@ int getChar(const bool ncurses) {
             case 185: // Right arrow
                 userInput = KEY_RIGHT;
                 break;
-            case 186:
+            case 186: // Left arrow
                 userInput = KEY_LEFT;
+                break;
+            case 0: // Enter key
+                userInput = KEY_ENTER;
                 break;
             default:
                 break;

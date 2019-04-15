@@ -24,7 +24,7 @@ namespace App {
         u_char getX();
         u_char getY();
         u_char getCharacter();
-        u_char getSpeed();
+        virtual u_char getSpeed();
         bool isAlive();
         bool isPlayer();
         bool isMonster();

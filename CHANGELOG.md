@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- Added players can now pick up items
+- Added players can now equip items from inventory
 - Added ncurses and shell colors based on visibility
 - Added forced boss monster generation or fail
 ### Fixed

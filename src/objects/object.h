@@ -62,6 +62,7 @@ namespace App {
         const std::string& getName();
         const std::string& getDescription();
         u_int getItemType();
+        std::string getTypeString();
         u_short getColor();
         u_short getHitBonus();
         u_short getDamageBonus();

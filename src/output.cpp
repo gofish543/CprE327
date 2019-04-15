@@ -229,6 +229,31 @@ Output* Output::printMonsterMenu(u_short startIndex) {
     return this;
 }
 
+Output* Output::printInventory(u_char selectIndex) {
+    u_char index;
+    Player* player = this->dungeon->getPlayer();
+    if (this->doNCurses) {
+        clear();
+    }
+    this->print("+-----+-------+----------------------------------------------+-----------------+\n");
+    this->print("|     | INDEX |                     NAME                     |       TYPE      |\n");
+    this->print("+-----+-------+----------------------------------------------+-----------------+\n");
+    for (index = 0; index < PLAYER_MAX_INVENTORY_SIZE; index++) {
+        if (index < player->getInventoryCount()) {
+            this->print("| [%c] |     %d | %44s | %15s |\n", selectIndex == index ? '*' : ' ', index, player->getInventoryAt(index)->getName().c_str(), player->getInventoryAt(index)->getTypeString().c_str());
+        } else {
+            this->print("| [%c] |     %d |                                              |                 |\n", selectIndex == index ? '*' : ' ', index);
+        }
+    }
+    this->print("+-----+-------+----------------------------------------------+-----------------+\n");
+
+    if (this->doNCurses) {
+        refresh();
+    }
+
+    return this;
+}
+
 Output* Output::printHardness(Floor* floor) {
     u_char x;
     u_char y;

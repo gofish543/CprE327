@@ -40,6 +40,12 @@ namespace Exception {
         }
     };
 
+    class InventoryOutOfBounds : public std::exception {
+        const char* what() const noexcept override {
+            return "Inventory index out of bounds exception";
+        }
+    };
+
     class RoomEmptySpaceInvalid : public std::exception {
         const char* what() const noexcept override {
             return "Cannot accurately place rooms with the given settings, more than 60% of the dungeon would be rooms";
