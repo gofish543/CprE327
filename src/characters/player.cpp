@@ -82,6 +82,8 @@ int Player::HandleEvent(Event* event) {
             return Player::HandleEvent(event);
 
         case 'd':
+            player->handleEventKeyDropItem();
+
             return Player::HandleEvent(event);
 
         case 'x':
@@ -223,6 +225,64 @@ int Player::handleEventKeyWearItem() {
 
     return 0;
 }
+
+int Player::handleEventKeyTakeOffItem() {
+
+}
+
+int Player::handleEventKeyDropItem() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+    u_char selectedIndex = 0;
+
+    while (character != 27 && character != KEY_ENTER) {
+        dungeon->getOutput()->printInventory(selectedIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (selectedIndex < PLAYER_MAX_INVENTORY_SIZE) {
+                    selectedIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (selectedIndex > 0) {
+                    selectedIndex--;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (character == KEY_ENTER) {
+        // Wear the item at selected index
+        if (selectedIndex < this->getInventoryCount()) {
+            // Placing on an already filled element destroys this item
+            if (this->floor->getObjectAt(this->x, this->y) == null) {
+                this->floor->setObjectAt(this->inventory[selectedIndex], x, y);
+                std::string wearText = "Dropped %s";
+                dungeon->prependText(&wearText, this->inventory[selectedIndex]->getName().c_str());
+            } else {
+                dungeon->prependText("Tried to drop item, but place already full. Destroying item...");
+            }
+
+            // Remove from inventory
+            this->removeFromInventory(selectedIndex);
+
+        } else {
+            dungeon->prependText("Cannot drop item");
+        }
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
+
+int Player::handleEventKeyDestroyItem() {}
 
 int Player::handleEventKeyToggleFog() {
     this->getFloor()->getDungeon()->getSettings()->setFogOfWar(
