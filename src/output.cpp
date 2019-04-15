@@ -235,6 +235,7 @@ Output* Output::printInventory(u_char selectIndex) {
     if (this->doNCurses) {
         clear();
     }
+
     this->print("+-----+-------+----------------------------------------------+-----------------+\n");
     this->print("|     | INDEX |                     NAME                     |       TYPE      |\n");
     this->print("+-----+-------+----------------------------------------------+-----------------+\n");
@@ -246,6 +247,33 @@ Output* Output::printInventory(u_char selectIndex) {
         }
     }
     this->print("+-----+-------+----------------------------------------------+-----------------+\n");
+
+    if (this->doNCurses) {
+        refresh();
+    }
+
+    return this;
+}
+
+Output* Output::printEquipment(u_char selectedIndex) {
+    u_char index = 0;
+    Player* player = this->dungeon->getPlayer();
+    if (this->doNCurses) {
+        clear();
+    }
+
+    this->print("+-----+--------------+--------+------------------------------------------------+\n");
+    this->print("|     |     TYPE     | SYMBOL |                      NAME                      |\n");
+    this->print("+-----+--------------+--------+------------------------------------------------+\n");
+    for (auto const& equipment : *player->getEquipment()) {
+        if (equipment.second == null) {
+            this->print("| [%c] | %12s |        |                                                |\n", selectedIndex == index ? '*' : ' ', Object::typeToString(equipment.first).c_str());
+        } else {
+            this->print("| [%c] | %12s | %6c | %46s |\n", selectedIndex == index ? '*' : ' ', equipment.second->getTypeString().c_str(), equipment.second->getCharacter(), equipment.second->getName().c_str());
+        }
+        index++;
+    }
+    this->print("+-----------------+--------+---------------------------------------------------+\n");
 
     if (this->doNCurses) {
         refresh();

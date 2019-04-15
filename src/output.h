@@ -10,6 +10,7 @@
 #define OUTPUT_DEBUG_TERMINATE          0b1000000u
 
 #include <string>
+#include <map>
 
 #include <ncurses.h>
 #include <cstdio>
@@ -31,6 +32,7 @@ namespace App {
         Output* printEndgame();
         Output* printMonsterMenu(u_short startIndex);
         Output* printInventory(u_char selectIndex = U_CHAR_MAX);
+        Output* printEquipment(u_char selectedIndex  = U_CHAR_MAX);
 
         /** DEBUG PRINTS **/
         Output* printHardness(Floor* floor);

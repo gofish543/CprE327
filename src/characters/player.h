@@ -29,6 +29,7 @@ namespace App {
 
         int handleEventKeyMonsterMenu();
         int handleEventKeyInventoryMenu();
+        int handleEventKeyEquipmentMenu();
         int handleEventKeyWearItem();
         int handleEventKeyTakeOffItem();
         int handleEventKeyDropItem();
@@ -39,6 +40,7 @@ namespace App {
         int handleEventKeyMovement(int command);
 
         Object* wearItem(u_char index);
+        Object* unEquipItem(u_char index);
 
         int moveTo(u_char toX, u_char toY);
         void battleMonster(Monster* monster);
@@ -61,6 +63,7 @@ namespace App {
         u_int getDaysSurvived();
         u_char getInventoryCount();
         Object* getInventoryAt(u_char index);
+        std::map<u_int, Object*>* getEquipment();
         /** GETTERS **/
 
         /** SETTERS **/

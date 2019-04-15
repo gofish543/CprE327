@@ -53,6 +53,8 @@ namespace App {
         Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, Dice* weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity);
         ~Object();
 
+        static std::string typeToString(u_int type);
+
         u_char getCharacter();
 
         /** GETTERS **/

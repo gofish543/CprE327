@@ -79,6 +79,8 @@ int Player::HandleEvent(Event* event) {
             return Player::HandleEvent(event);
 
         case 't':
+            player->handleEventKeyTakeOffItem();
+
             return Player::HandleEvent(event);
 
         case 'd':
@@ -87,6 +89,8 @@ int Player::HandleEvent(Event* event) {
             return Player::HandleEvent(event);
 
         case 'x':
+            player->handleEventKeyDestroyItem();
+
             return Player::HandleEvent(event);
 
         case 'i':
@@ -94,6 +98,8 @@ int Player::HandleEvent(Event* event) {
 
             return Player::HandleEvent(event);
         case 'e':
+            player->handleEventKeyEquipmentMenu();
+
             return Player::HandleEvent(event);
 
         case 'I':
@@ -182,6 +188,22 @@ int Player::handleEventKeyInventoryMenu() {
     return 0;
 }
 
+int Player::handleEventKeyEquipmentMenu() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+
+    while (character != 27) {
+        dungeon->getOutput()->printEquipment();
+        dungeon->getOutput()->print("Esc: Close\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
+
 int Player::handleEventKeyWearItem() {
     Dungeon* dungeon = this->getFloor()->getDungeon();
     int character = 0;
@@ -227,7 +249,53 @@ int Player::handleEventKeyWearItem() {
 }
 
 int Player::handleEventKeyTakeOffItem() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+    u_char selectedIndex = 0;
 
+    while (character != 27 && character != KEY_ENTER) {
+        dungeon->getOutput()->printEquipment(selectedIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (selectedIndex < this->equipment.size()) {
+                    selectedIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (selectedIndex > 0) {
+                    selectedIndex--;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (character == KEY_ENTER) {
+        // Wear the item at selected index
+        if (selectedIndex < this->equipment.size()) {
+            auto object = this->unEquipItem(selectedIndex);
+
+            if (object == null) {
+                dungeon->prependText("Unequipped and destroyed item");
+            }
+            else {
+                std::string wearText = "Unequipped %s";
+                dungeon->prependText(&wearText, object->getName().c_str());
+            }
+
+        } else {
+            dungeon->prependText("Cannot unequip item");
+        }
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
 }
 
 int Player::handleEventKeyDropItem() {
@@ -282,7 +350,50 @@ int Player::handleEventKeyDropItem() {
     return 0;
 }
 
-int Player::handleEventKeyDestroyItem() {}
+int Player::handleEventKeyDestroyItem() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+    u_char selectedIndex = 0;
+
+    while (character != 27 && character != KEY_ENTER) {
+        dungeon->getOutput()->printInventory(selectedIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (selectedIndex < PLAYER_MAX_INVENTORY_SIZE) {
+                    selectedIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (selectedIndex > 0) {
+                    selectedIndex--;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (character == KEY_ENTER) {
+        // Wear the item at selected index
+        if (selectedIndex < this->getInventoryCount()) {
+            auto object = this->inventory[selectedIndex];
+            this->removeFromInventory(selectedIndex);
+
+            std::string wearText = "Destroyed %s";
+            dungeon->prependText(&wearText, object->getName().c_str());
+        } else {
+            dungeon->prependText("Cannot destroy item");
+        }
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
 
 int Player::handleEventKeyToggleFog() {
     this->getFloor()->getDungeon()->getSettings()->setFogOfWar(
@@ -529,6 +640,37 @@ Object* Player::wearItem(u_char index) {
     return toAdd;
 }
 
+Object* Player::unEquipItem(u_char index) {
+    if (index > this->equipment.size()) {
+        return null;
+    }
+
+    Object* object;
+    u_char findIndex = 0;
+
+    for (auto const& equipment : this->equipment) {
+        if (findIndex == index) {
+            // Unequip this item
+            object = equipment.second;
+            auto iterator = this->equipment.find(object->getItemType());
+
+            if (iterator != this->equipment.end()) {
+                iterator->second = null;
+
+                if (this->getInventoryCount() < findIndex) {
+                    this->inventory.push_back(object);
+                }
+            }
+
+            return object;
+        }
+
+        findIndex++;
+    }
+
+    return null;
+}
+
 int Player::moveTo(u_char toX, u_char toY) {
     // If moving to the same spot, just exit
     if (toX == this->getX() && toY == this->getY()) {
@@ -676,6 +818,10 @@ Object* Player::getInventoryAt(u_char index) {
     } else {
         return this->inventory[index];
     }
+}
+
+std::map<u_int, Object*>* Player::getEquipment() {
+    return &this->equipment;
 }
 /** GETTERS **/
 
