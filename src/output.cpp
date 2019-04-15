@@ -89,7 +89,6 @@ Output* Output::print(std::string* format, ...) {
 
     if (this->doNCurses) {
         vw_printw(window, format->c_str(), args);
-        refresh();
     } else {
         vprintf(format->c_str(), args);
     }
@@ -105,7 +104,6 @@ Output* Output::print(const char* format, ...) {
 
     if (this->doNCurses) {
         vw_printw(window, format, args);
-        refresh(); // TODO Update where refresh is
     } else {
         vprintf(format, args);
     }
@@ -194,7 +192,7 @@ Output* Output::printEndgame() {
     return this;
 }
 
-Output* Output::printMonsterMenu(u_short startIndex) {
+Output* Output::printMonsterMenu(u_short startIndex, u_short selectedIndex) {
     u_char y;
     u_short index;
     char location[19] = "";
@@ -203,24 +201,22 @@ Output* Output::printMonsterMenu(u_short startIndex) {
         clear();
     }
 
-    this->print("+---------+-------------+------------+----------+---------+--------------------+\n");
-    this->print("| MONSTER | INTELLIGENT | TELEPATHIC | TUNNELER | ERRATIC |      LOCATION      |\n");
-    this->print("+---------+-------------+------------+----------+---------+--------------------+\n");
+    this->print("+-----+-----+-------+-------+-------+-------+-------+--------------------------+\n");
+    this->print("|     | NUM | ALIVE | INTEL | TELEP | TUNNE | ERRAT |         LOCATION         |\n");
+    this->print("+-----+-----+-------+-------+-------+-------+-------+--------------------------+\n");
     for (index = startIndex, y = 0; y < DUNGEON_FLOOR_HEIGHT && index < dungeon->getCurrentFloor()->getMonsterCount(); index++, y++) {
-        if (dungeon->getCurrentFloor()->getMonster(index)->isAlive()) {
-            this->print("| %7d | %11s | %10s | %8s | %7s | %18s |\n",
-                        index,
-                        (dungeon->getCurrentFloor()->getMonster(index)->isIntelligent()) ? "YES" : "NO",
-                        (dungeon->getCurrentFloor()->getMonster(index)->isTelepathic()) ? "YES" : "NO",
-                        (dungeon->getCurrentFloor()->getMonster(index)->isTunneler()) ? "YES" : "NO",
-                        (dungeon->getCurrentFloor()->getMonster(index)->isErratic()) ? "YES" : "NO",
-                        dungeon->getCurrentFloor()->getMonster(index)->locationString(location)
-            );
-        } else {
-            y--;
-        }
+        this->print("| [%c] | %3d | %5s | %5s | %5s | %5s | %5s | %24s |\n",
+                    selectedIndex == index ? '*' : ' ',
+                    index,
+                    (dungeon->getCurrentFloor()->getMonster(index)->isAlive()) ? "YES" : "NO",
+                    (dungeon->getCurrentFloor()->getMonster(index)->isIntelligent()) ? "YES" : "NO",
+                    (dungeon->getCurrentFloor()->getMonster(index)->isTelepathic()) ? "YES" : "NO",
+                    (dungeon->getCurrentFloor()->getMonster(index)->isTunneler()) ? "YES" : "NO",
+                    (dungeon->getCurrentFloor()->getMonster(index)->isErratic()) ? "YES" : "NO",
+                    dungeon->getCurrentFloor()->getMonster(index)->locationString(location)
+        );
     }
-    this->print("+---------+-------------+------------+----------+---------+--------------------+\n");
+    this->print("+-----+-----+-------+-------+-------+-------+-------+--------------------------+\n");
 
     if (this->doNCurses) {
         refresh();
@@ -294,7 +290,7 @@ Output* Output::printInspectItem(u_char selectedIndex) {
     this->print("+----------------+-------------------------------------------------------------+\n");
     this->print("| %14s | %59s |\n", "Name", object->getName().c_str());
     this->print("| %14s | %59s |\n", "Desc", trim(object->getDescription().substr(0, 58), "\t\n\v\f\r").c_str());
-    for (index = 1; index <= object->getDescription().size()/ 58; index++) {
+    for (index = 1; index <= object->getDescription().size() / 58; index++) {
         this->print("|                | %59s |\n", trim(object->getDescription().substr(index * 58, 58), "\t\n\v\f\r").c_str());
     }
     this->print("| %14s | %59s |\n", "Type", object->getTypeString().c_str());
@@ -308,6 +304,36 @@ Output* Output::printInspectItem(u_char selectedIndex) {
     this->print("| %14s | %59s |\n", "Value", object->getValueDice()->toString().c_str());
     this->print("| %14s | %59s |\n", "Artifact", object->getIsArtifact() ? "Yes" : "No");
     this->print("| %14s | %59d |\n", "Rarity", object->getRarity());
+    this->print("+----------------+-------------------------------------------------------------+\n");
+
+    if (this->doNCurses) {
+        refresh();
+    }
+
+    return this;
+}
+
+Output* Output::printInspectMonster(u_short selectedIndex) {
+    u_char index = 0;
+    Monster* monster = this->dungeon->getCurrentFloor()->getMonster(selectedIndex);
+
+    if (this->doNCurses) {
+        clear();
+    }
+
+    this->print("+----------------+-------------------------------------------------------------+\n");
+    this->print("|      NAME      |                            VALUE                            |\n");
+    this->print("+----------------+-------------------------------------------------------------+\n");
+    this->print("| %14s | %59s |\n", "Name", monster->getName().c_str());
+    this->print("| %14s | %59s |\n", "Desc", trim(monster->getDescription().substr(0, 58), "\t\n\v\f\r").c_str());
+    for (index = 1; index <= monster->getDescription().size() / 58; index++) {
+        this->print("|                | %59s |\n", trim(monster->getDescription().substr(index * 58, 58), "\t\n\v\f\r").c_str());
+    }
+    this->print("| %14s | %59d |\n", "Color", monster->getColor());
+    this->print("| %14s | %59d |\n", "Hit Points", monster->getHitPoints());
+    this->print("| %14s | %59s |\n", "Damage", monster->getDamageDice()->toString().c_str());
+    this->print("| %14s | %59d |\n", "Abilities", monster->getAbility());
+    this->print("| %14s | %59d |\n", "Rarity", monster->getRarity());
     this->print("+----------------+-------------------------------------------------------------+\n");
 
     if (this->doNCurses) {

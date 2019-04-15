@@ -386,6 +386,10 @@ u_char Monster::getPlayerLastSpottedX() {
 u_char Monster::getPlayerLastSpottedY() {
     return this->playerLastSpottedY;
 }
+
+Dice* Monster::getDamageDice() {
+    return this->attackDamage;
+}
 /** GETTERS **/
 
 /** SETTERS **/

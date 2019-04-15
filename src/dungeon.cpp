@@ -222,7 +222,7 @@ bool Dungeon::continueGame() {
     }
     return
             this->player->isAlive() &&
-            !this->player->getRequestTerminate() ;
+            !this->player->getRequestTerminate();
 //            this->boss->isAlive();
 }
 

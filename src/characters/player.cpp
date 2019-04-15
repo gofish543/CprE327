@@ -108,6 +108,8 @@ int Player::HandleEvent(Event* event) {
             return Player::HandleEvent(event);
 
         case 'L':
+            player->handleEventKeyInspectMonster();
+
             return Player::HandleEvent(event);
 
         case 'm':
@@ -155,7 +157,7 @@ int Player::handleEventKeyMonsterMenu() {
 
         switch (character) {
             case KEY_DOWN:
-                if (startIndex < dungeon->getCurrentFloor()->getMonsterCount()) {
+                if (startIndex < dungeon->getCurrentFloor()->getMonsterCount() - 1) {
                     startIndex++;
                 }
                 break;
@@ -284,8 +286,7 @@ int Player::handleEventKeyTakeOffItem() {
 
             if (object == null) {
                 dungeon->prependText("Unequipped and destroyed item");
-            }
-            else {
+            } else {
                 std::string wearText = "Unequipped %s";
                 dungeon->prependText(&wearText, object->getName().c_str());
             }
@@ -402,7 +403,7 @@ int Player::handleEventKeyInspectItem() {
     int character = 0;
     u_char selectedIndex = 0;
 
-    while (character != 27 ) {
+    while (character != 27) {
         dungeon->getOutput()->printInventory(selectedIndex);
         dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
 
@@ -420,8 +421,55 @@ int Player::handleEventKeyInspectItem() {
                 }
                 break;
             case KEY_ENTER:
-                while(character != 27) {
+                while (character != 27) {
                     dungeon->getOutput()->printInspectItem(selectedIndex);
+                    dungeon->getOutput()->print("Esc: Close\n");
+
+                    character = getChar(dungeon->getSettings()->doNCursesPrint());
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
+
+int Player::handleEventKeyInspectMonster() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+    u_short selectedIndex = 0;
+    u_short startIndex = 0;
+
+    while (character != 27) {
+        dungeon->getOutput()->printMonsterMenu(startIndex, selectedIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (selectedIndex < dungeon->getCurrentFloor()->getMonsterCount() - 1) {
+                    selectedIndex++;
+                }
+                if (selectedIndex > startIndex + 3) {
+                    startIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (selectedIndex > 0) {
+                    selectedIndex--;
+                    if (startIndex > 0) {
+                        startIndex--;
+                    }
+                }
+                break;
+            case KEY_ENTER:
+                while (character != 27) {
+                    dungeon->getOutput()->printInspectMonster(selectedIndex);
                     dungeon->getOutput()->print("Esc: Close\n");
 
                     character = getChar(dungeon->getSettings()->doNCursesPrint());

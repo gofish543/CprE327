@@ -30,10 +30,11 @@ namespace App {
         Output* print(const char* format, ...);
         Output* print(u_int debugFunctions, Floor* floor = null);
         Output* printEndgame();
-        Output* printMonsterMenu(u_short startIndex);
+        Output* printMonsterMenu(u_short startIndex, u_short selectedIndex = U_SHORT_MAX);
         Output* printInventory(u_char selectIndex = U_CHAR_MAX);
-        Output* printEquipment(u_char selectedIndex  = U_CHAR_MAX);
+        Output* printEquipment(u_char selectedIndex = U_CHAR_MAX);
         Output* printInspectItem(u_char selectedIndex);
+        Output* printInspectMonster(u_short selectedIndex);
 
         /** DEBUG PRINTS **/
         Output* printHardness(Floor* floor);

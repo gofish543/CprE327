@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added ability to inspect monsters
 - Added ability to inspect inventory items
 - Added players can now destroy items from the game
 - Added players can now drop items from inventory
@@ -11,6 +12,7 @@
 - Added ncurses and shell colors based on visibility
 - Added forced boss monster generation or fail
 ### Fixed
+- Fixed \r and \n issues with monster and object descriptions
 - Fixed room pointer issues
 - Fixed out of sight coloring on map
 - Fixed line of sight algorithm

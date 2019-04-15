@@ -35,6 +35,7 @@ namespace App {
         int handleEventKeyDropItem();
         int handleEventKeyDestroyItem();
         int handleEventKeyInspectItem();
+        int handleEventKeyInspectMonster();
         int handleEventKeyToggleFog();
         int handleEventKeyTeleport();
         int handleEventKeyStaircase(int command);

@@ -73,6 +73,7 @@ namespace App {
         u_char getRarity();
         u_char getPlayerLastSpottedX();
         u_char getPlayerLastSpottedY();
+        Dice* getDamageDice();
         /** GETTERS **/
 
         /** SETTERS **/
