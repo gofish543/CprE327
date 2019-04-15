@@ -33,6 +33,7 @@ namespace App {
         Output* printMonsterMenu(u_short startIndex);
         Output* printInventory(u_char selectIndex = U_CHAR_MAX);
         Output* printEquipment(u_char selectedIndex  = U_CHAR_MAX);
+        Output* printInspectItem(u_char selectedIndex);
 
         /** DEBUG PRINTS **/
         Output* printHardness(Floor* floor);

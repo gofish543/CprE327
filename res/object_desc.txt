@@ -13,10 +13,10 @@ DODGE 10+0d1
 DEF 0+0d1
 SPEED 0+0d1
 DESC
-This is a totally wicked looking dagger.  It's got awesome barbs on the back
+This is a totally wicked looking dagger. It's got awesome barbs on the back
 of the blade, a compass on the hilt, and myriad other embellishments that
-serve no functional purpose.  You could totally be a deadly assassin with a
-sweet blade like this.  Since it's so light, it won't encumber you.  It's
+serve no functional purpose. You could totally be a deadly assassin with a
+sweet blade like this. Since it's so light, it won't encumber you. It's
 made out of polyurethane foam.
 .
 RRTY 90
@@ -54,8 +54,8 @@ VAL 449+0d1
 DEF 0+0d1
 DESC
 This dress is totes fab! It's off-the-shoulder with an A-line waste, sequins,
-and lavender chiffon.  It fits tight to mid-calf and you totally can't take
-full steps in it, but, like, who cares?  You'll be the hit of the party as
+and lavender chiffon. It fits tight to mid-calf and you totally can't take
+full steps in it, but, like, who cares? You'll be the hit of the party as
 long as Shirley doesn't show up wearing the same thing again.
 .
 TYPE ARMOR
@@ -75,7 +75,7 @@ ATTR 0+0d1
 VAL 449+0d1
 DEF 0+0d1
 DESC
-You'll be the belle of the prom in these Prada dress sandals.  The 3" spike
+You'll be the belle of the prom in these Prada dress sandals. The 3" spike
 heel makes you a bit unsteady, but they look like they could cause some
 major damage.
 .
@@ -109,8 +109,8 @@ END
 BEGIN OBJECT
 NAME the Aegis
 DESC
-A very high-quality shield.  Nobody knows what it looks like, except for
-maybe--now--you, but you're not telling.  The back side is inscribed with the
+A very high-quality shield. Nobody knows what it looks like, except for
+maybe--now--you, but you're not telling. The back side is inscribed with the
 words: "If found, please return to Zeus, Mount Olympus".
 .
 TYPE OFFHAND
@@ -132,7 +132,7 @@ NAME the cloak of invisibility
 TYPE CLOAK
 VAL 10000+5d1000
 DESC
-One of the Deathly Hallows, this cloak grants the wearer invisibility.  Last
+One of the Deathly Hallows, this cloak grants the wearer invisibility. Last
 know to be the property of the Boy Who Lived.
 .
 WEIGHT 1+0d1
@@ -160,8 +160,8 @@ HIT 10+2d5
 DAM 10+12d55
 SPEED 25+5d5
 DESC
-The One Ring to rule them all... and in the darkness bind them.  Created by
-Sauron as a tool in his quest to dominate Middle Earth.  It draws the dark
+The One Ring to rule them all... and in the darkness bind them. Created by
+Sauron as a tool in his quest to dominate Middle Earth. It draws the dark
 sorcerer's eye upon its wearer.
 .
 RRTY 3
@@ -222,7 +222,7 @@ DEF 100+0d1
 HIT 0+0d1
 SPEED 0+0d1
 DESC
-Sailor Moon's Moon Tiara.  Maybe you can use it to do Moon Tiara Action?  But
+Sailor Moon's Moon Tiara. Maybe you can use it to do Moon Tiara Action? But
 she's probably looking for it.
 .
 ATTR 200+0d1
@@ -242,7 +242,7 @@ DEF 100+0d1
 HIT 0+0d1
 SPEED 0+0d1
 DESC
-Sailor Moon's Moon Stick.  Maybe you can use it to do Moon Princess Halation?
+Sailor Moon's Moon Stick. Maybe you can use it to do Moon Princess Halation?
 But she's probably looking for it.
 .
 ATTR 200+0d1
@@ -359,8 +359,8 @@ HIT 10+0d1
 SPEED 10+0d1
 DESC
 A 56 carat diamond was originally owned by Louis XVI and cut into a heart
-shape after the French Revolution.  Last known whereabouts: Bottom of the
-Atlantic Ocean (thanks, Rose).  Little did she know, it's imbued with
+shape after the French Revolution. Last known whereabouts: Bottom of the
+Atlantic Ocean (thanks, Rose). Little did she know, it's imbued with
 fantastic magical powers!
 .
 ATTR 0+0d1

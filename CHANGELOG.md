@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added ability to inspect inventory items
 - Added players can now destroy items from the game
 - Added players can now drop items from inventory
 - Added players can now pick up items

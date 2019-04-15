@@ -105,7 +105,7 @@ Output* Output::print(const char* format, ...) {
 
     if (this->doNCurses) {
         vw_printw(window, format, args);
-        refresh();
+        refresh(); // TODO Update where refresh is
     } else {
         vprintf(format, args);
     }
@@ -273,7 +273,42 @@ Output* Output::printEquipment(u_char selectedIndex) {
         }
         index++;
     }
-    this->print("+-----------------+--------+---------------------------------------------------+\n");
+    this->print("+-----+--------------+--------+------------------------------------------------+\n");
+
+    if (this->doNCurses) {
+        refresh();
+    }
+
+    return this;
+}
+
+Output* Output::printInspectItem(u_char selectedIndex) {
+    u_char index = 0;
+    Object* object = this->dungeon->getPlayer()->getInventoryAt(selectedIndex);
+    if (this->doNCurses) {
+        clear();
+    }
+
+    this->print("+----------------+-------------------------------------------------------------+\n");
+    this->print("|      NAME      |                            VALUE                            |\n");
+    this->print("+----------------+-------------------------------------------------------------+\n");
+    this->print("| %14s | %59s |\n", "Name", object->getName().c_str());
+    this->print("| %14s | %59s |\n", "Desc", trim(object->getDescription().substr(0, 58), "\t\n\v\f\r").c_str());
+    for (index = 1; index <= object->getDescription().size()/ 58; index++) {
+        this->print("|                | %59s |\n", trim(object->getDescription().substr(index * 58, 58), "\t\n\v\f\r").c_str());
+    }
+    this->print("| %14s | %59s |\n", "Type", object->getTypeString().c_str());
+    this->print("| %14s | %59d |\n", "Color", object->getColor());
+    this->print("| %14s | %59s |\n", "Hit", object->getHitDice()->toString().c_str());
+    this->print("| %14s | %59s |\n", "Damage", object->getDamageDice()->toString().c_str());
+    this->print("| %14s | %59s |\n", "Dodge", object->getDodgeDice()->toString().c_str());
+    this->print("| %14s | %59d |\n", "Weight", object->getWeight());
+    this->print("| %14s | %59s |\n", "Speed", object->getSpeedDice()->toString().c_str());
+    this->print("| %14s | %59s |\n", "Special", object->getSpecialAttributeDice()->toString().c_str());
+    this->print("| %14s | %59s |\n", "Value", object->getValueDice()->toString().c_str());
+    this->print("| %14s | %59s |\n", "Artifact", object->getIsArtifact() ? "Yes" : "No");
+    this->print("| %14s | %59d |\n", "Rarity", object->getRarity());
+    this->print("+----------------+-------------------------------------------------------------+\n");
 
     if (this->doNCurses) {
         refresh();

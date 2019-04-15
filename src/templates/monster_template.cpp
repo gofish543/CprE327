@@ -32,6 +32,8 @@ MonsterTemplate::MonsterTemplate(std::string& templateString) {
                         this->description += buffer;
                     }
 
+                    std::replace(this->description.begin(), this->description.end(), '\r', ' ');
+
                 } else if (strstarts(buffer, MONSTER_TEMPLATE_COLOR)) {
 
                     for (auto const& color: split(trim(buffer.substr(std::strlen(MONSTER_TEMPLATE_COLOR))), ' ')) {

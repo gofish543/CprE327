@@ -5,6 +5,14 @@ int getChar(const bool ncurses) {
 
     if (ncurses) {
         userInput = getch();
+
+        switch (userInput) {
+            case 10:
+                userInput = KEY_ENTER;
+                break;
+            default:
+                break;
+        }
     } else {
         int character = 0;
         printf("Please enter your command, then click enter\n");

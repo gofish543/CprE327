@@ -1,6 +1,6 @@
 #include "object.h"
 
-Object::Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, Dice* weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity) {
+Object::Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, u_short weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity) {
     this->floor = floor;
     this->x = x;
     this->y = y;
@@ -25,7 +25,6 @@ Object::~Object() {
     delete (this->damageBonus);
     delete (this->dodgeBonus);
     delete (this->defenseBonus);
-    delete (this->weight);
     delete (this->speedBonus);
     delete (this->specialAttribute);
     delete (this->value);
@@ -133,11 +132,11 @@ u_char Object::getY() {
     return y;
 }
 
-const std::string& Object::getName() {
+std::string Object::getName() {
     return name;
 }
 
-const std::string& Object::getDescription() {
+std::string Object::getDescription() {
     return description;
 }
 
@@ -191,47 +190,71 @@ std::string Object::getTypeString() {
 }
 
 u_short Object::getColor() {
-    return color;
+    return this->color;
 }
 
 u_short Object::getHitBonus() {
-    return hitBonus->roll();
+    return this->hitBonus->roll();
 }
 
 u_short Object::getDamageBonus() {
-    return damageBonus->roll();
+    return this->damageBonus->roll();
 }
 
 u_short Object::getDodgeBonus() {
-    return dodgeBonus->roll();
+    return this->dodgeBonus->roll();
 }
 
 u_short Object::getDefenseBonus() {
-    return defenseBonus->roll();
+    return this->defenseBonus->roll();
 }
 
 u_short Object::getWeight() {
-    return weight->roll();
+    return this->weight;
 }
 
 short Object::getSpeedBonus() {
-    return speedBonus->roll();
+    return this->speedBonus->roll();
 }
 
 u_short Object::getSpecialAttribute() {
-    return specialAttribute->roll();
+    return this->specialAttribute->roll();
 }
 
 u_short Object::getValue() {
-    return value->roll();
+    return this->value->roll();
 }
 
 bool Object::getIsArtifact() {
-    return isArtifact;
+    return this->isArtifact;
 }
 
 u_char Object::getRarity() {
-    return rarity;
+    return this->rarity;
+}
+
+Dice* Object::getHitDice() {
+    return this->hitBonus;
+}
+
+Dice* Object::getDamageDice() {
+    return this->damageBonus;
+}
+
+Dice* Object::getDodgeDice() {
+    return this->dodgeBonus;
+}
+
+Dice* Object::getSpeedDice() {
+    return this->speedBonus;
+}
+
+Dice* Object::getSpecialAttributeDice() {
+    return this->specialAttribute;
+}
+
+Dice* Object::getValueDice() {
+    return this->value;
 }
 /** GETTERS **/
 

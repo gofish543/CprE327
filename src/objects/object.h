@@ -50,7 +50,7 @@
 namespace App {
     class Object {
     public:
-        Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, Dice* weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity);
+        Object(Floor* floor, u_char x, u_char y, std::string* name, std::string* description, u_int itemType, u_short color, Dice* hitBonus, Dice* damageBonus, Dice* dodgeBonus, Dice* defenseBonus, u_short weight, Dice* speedBonus, Dice* specialAttribute, Dice* value, bool isArtifact, u_char rarity);
         ~Object();
 
         static std::string typeToString(u_int type);
@@ -61,8 +61,8 @@ namespace App {
         Floor* getFloor();
         u_char getX();
         u_char getY();
-        const std::string& getName();
-        const std::string& getDescription();
+        std::string getName();
+        std::string getDescription();
         u_int getItemType();
         std::string getTypeString();
         u_short getColor();
@@ -76,6 +76,12 @@ namespace App {
         u_short getValue();
         bool getIsArtifact();
         u_char getRarity();
+        Dice* getHitDice();
+        Dice* getDamageDice();
+        Dice* getDodgeDice();
+        Dice* getSpeedDice();
+        Dice* getSpecialAttributeDice();
+        Dice* getValueDice();
         /** GETTERS **/
 
         /** SETTERS **/
@@ -117,7 +123,7 @@ namespace App {
         Dice* damageBonus;
         Dice* dodgeBonus;
         Dice* defenseBonus;
-        Dice* weight;
+        u_short weight;
         Dice* speedBonus;
         Dice* specialAttribute;
         Dice* value;

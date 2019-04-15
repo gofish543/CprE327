@@ -14,6 +14,7 @@
 #define MONSTER_TEMPLATE_RARITY         "RRTY"
 
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <cstring>
 #include <iostream>

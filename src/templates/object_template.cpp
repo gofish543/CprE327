@@ -37,6 +37,8 @@ ObjectTemplate::ObjectTemplate(std::string& templateString) {
                         this->description += buffer;
                     }
 
+                    std::replace(this->description.begin(), this->description.end(), '\r', ' ');
+
                 } else if (strstarts(buffer, OBJECT_TEMPLATE_TYPE)) {
 
                     buffer = trim(buffer.substr(std::strlen(OBJECT_TEMPLATE_TYPE)));
@@ -228,7 +230,7 @@ Object* ObjectTemplate::generateObject(Floor* floor, u_char x, u_char y) {
             &this->name, &this->description,
             this->itemType, this->color,
             this->hitBonus->copy(), this->damageBonus->copy(), this->dodgeBonus->copy(),
-            this->defenseBonus->copy(), this->weight->copy(), this->speedBonus->copy(),
+            this->defenseBonus->copy(), this->weight->roll(), this->speedBonus->copy(),
             this->specialAttribute->copy(), this->value->copy(),
             this->isArtifact, this->rarity
     );

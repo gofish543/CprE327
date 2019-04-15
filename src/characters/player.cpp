@@ -103,6 +103,8 @@ int Player::HandleEvent(Event* event) {
             return Player::HandleEvent(event);
 
         case 'I':
+            player->handleEventKeyInspectItem();
+
             return Player::HandleEvent(event);
 
         case 'L':
@@ -387,6 +389,46 @@ int Player::handleEventKeyDestroyItem() {
             dungeon->prependText(&wearText, object->getName().c_str());
         } else {
             dungeon->prependText("Cannot destroy item");
+        }
+    }
+
+    dungeon->getOutput()->print();
+
+    return 0;
+}
+
+int Player::handleEventKeyInspectItem() {
+    Dungeon* dungeon = this->getFloor()->getDungeon();
+    int character = 0;
+    u_char selectedIndex = 0;
+
+    while (character != 27 ) {
+        dungeon->getOutput()->printInventory(selectedIndex);
+        dungeon->getOutput()->print("Esc: Close\nArrowUp: Scroll Down\nArrowDown: Scroll Up\n");
+
+        character = getChar(dungeon->getSettings()->doNCursesPrint());
+
+        switch (character) {
+            case KEY_DOWN:
+                if (selectedIndex < PLAYER_MAX_INVENTORY_SIZE) {
+                    selectedIndex++;
+                }
+                break;
+            case KEY_UP:
+                if (selectedIndex > 0) {
+                    selectedIndex--;
+                }
+                break;
+            case KEY_ENTER:
+                while(character != 27) {
+                    dungeon->getOutput()->printInspectItem(selectedIndex);
+                    dungeon->getOutput()->print("Esc: Close\n");
+
+                    character = getChar(dungeon->getSettings()->doNCursesPrint());
+                }
+                break;
+            default:
+                break;
         }
     }
 
