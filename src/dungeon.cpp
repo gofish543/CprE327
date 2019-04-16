@@ -48,7 +48,6 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
 
     this->output = new Output(this);
     this->eventManager = new EventManager(this);
-    this->player = new Player(null, 0, 0);
     this->boss = null;
 
     this->monsterTemplates = MonsterTemplate::GenerateTemplates(this->settings->getMonsterDesc());
@@ -57,6 +56,8 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
     if (this->settings->doLoad()) {
         load_from_file(this);
     } else {
+        this->player = new Player(null, 0, 0);
+
         u_short stairCount = Dice::RandomNumberBetween(FLOOR_STAIRS_MIN, FLOOR_STAIRS_MAX);
 
         for (index = 0; index < Dice::RandomNumberBetween(DUNGEON_FLOORS_MIN, DUNGEON_FLOORS_MAX); index++) {
@@ -101,6 +102,8 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
                 new Event(1 + index, event_type_monster, this->floor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick)
         );
     }
+    this->eventManager->addToQueue(new Event(1+index, event_type_monster, this->boss, Monster::HandleEvent, Monster::NextEventTick));
+
 
     this->player->updateVisibility();
 }
@@ -130,6 +133,7 @@ Dungeon::~Dungeon() {
     }
 
     delete (this->player);
+    delete (this->boss);
     delete (this->eventManager);
     delete (this->output);
     delete (this->settings);
@@ -192,7 +196,7 @@ MonsterTemplate* Dungeon::randomMonsterTemplate() {
     MonsterTemplate* monsterTemplate;
     do {
         monsterTemplate = this->monsterTemplates[Dice::RandomNumberBetween(0, this->monsterTemplates.size() - 1)];
-    } while (monsterTemplate->getRarity() >= Dice::RandomNumberBetween(0, 100));
+    } while (monsterTemplate->getRarity() >= Dice::RandomNumberBetween(0, 100) || (monsterTemplate->getAbilities() & MONSTER_BOSS));
 
     return monsterTemplate;
 }

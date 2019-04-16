@@ -27,16 +27,17 @@ namespace App {
         Settings(int argc, char* argv[]);
         ~Settings();
 
+        bool doSave();
+        bool doLoad();
+
         /** GETTERS **/
         bool doExpandPrint();
         bool doNCursesPrint();
         bool doNumberOfMonsters();
-        bool doSave();
-        bool doLoad();
         bool doFogOfWar();
         u_char getFileVersion();
-        std::string* getSavePath();
-        std::string* getLoadPath();
+        std::ofstream* getSavePath();
+        std::ifstream* getLoadPath();
         u_short getNumberOfMonsters();
         std::ifstream* getMonsterDesc();
         std::ifstream* getObjectDesc();
@@ -46,8 +47,6 @@ namespace App {
         Settings* setExpandedPrint(bool expandedPrint);
         Settings* setNCursesPrint(bool nCursesPrint);
         Settings* setCanNumberOfMonsters(bool canNumberOfMonsters);
-        Settings* setSave(bool save);
-        Settings* setLoad(bool load);
         Settings* setFogOfWar(bool fogOfWar);
         Settings* setFileVersion(u_char fileVersion);
         Settings* setSavePath(std::string& savePath);
@@ -60,21 +59,19 @@ namespace App {
     protected:
         Settings* loadArguments(int argc, char* argv[]);
         Settings* loadFiles();
-        std::string getFileName(const std::string& string);
-        bool fileExists(const std::string& fileString);
-        int createFolder(const std::string& path);
+        static std::string GetFileName(const std::string& string);
+        static bool FileExists(const std::string& fileString);
+        static int CreateFolder(const std::string& path);
 
     private:
         bool expandedPrint;
         bool nCursesPrint;
         bool canNumberOfMonsters;
-        bool save;
-        bool load;
         bool fogOfWar;
 
         u_char fileVersion;
-        std::string* savePath;
-        std::string* loadPath;
+        std::ofstream* savePath;
+        std::ifstream* loadPath;
 
         u_short numberOfMonsters;
 

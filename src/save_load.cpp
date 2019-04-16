@@ -1,29 +1,27 @@
 #include "save_load.h"
 
 int save_to_file(Dungeon* dungeon) {
-    return 0;
-//    switch (dungeon->getSettings()->getFileVersion()) {
-//        case 1:
-//            file_save_1(dungeon);
-//            break;
-//        case 0:
-//        default:
-//            file_save_0(dungeon);
-//            break;
-//    }
+    switch (dungeon->getSettings()->getFileVersion()) {
+        case 1:
+            file_save_1(dungeon);
+            break;
+        case 0:
+        default:
+            file_save_0(dungeon);
+            break;
+    }
 }
 
 int load_from_file(Dungeon* dungeon) {
-    return 0;
-//    switch (dungeon->getSettings()->getFileVersion()) {
-//        case 1:
-//            file_load_1(dungeon);
-//            break;
-//        case 0:
-//        default:
-//            file_load_0(dungeon);
-//            break;
-//    }
+    switch (dungeon->getSettings()->getFileVersion()) {
+        case 1:
+            file_load_1(dungeon);
+            break;
+        case 0:
+        default:
+            file_load_0(dungeon);
+            break;
+    }
 }
 
 void save_error(Dungeon* dungeon) {

@@ -2,14 +2,14 @@
 
 int file_save_1(Dungeon* dungeon) {
     // Move current file to a tmp file in case save fails
-    std::string tempName = dungeon->getSettings()->getSavePath() + ".tmp";
-    std::rename(dungeon->getSettings()->getSavePath().c_str(), tempName.c_str());
+    std::string tempName = *dungeon->getSettings()->getSavePath() + ".tmp";
+    std::rename(dungeon->getSettings()->getSavePath()->c_str(), tempName.c_str());
 
     // Open the file
-    FILE* file = std::fopen(dungeon->getSettings()->getSavePath().c_str(), "wb+");
+    FILE* file = std::fopen(dungeon->getSettings()->getSavePath()->c_str(), "wb+");
 
     if (file == null) {
-        printf("Failed to open file at path %s\n", dungeon->getSettings()->getSavePath().c_str());
+        printf("Failed to open file at path %s\n", dungeon->getSettings()->getSavePath()->c_str());
         return 1;
     }
 
@@ -54,13 +54,18 @@ int file_save_1(Dungeon* dungeon) {
     if (error_check_fwrite(&(playerDaysSurvived_be32), sizeof(playerDaysSurvived_be32), 1, file)) {
         return 1;
     }
+    // Write player health
+    u_int playerHealth_be32 = htobe32(dungeon->getPlayer()->getHealth());
+    if (error_check_fwrite(&(playerHealth_be32), sizeof(playerHealth_be32), 1, file)) {
+        return 1;
+    }
     // Write current floor of player
-    // Write max floors
     u_char currentFloorNumber = dungeon->getCurrentFloor()->getFloorNumber();
-    u_char maxFloors = dungeon->getFloorCount();
     if (error_check_fwrite(&(currentFloorNumber), sizeof(currentFloorNumber), 1, file)) {
         return 1;
     }
+    // Write max floors
+    u_char maxFloors = dungeon->getFloorCount();
     if (error_check_fwrite(&(maxFloors), sizeof(maxFloors), 1, file)) {
         return 1;
     }
@@ -86,7 +91,7 @@ int file_save_1(Dungeon* dungeon) {
 
     fclose(file);
 
-    tempName = dungeon->getSettings()->getSavePath() + ".tmp";
+    tempName = *dungeon->getSettings()->getSavePath() + ".tmp";
     std::remove(tempName.c_str());
 
     return 0;
@@ -103,9 +108,10 @@ int file_save_floor_1(FILE* file, Floor* floor) {
     u_char y;
     u_char lastSpottedX;
     u_char lastSpottedY;
-    u_char level;
     u_char speed;
-    u_char classification;
+    u_int abilities;
+    std::string
+    u_short color;
 
     for (height = 0; height < DUNGEON_FLOOR_HEIGHT; height++) {
         for (width = 0; width < DUNGEON_FLOOR_WIDTH; width++) {
@@ -123,10 +129,10 @@ int file_save_floor_1(FILE* file, Floor* floor) {
     // Write rooms
     for (index = 0; index < floor->getRoomCount(); index++) {
         // Write x position
-        x = floor->getRoom(u_short(index))->getStartingX();
-        y = floor->getRoom(u_short(index))->getStartingY();
-        height = floor->getRoom(u_short(index))->getHeight();
-        width = floor->getRoom(u_short(index))->getWidth();
+        x = floor->getRoom(index)->getStartingX();
+        y = floor->getRoom(index)->getStartingY();
+        height = floor->getRoom(index)->getHeight();
+        width = floor->getRoom(index)->getWidth();
 
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -151,8 +157,8 @@ int file_save_floor_1(FILE* file, Floor* floor) {
     }
     // Write location of upward staircases
     for (index = 0; index < floor->getStairUpCount(); index++) {
-        x = floor->getUpStair(u_short(index))->getX();
-        y = floor->getUpStair(u_short(index))->getY();
+        x = floor->getUpStair(index)->getX();
+        y = floor->getUpStair(index)->getY();
         // Write x position
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -169,8 +175,8 @@ int file_save_floor_1(FILE* file, Floor* floor) {
     }
     // Write location of downward staircases
     for (index = 0; index < floor->getStairDownCount(); index++) {
-        x = floor->getDownStair(u_short(index))->getX();
-        y = floor->getDownStair(u_short(index))->getY();
+        x = floor->getDownStair(index)->getX();
+        y = floor->getDownStair(index)->getY();
         // Write x position
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -188,13 +194,12 @@ int file_save_floor_1(FILE* file, Floor* floor) {
     }
     // Write location of monsters
     for (index = 0; index < floor->getMonsterCount(); index++) {
-        x = floor->getMonster(u_short(index))->getX();
-        y = floor->getMonster(u_short(index))->getY();
-        classification = floor->getMonster(u_short(index))->getClassification();
-        speed = floor->getMonster(u_short(index))->getSpeed();
-//        level = floor->getMonster(u_short(index))->getLevel();
-        lastSpottedX = floor->getMonster(u_short(index))->getPlayerLastSpottedX();
-        lastSpottedY = floor->getMonster(u_short(index))->getPlayerLastSpottedY();
+        x = floor->getMonster(index)->getX();
+        y = floor->getMonster(index)->getY();
+        classification = floor->getMonster(index)->getAbility();
+        speed = floor->getMonster(index)->getSpeed();
+        lastSpottedX = floor->getMonster(index)->getPlayerLastSpottedX();
+        lastSpottedY = floor->getMonster(index)->getPlayerLastSpottedY();
         // Write x Position
         if (error_check_fwrite(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -211,10 +216,6 @@ int file_save_floor_1(FILE* file, Floor* floor) {
         if (error_check_fwrite(&(speed), sizeof(speed), 1, file)) {
             return 1;
         }
-        // Write level
-//        if (error_check_fwrite(&(level), sizeof(level), 1, file)) {
-//            return 1;
-//        }
         // Write last spotted playerX
         if (error_check_fwrite(&(lastSpottedX), sizeof(lastSpottedX), 1, file)) {
             return 1;
@@ -229,10 +230,10 @@ int file_save_floor_1(FILE* file, Floor* floor) {
 }
 
 int file_load_1(Dungeon* dungeon) {
-    FILE* file = std::fopen(dungeon->getSettings()->getLoadPath().c_str(), "rb");
+    FILE* file = std::fopen(dungeon->getSettings()->getLoadPath()->c_str(), "rb");
 
     if (file == null) {
-        printf("Failed to open file at path %s\n", dungeon->getSettings()->getLoadPath().c_str());
+        printf("Failed to open file at path %s\n", dungeon->getSettings()->getLoadPath()->c_str());
         return 1;
     }
 
@@ -306,10 +307,9 @@ int file_load_1(Dungeon* dungeon) {
     if (error_check_fread(&floorCount, sizeof(floorCount), 1, file)) {
         return 1;
     }
-    dungeon->setFloorCount(floorCount);
 
     u_char index;
-    for (index = 0; index < dungeon->getFloorCount(); index++) {
+    for (index = 0; index < floorCount; index++) {
         auto floor = new Floor(dungeon);
         floor->setFloorNumber(index);
 
@@ -322,7 +322,7 @@ int file_load_1(Dungeon* dungeon) {
 
     dungeon->setCurrentFloor(dungeon->getFloor(playerFloor));
 
-    dungeon->setPlayer(new Player(dungeon->getCurrentFloor(), playerX, playerY, level, monstersSlain, daysSurvived));
+    dungeon->setPlayer(new Player(dungeon->getCurrentFloor(), playerX, playerY, level, monstersSlain, daysSurvived, 100000));
 
     dungeon->getCurrentFloor()->setCharacterAt(dungeon->getPlayer(), playerX, playerY);
 
@@ -346,9 +346,9 @@ int file_load_floor_1(FILE* file, Floor* floor) {
 
             if (floor->getTerrainAt(width, height) == null) {
                 if (hardness == CORRIDOR_HARDNESS) {
-                    floor->setTerrainAt(new Corridor(floor, 0, width, height), width, height);
+                    floor->setTerrainAt(new Corridor(floor, width, height), width, height);
                 } else {
-                    floor->setTerrainAt(new Rock(floor, 0, width, height, hardness), width, height);
+                    floor->setTerrainAt(new Rock(floor, width, height, hardness), width, height);
                 }
             }
         }
@@ -360,13 +360,14 @@ int file_load_floor_1(FILE* file, Floor* floor) {
     if (error_check_fread(&numberOfRooms, sizeof(numberOfRooms), 1, file)) {
         return 1;
     }
-    floor->setRoomCount(be16toh(numberOfRooms));
+    numberOfRooms = be16toh(numberOfRooms);
     // Load room locations
     u_char startX;
     u_char startY;
     u_char x;
     u_char y;
-    for (index = 0; index < floor->getRoomCount(); index++) {
+    Room* room;
+    for (index = 0; index < numberOfRooms; index++) {
         // Read x position
         if (error_check_fread(&(startX), sizeof(startX), 1, file)) {
             return 1;
@@ -384,24 +385,26 @@ int file_load_floor_1(FILE* file, Floor* floor) {
             return 1;
         }
 
-        floor->setRoom(new Room(floor, index, startX, startY, startX, startY, width, height));
+        room = new Room(floor, startX, startY, width, height);
 
+        floor->setRoom(room);
         for (y = startY; y < startY + height; y++) {
             for (x = startX; x < startX + width; x++) {
                 delete (floor->getTerrainAt(x, y));
-                floor->setTerrainAt(new Room(floor, index, x, y, startX, startY, width, height), x, y);
+                floor->setTerrainAt(room, x, y);
             }
         }
     }
 
+    Staircase* staircase;
     // Read number of upward staircases
     u_short stairUpCount;
     if (error_check_fread(&stairUpCount, sizeof(stairUpCount), 1, file)) {
         return 1;
     }
-    floor->setStairUpCount(be16toh(stairUpCount));
+    stairUpCount = be16toh(stairUpCount);
     // Read location of upward staircases
-    for (index = 0; index < floor->getStairUpCount(); index++) {
+    for (index = 0; index < stairUpCount; index++) {
         // Read x position
         if (error_check_fread(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -411,9 +414,10 @@ int file_load_floor_1(FILE* file, Floor* floor) {
             return 1;
         }
 
-        floor->setUpStair(new Staircase(floor, index, x, y, STAIRCASE_TYPE_UP));
+        staircase = new Staircase(floor, x, y, index, STAIRCASE_DIRECTION_UP);
         delete (floor->getTerrainAt(x, y));
-        floor->setTerrainAt(new Staircase(floor, index, x, y, STAIRCASE_TYPE_UP), x, y);
+        floor->setUpStair(staircase);
+        floor->setTerrainAt(staircase, x, y);
     }
 
     // Read number of downward staircases
@@ -421,9 +425,9 @@ int file_load_floor_1(FILE* file, Floor* floor) {
     if (error_check_fread(&stairDownCount, sizeof(stairDownCount), 1, file)) {
         return 1;
     }
-    floor->setStairDownCount(be16toh(stairDownCount));
+    stairDownCount = be16toh(stairDownCount);
     // Read location of downward staircases
-    for (index = 0; index < floor->getStairDownCount(); index++) {
+    for (index = 0; index < stairDownCount; index++) {
         // Read x position
         if (error_check_fread(&(x), sizeof(x), 1, file)) {
             return 1;
@@ -433,9 +437,10 @@ int file_load_floor_1(FILE* file, Floor* floor) {
             return 1;
         }
 
-        floor->setDownStair(new Staircase(floor, index, x, y, STAIRCASE_TYPE_DOWN));
+        staircase = new Staircase(floor, x, y, index, STAIRCASE_DIRECTION_DOWN);
         delete (floor->getTerrainAt(x, y));
-        floor->setTerrainAt(new Staircase(floor, index, x, y, STAIRCASE_TYPE_DOWN), x, y);
+        floor->setDownStair(staircase);
+        floor->setTerrainAt(staircase, x, y);
     }
 
     // Read number of monsters
@@ -443,17 +448,16 @@ int file_load_floor_1(FILE* file, Floor* floor) {
     if (error_check_fread(&monsterCount, sizeof(monsterCount), 1, file)) {
         return 1;
     }
-    floor->setMonsterCount(be16toh(monsterCount));
+    monsterCount = be16toh(monsterCount);
     u_char tempX;
     u_char tempY;
     u_char tempType;
     u_char tempSpeed;
     u_char playerLastSpottedX;
     u_char playerLastSpottedY;
-    u_char level;
     Monster* monster;
     // Read location of monsters
-    for (index = 0; index < floor->getMonsterCount(); index++) {
+    for (index = 0; index < monsterCount; index++) {
         // Read x Position
         if (error_check_fread(&(tempX), sizeof(tempX), 1, file)) {
             return 1;
@@ -470,24 +474,19 @@ int file_load_floor_1(FILE* file, Floor* floor) {
         if (error_check_fread(&(tempSpeed), sizeof(tempSpeed), 1, file)) {
             return 1;
         }
+        std::string str = "Hello World";
+        monster = new Monster(floor, tempX, tempY, &str, &str, 0, 0, 0, 0, new Dice(0, 0, 0), '0', 0);
 
-        monster = new Monster(floor, tempX, tempY, tempType, tempSpeed);
-
-        // Write level
-//        if (error_check_fread(&(level), sizeof(level), 1, file)) {
-//            return 1;
-//        }
-        // Write last spotted playerX
+        // Read last spotted playerX
         if (error_check_fread(&(playerLastSpottedX), sizeof(playerLastSpottedX), 1, file)) {
             return 1;
         }
-        // Write last spotted playerY
+        // Read last spotted playerY
         if (error_check_fread(&(playerLastSpottedY), sizeof(playerLastSpottedY), 1, file)) {
             return 1;
         }
         floor->setMonster(monster);
-//        monster->setLevel(level)->setPlayerLastSpottedX(playerLastSpottedX)->setPlayerLastSpottedY(playerLastSpottedY);
-
+        monster->setPlayerLastSpottedX(playerLastSpottedX)->setPlayerLastSpottedY(playerLastSpottedY);
         floor->setCharacterAt(monster, tempX, tempY);
     }
 

@@ -730,9 +730,6 @@ Floor* Floor::generateMonsters(u_short monsterCount) {
         Monster* monster = monsterTemplate->generateMonster(this, monsterX, monsterY);
         // If the monster generated is a boss or is unique, remove from possible templates
         if (monster->isBoss() || monster->isUnique()) {
-            if (monster->isBoss()) {
-                this->dungeon->setBoss(monster);
-            }
             this->dungeon->removeMonsterTemplate(monsterTemplate);
         }
 
