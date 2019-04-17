@@ -1,4 +1,4 @@
-# CprE 327 Escape from Darkness #
+# ComS 327 Escape from Darkness #
 
 Escape from Darkness is a dungeon game which the user navigates through a series of floors battling monsters, collecting gear, and growing stronger. The goal is not just to survive, but thrive.
 
