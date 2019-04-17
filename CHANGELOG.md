@@ -2,7 +2,6 @@
 
 ## [v1.0.0 (2019-04-22)](https://github.com/gofish543/CprE327/releases/tag/v1.0.0)
 
-### Added
 ### Fixed
 - Fixed light algorithm
 - Fixed taking staircase
