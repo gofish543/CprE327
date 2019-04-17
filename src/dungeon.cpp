@@ -82,8 +82,11 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
         if (this->monsterTemplates[index]->getAbilities() & MONSTER_BOSS) {
             // Put the boss on the final floor, first room
             this->boss = this->monsterTemplates[index]->generateMonster(this->floors.back(), this->floors.back()->getRoom(0)->randomXInside(), this->floors.back()->getRoom(0)->randomYInside());
-            // Delete what ever was previously there
-            delete (this->floors.back()->getCharacterAt(this->boss->getX(), this->boss->getY()));
+            // Kill what ever was previously there
+            if(this->floors.back()->getCharacterAt(this->boss->getX(), this->boss->getY())) {
+                this->floors.back()->getCharacterAt(this->boss->getX(), this->boss->getY())->killCharacter();
+            }
+
             // Place our boss there
             this->floors.back()->setCharacterAt(this->boss, this->boss->getX(), this->boss->getY());
         }
@@ -102,8 +105,7 @@ Dungeon::Dungeon(int argc, char* argv[]) : textLines{new std::string, new std::s
                 new Event(1 + index, event_type_monster, this->floor->getMonster(index), Monster::HandleEvent, Monster::NextEventTick)
         );
     }
-    this->eventManager->addToQueue(new Event(1+index, event_type_monster, this->boss, Monster::HandleEvent, Monster::NextEventTick));
-
+    this->eventManager->addToQueue(new Event(1 + index, event_type_monster, this->boss, Monster::HandleEvent, Monster::NextEventTick));
 
     this->player->updateVisibility();
 }

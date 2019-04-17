@@ -6,6 +6,11 @@ int main(int argc, char* argv[]) {
     while (dungeon->continueGame()) {
         dungeon->getEventManager()->handleNext();
         dungeon->getPlayer()->incrementDaysSurvived();
+
+        if(dungeon->getPlayer()->getTakingStaircase() != null) {
+            dungeon->getPlayer()->getTakingStaircase()->take();
+            dungeon->getPlayer()->setTakingStaircase(null);
+        }
     }
     dungeon->getOutput()->printEndgame();
 

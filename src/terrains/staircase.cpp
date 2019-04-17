@@ -34,7 +34,7 @@ int Staircase::take() {
 
     // Set dungeon floor and player floor pointers
     dungeon->setCurrentFloor(this->getTargetFloor());
-    player->setFloor(this->getTargetFloor());
+    player->setFloor(dungeon->getCurrentFloor());
 
     // Update current floor
     currentFloor = dungeon->getCurrentFloor();
@@ -68,7 +68,7 @@ int Staircase::take() {
 
     // Move monster's on that floor to random locations not in the same room as the user
     // We said that staircases cannot be at the edge of rooms, this is why
-    Room* playerRoom = (Room*) currentFloor->getTerrainAt(player->getX() - u_char(1), player->getY());
+    Room* playerRoom = (Room*) currentFloor->getTerrainAt(player->getX() - 1, player->getY());
 
     for (height = playerRoom->getStartingY(); height < playerRoom->getStartingY() + playerRoom->getHeight(); height++) {
         for (width = playerRoom->getStartingX(); width < playerRoom->getStartingX() + playerRoom->getWidth(); width++) {

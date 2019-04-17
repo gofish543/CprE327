@@ -36,8 +36,10 @@ namespace App {
         bool doNumberOfMonsters();
         bool doFogOfWar();
         u_char getFileVersion();
-        std::ofstream* getSavePath();
-        std::ifstream* getLoadPath();
+        std::string* getSavePath();
+        std::string* getLoadPath();
+        std::ofstream* getSaveStream();
+        std::ifstream* getLoadStream();
         u_short getNumberOfMonsters();
         std::ifstream* getMonsterDesc();
         std::ifstream* getObjectDesc();
@@ -70,8 +72,10 @@ namespace App {
         bool fogOfWar;
 
         u_char fileVersion;
-        std::ofstream* savePath;
-        std::ifstream* loadPath;
+        std::string* savePath;
+        std::string* loadPath;
+        std::ofstream* saveStream;
+        std::ifstream* loadStream;
 
         u_short numberOfMonsters;
 

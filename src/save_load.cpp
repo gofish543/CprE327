@@ -2,25 +2,17 @@
 
 int save_to_file(Dungeon* dungeon) {
     switch (dungeon->getSettings()->getFileVersion()) {
-        case 1:
-            file_save_1(dungeon);
-            break;
         case 0:
         default:
-            file_save_0(dungeon);
-            break;
+            return file_save_0(dungeon);
     }
 }
 
 int load_from_file(Dungeon* dungeon) {
     switch (dungeon->getSettings()->getFileVersion()) {
-        case 1:
-            file_load_1(dungeon);
-            break;
         case 0:
         default:
-            file_load_0(dungeon);
-            break;
+            return file_load_0(dungeon);
     }
 }
 

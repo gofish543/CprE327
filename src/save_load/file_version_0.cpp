@@ -334,5 +334,6 @@ int file_load_floor_0(FILE* file, Floor* floor) {
     }
 
     floor->generateMonsters(monsterCount)->generateObjects(Dice::RandomNumberBetween(FLOOR_OBJECTS_MIN, FLOOR_OBJECTS_MAX));
+
     return 0;
 }

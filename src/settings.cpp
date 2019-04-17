@@ -1,8 +1,10 @@
 #include "settings.h"
 
 Settings::Settings(int argc, char* argv[]) {
-    this->savePath = new std::ofstream();
-    this->loadPath = new std::ifstream();
+    this->savePath = new std::string();
+    this->loadPath = new std::string();
+    this->saveStream = new std::ofstream();
+    this->loadStream = new std::ifstream();
 
     this->fileVersion = 0;
     this->numberOfMonsters = 0;
@@ -28,14 +30,16 @@ Settings::~Settings() {
     }
     delete (this->monsterDesc);
 
-    if (this->savePath->is_open()) {
-        this->savePath->close();
+    if (this->saveStream->is_open()) {
+        this->saveStream->close();
     }
+    delete (this->saveStream);
     delete (this->savePath);
 
-    if (this->loadPath->is_open()) {
-        this->loadPath->close();
+    if (this->loadStream->is_open()) {
+        this->loadStream->close();
     }
+    delete (this->loadStream);
     delete (this->loadPath);
 }
 
@@ -53,19 +57,21 @@ Settings* Settings::loadArguments(int argc, char* argv[]) {
 
             // Is it just a file name?
             std::string fileName = Settings::GetFileName(argv[index + 1]);
+            std::string target;
 
             if (fileName == argv[index + 1]) {
                 // Just file name passed, use home directory
-                fileName = getenv("HOME") + std::string(SETTINGS_HOME_FOLDER) + fileName;
+                target = getenv("HOME") + std::string(SETTINGS_HOME_FOLDER) + fileName;
             } else if (Settings::FileExists(argv[index + 1])) {
                 // A folder path was used, check that it is valid
-                fileName = argv[index + 1];
+                target = argv[index + 1];
             } else {
                 printf(SHELL_TEXT_RED "Using --save (-s) required a valid file or file path\n");
                 exit(1);
             }
 
-            this->savePath->open(fileName);
+            this->saveStream->open(target);
+            this->savePath->assign(target);
         } else if (strcmp(argv[index], "--load") == 0 || strcmp(argv[index], "-l") == 0) {
             // Make sure there is a load path specified
             if (index + 1 == argc || strstarts(argv[index + 1], "-")) {
@@ -76,26 +82,28 @@ Settings* Settings::loadArguments(int argc, char* argv[]) {
 
             // Is it just a file name?
             std::string fileName = Settings::GetFileName(argv[index + 1]);
+            std::string target;
 
             if (fileName == argv[index + 1]) {
                 // Just file name passed, use home directory and validate that it exists
-                fileName = getenv("HOME") + std::string(SETTINGS_HOME_FOLDER) + fileName;
+                target = getenv("HOME") + std::string(SETTINGS_HOME_FOLDER) + fileName;
 
-                if (!Settings::FileExists(fileName)) {
+                if (!Settings::FileExists(target)) {
                     printf(SHELL_TEXT_RED "Using --load (-l) requires a file as the target to load from\n");
                     printf(SHELL_DEFAULT "\n");
                     exit(1);
                 }
             } else if (Settings::FileExists(argv[index + 1])) {
                 // A folder path was used, check that it is valid
-                fileName = argv[index + 1];
+                target = argv[index + 1];
             } else {
                 printf(SHELL_TEXT_RED "Using --load (-l) requires a file as the target to load from\n");
                 printf(SHELL_DEFAULT "\n");
                 exit(1);
             }
 
-            this->loadPath->open(fileName);
+            this->loadStream->open(target);
+            this->loadPath->assign(target);
         } else if (strcmp(argv[index], "--file_version") == 0 || strcmp(argv[index], "-fv") == 0) {
             if (index + 1 == argc || strstarts(argv[index + 1], "-")) {
                 printf("Using --file_version (-fv) requires a file version integer\n");
@@ -203,11 +211,11 @@ int Settings::CreateFolder(const std::string& path) {
 }
 
 bool Settings::doSave() {
-    return this->savePath->is_open();
+    return this->saveStream->is_open();
 }
 
 bool Settings::doLoad() {
-    return this->loadPath->is_open();
+    return this->loadStream->is_open();
 }
 
 /** GETTERS **/
@@ -231,11 +239,19 @@ u_char Settings::getFileVersion() {
     return this->fileVersion;
 }
 
-std::ofstream* Settings::getSavePath() {
+std::ofstream* Settings::getSaveStream() {
+    return this->saveStream;
+}
+
+std::string* Settings::getSavePath() {
     return this->savePath;
 }
 
-std::ifstream* Settings::getLoadPath() {
+std::ifstream* Settings::getLoadStream() {
+    return this->loadStream;
+}
+
+std::string* Settings::getLoadPath() {
     return this->loadPath;
 }
 
@@ -284,23 +300,27 @@ Settings* Settings::setFileVersion(u_char fileVersion) {
 }
 
 Settings* Settings::setSavePath(std::string& path) {
-    this->savePath->close();
+    this->saveStream->close();
 
-    this->savePath->open(path);
-    if (!this->savePath->is_open()) {
+    this->saveStream->open(path);
+    if (!this->saveStream->is_open()) {
         throw Exception::FileFailedToOpen();
     }
+
+    this->savePath->assign(path);
 
     return this;
 }
 
 Settings* Settings::setLoadPath(std::string& path) {
-    this->loadPath->close();
+    this->loadStream->close();
 
-    this->loadPath->open(path);
-    if (!this->loadPath->is_open()) {
+    this->loadStream->open(path);
+    if (!this->loadStream->is_open()) {
         throw Exception::FileFailedToOpen();
     }
+
+    this->loadPath->assign(path);
 
     return this;
 }

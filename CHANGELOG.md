@@ -3,11 +3,10 @@
 ## [v1.0.0 (2019-04-22)](https://github.com/gofish543/CprE327/releases/tag/v1.0.0)
 
 ### Added
-- Added file version 1 with c++ classes
 ### Fixed
 - Fixed light algorithm
+- Fixed taking staircase
 ### Changed
-- Support for file version 0 has been dropped
 - Updated readme to reflect changes
 
 ## [v0.1.9 (2019-04-15)](https://github.com/gofish543/CprE327/releases/tag/v0.1.9)

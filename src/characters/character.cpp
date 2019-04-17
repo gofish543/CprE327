@@ -44,6 +44,16 @@ bool Character::hasLineOfSightTo(u_char width, u_char height) {
         if (std::sqrt(deltaX * deltaX + deltaY * deltaY) > PLAYER_DEFAULT_LIGHT_RADIUS) {
             return false;
         }
+        if (abs(deltaX) >= PLAYER_DEFAULT_LIGHT_RADIUS) {
+            return false;
+        }
+        if (abs(deltaY) >= PLAYER_DEFAULT_LIGHT_RADIUS) {
+            return false;
+        }
+    }
+
+    if (!floor->getTerrainAt(width, height)->isWalkable()) {
+        return false;
     }
 
     if (deltaX == 0 && deltaY == 0) {
